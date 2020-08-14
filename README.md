@@ -2,4 +2,4 @@
 
 #### checklist
 
-[ ] verify hycom hindcast, forecast, ITP data, and CTD data
+-[ ] verify hycom hindcast, forecast, ITP data, and CTD data
