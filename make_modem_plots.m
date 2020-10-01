@@ -98,6 +98,7 @@ title(lgd,'srcID');
 hold off
 grid on
 
+ylabel('pdf');
 xlabel('travel time [s]')
 xlim([0 5]);
 end
