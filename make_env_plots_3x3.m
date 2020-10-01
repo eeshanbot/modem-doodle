@@ -29,6 +29,7 @@ clear tt;
 listing = dir('~/.dropboxmit/icex_2020_mat/itp-files/itp*grd*.dat');
 
 itp_search.filepath = strings(length(listing),1);
+itp_search.machine = strings(length(listing),1);
 itp_search.lon = zeros(length(listing),1);
 itp_search.lat = zeros(length(listing),1);
 itp_search.time = zeros(length(listing),1);
@@ -43,6 +44,7 @@ for cc = 1:length(listing)
     itp_search.lon(cc)        = info.lon;
     itp_search.lat(cc)        = info.lat;
     itp_search.time(cc)       = datenum([info.year 0 info.day 0 0 0]);
+    itp_search.machine(cc)    = listing(cc).name(1:6);
 end
 
 num_check = 3;
@@ -105,11 +107,11 @@ for p = 1:length(CTD)
     
     % pick "nearest neighbor" by z-score
     
-    z_lat = abs((itp_search.lat - request_lat)./std(itp_search.lat));
-    z_lon = abs((itp_search.lon - (request_lon - 360))./std(itp_search.lon));
-    z_time = abs((itp_search.time - request_time)./std(itp_search.time));
+    z_lat = (itp_search.lat - request_lat)./std(itp_search.lat);
+    z_lon = (itp_search.lon - (request_lon - 360))./std(itp_search.lon);
+    z_time = (itp_search.time - request_time)./std(itp_search.time);
     
-    z_total = 5.*z_time + z_lat + z_lon;
+    z_total = 1.*abs(z_time) + 3.*abs(z_lat) + abs(z_lon);
     [B,best_index] = sort(z_total,'ascend');
     
     count = 0;
@@ -126,7 +128,7 @@ for p = 1:length(CTD)
             best_itp_lat(p,lp) = itp_search.lat(best_index(count));
             best_itp_lon(p,lp) = itp_search.lon(best_index(count));
             best_itp_time(p,lp) = itp_search.time(best_index(count));
-            best_itp_filename(p,lp) = itp_search.filepath(best_index(count));
+            best_itp_name(p,lp) = itp_search.machine(best_index(count));
         end
     end
     
