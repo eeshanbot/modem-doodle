@@ -1,0 +1,79 @@
+Exp 1:
+  1. 13:48 > 14:15
+  - EEOF weights
+  - Rx deep
+  - H1 as macrura
+
+Exp 2:
+  1. 13:48 > 14:15
+  - EEOF weights
+  - Rx deep
+  - H2 as macrura
+
+Exp 3:
+  1. 13:48 > 14:15
+  - EEOF weights
+  - Rx deep
+  - H2 as macrura
+
+Exp 4:
+  1. 13:48 > 14:15
+  - EEOF weights
+  - Rx deep
+  - H2 as macrura
+
+
+
+
+Exp 5:
+  1. 13:48 > 14:15
+  - EEOF weights
+  - Rx deep
+  - H2 as macrura
+
+
+Exp 6:
+  1. 14:15 > (??) [h1 died]
+  - baseline weights
+  - Rx shallow
+  - H2 as macrura
+
+
+Exp 7:
+
+  1. 15:26 > 15:56 &
+  - baseline weights
+  - Rx shallow
+  - H2 as macrura
+
+  2. 15:56 > 16:01 [h3 died]
+  - baseline weights
+  - Rx deep
+  - H2 as macrura
+
+
+Exp 8:
+  1. 21:35 >
+  - EEOF weights
+  - Rx shallow
+  - H3 (?) as macrura
+
+
+Cast times:
+
+RSK:
+- 2020-03-09 06:05
+- 2020-03-09 12:02
+- 2020-03-09 18:04
+- 2020-03-09 21:31
+
+XCTD:
+- 2020-03-10 15:30
+- 2020-03-11 06:30
+- 2020-03-11 13:00
+- 2020-03-11 21:00
+- 2020-03-12 06:20
+
+Detailed notes:
+target.mit.edu:/data2/ICEX2020_1/icex_2020_arctic_data/detailed_cruise_notes_and_report
+
