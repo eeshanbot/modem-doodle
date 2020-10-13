@@ -1,26 +1,51 @@
+Experiment breakdown -- "Toby test" dataset
+
+Exp 1-4 exhibit time sync issues
+
+
 Exp 1:
-  1. 13:48 > 14:15
+  1. 8:35 > 9:25
   - EEOF weights
   - Rx deep
   - H1 as macrura
 
+  * Included ICEX hack :
+    substract 1 sec for delays of more than 1.5 sec
+
+
 Exp 2:
-  1. 13:48 > 14:15
+  1. 9:30 > 10:30
   - EEOF weights
   - Rx deep
-  - H2 as macrura
+  - H1 as macrura
+
+  * Removes ICEX hack
+
 
 Exp 3:
-  1. 13:48 > 14:15
+  1. 10:30 > 11:30
+  - EEOF weights
+  - Rx deep
+  - H1 as macrura
+
+  * Hydrohole as "H1"
+    time is wrong
+    drift up to 8 seconds
+    for details:
+    $ cat lamss_icex_tracker_20200310T183218.txt | grep "\$C.TM" | grep "::2"
+
+
+Exp 4:
+  1. 12:45 > 13:45
   - EEOF weights
   - Rx deep
   - H2 as macrura
 
-Exp 4:
-  1. 13:48 > 14:15
-  - EEOF weights
-  - Rx deep
-  - H2 as macrura
+  * Hydrohole as "H2",
+    time is wrong until 13:25
+    error consists of up to 1 sec offset during this experiment
+    for details:
+    $ cat  lamss_icex_tracker_20200310T204453.txt | grep "\$C.TM" | grep "::3"
 
 
 
@@ -57,6 +82,11 @@ Exp 8:
   - EEOF weights
   - Rx shallow
   - H3 (?) as macrura
+
+  * H3 as macrura : confirmed
+    see lamss_icex_tracker_20200311T053548.txt
+    line 108 confirms hydrohole acting as substitute H3
+
 
 
 Cast times:
