@@ -1,0 +1,1 @@
+../jasa-latex-template-v2019/jasanum2.bst

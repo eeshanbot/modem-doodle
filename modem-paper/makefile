@@ -1,23 +1,40 @@
 all: preprint reprint
 
-# for the target files, call pdflatex twice to make
-# sure references (Sections, Figs, Tables, Citations)
-# are rendered correctly – read in on first pass, and
-# rendered at ref targets on second pass
+# with bibligraphy:
+#
+# pdflatex - first pass reads in all references
+# bibtex   - reads aux file and styles bibliography
+# pdflatex - second pass links references to bibtex out
+# pdflatex - third pass renders references
+#
+# target files only (no biblio):
+#
+# pdflatex - first pass reads in all references
+# pdflatex - second pass renders references
+#
+# this will help make sure references (Sections, Figs,
+# Tables, Citations) are rendered correctly in the
+# final PDF output
 
 preprint:
-	pdflatex preprint.tex
-	pdflatex preprint.tex
+	pdflatex preprint
+	bibtex   preprint
+	pdflatex preprint
+	pdflatex preprint
 
 reprint:
-	pdflatex reprint.tex
-	pdflatex reprint.tex
+	pdflatex reprint
+	bibtex   reprint
+	pdflatex reprint
+	pdflatex reprint
 
 clean:
-	rm -f preprint.tex
-	rm -f reprint.tex
+	rm -f preprint.pdf
+	rm -f reprint.pdf
 	rm -f *.aux
 	rm -f *.log
 	rm -f *Notes.bib
+	rm -f *.blg
+	rm -f *.bbl
 
 
