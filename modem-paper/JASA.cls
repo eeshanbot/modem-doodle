@@ -1,0 +1,1 @@
+../jasa-latex-template-v2019/JASA.cls
