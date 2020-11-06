@@ -1,17 +1,13 @@
-\title[JASA/Sample JASA Article]{Sample JASA Article}
+\title[JASA/Sample JASA Article]{Considering vertical sound speed uncertainty in the Beaufort Lens for more realistic range estimation between acoustic modems}
 \author{EeShan Bhatt}
 \author{Oscar Viquez}
+\author{Bradli Howard}
 \author{Henrik Schmidt}
 \affiliation{Department of Mechanical Engineering,  Massachusetts Institute of Technology, Cambridge, MA 02139, USA}
-
 
 % \author{Author Four}
 % \email{author.four@university.edu}
 % \affiliation{Department2,  University2, City, State ZipCode, Country}
-
-% \author{Author Five}
-% \altaffiliation{Also at: Department, University, City, State ZipCode, Country.}
-% \affiliation{Department3,  University3, City, State ZipCode, Country}
 
 
 \preprint{Bhatt, JASA}   %  if you want want this message to appear in upper right corner of title page
@@ -19,6 +15,9 @@
 \date{\today}
 
 \begin{abstract}
+
+{\color{red}[Draft Abstract]}
+
 Put your abstract here. Abstracts are limited to 200 words for
 regular articles and 100 words for Letters to the Editor. Please no
 personal pronouns, also please do not use the words ``new'' and/or
@@ -31,11 +30,18 @@ article.
 
 \maketitle
 
-%  End of title page for Preprint option --------------------------------- %
 
 
-
+% =========================================================================== %
+% =========================================================================== %
 \section{\label{sec:1} Introduction}
+
+{\color{red}
+[Intro : EOF Approach, generally]
+
+[Motivation: ICEX (\& Irminger?)]
+}
+
 This sample document demonstrates the use of JASA in manuscripts
 prepared for submission to the Journal of the Acoustical Society of America.
 
@@ -43,30 +49,127 @@ The paper is organized as follows: Section~\ref{sec:2} presents
 initial information, while
 Section~\ref{sec:3} presents examples of mathematical expressions.
 
- % Sample showing how to include figure, this is a floating figure
 
+
+% =========================================================================== %
+% =========================================================================== %
+\section{\label{sec:2} Methods}
+
+\subsection{\label{subsec:2:1} Environmental EOFs}
+
+{\color{red}[DETAIL : EOF Approach]}
+
+% ================================================== %
 \begin{figure}[ht]
-%% \reprintcolumnwidth is the same in preprint and reprint for
-%% ease of use for authors:
+\figline{\fig{figsamp.jpg}{\reprintcolumnwidth}{(a)}}
+\figline{\fig{figsamp.jpg}{4cm}{(b)} \fig{figsamp.jpg}{4cm}{(c)}}
+
+% \includegraphics[width=\reprintcolumnwidth]{figsamp.jpg}
+\caption{\label{fig:FIG1}{Extracting EOFs from environmental data: (a) HYCOM and ITP data, (b) EOF shapes and weight distributions.}}
+
+\end{figure}
+% ================================================== %
+
+This section would generally discuss EOFs, the equations that extract them from data collections, and perhaps the "information capacity" w.r.t. to the number of depth points vs number of samples. Should we also include, in somewhat general terms, the "uniqueness" constraint? As in, i.e.: sampled region is too large or too small to adequately capture the features needed for reconstruction.
+
+
+
+% =========================================================================== %
+% =========================================================================== %
+\section{\label{sec:3} Results}
+
+\subsection{\label{subsec:3:1} ICEX 2020 conditions}
+{\color{red}[CTD comparison]}
+
+% ================================================== %
+\begin{figure}[ht]
+\includegraphics[width=\reprintcolumnwidth]{figsamp.jpg}
+\caption{\label{fig:FIG2}{CTD casts vs. HYCOM-derived baseline}}
+\end{figure}
+% ================================================== %
+
+% ========================= %
+% ========================= %
+\subsection{\label{subsec:3:2} One-Way Travel Times}
+{\color{red}[OWTT comparison]}
+
+% ================================================== %
+\begin{figure}[ht]
+\includegraphics[width=\reprintcolumnwidth]{figsamp.jpg}
+\caption{\label{fig:FIG3}{Modem placement diagram}}
+\end{figure}
+% ================================================== %
+
+% ================================================== %
+\begin{figure}[ht]
+\figline{\fig{figsamp.jpg}{\reprintcolumnwidth}{(a)}}
+\figline{\fig{figsamp.jpg}{4cm}{(b)} \fig{figsamp.jpg}{4cm}{(c)}}
+% \includegraphics[width=\reprintcolumnwidth]{figsamp.jpg}
+\caption{\label{fig:FIG4}{(a) OWTT histogram, (b) "..." OF RANGE "...".}}
+\end{figure}
+% ================================================== %
+
+
+
+% =========================================================================== %
+% =========================================================================== %
+\section{\label{sec:4} Discussion}
+
+\subsection{\label{subsec:4:1} Model agreement discussion}
+{\color{red}[Model agreement discussion]}
+
+% ================================================== %
+\begin{figure}[ht]
+\includegraphics[width=\reprintcolumnwidth]{figsamp.jpg}
+\caption{\label{fig:FIG5}{Comparison of range-independent model vs. field data}}
+\end{figure}
+% ================================================== %
+
+\subsection{\label{subsec:4:2} Bootstrapping EOF}
+{\color{red}[Bootstrapping EOF]}
+
+% ================================================== %
+\begin{figure}[ht]
+\includegraphics[width=\reprintcolumnwidth]{figsamp.jpg}
+\caption{\label{fig:FIG6}{Convergence}}
+\end{figure}
+% ================================================== %
+
+% ================================================== %
+\begin{figure}[ht]
+\includegraphics[width=\reprintcolumnwidth]{figsamp.jpg}
+\caption{\label{fig:FIG7}{Bootstrap error estimate}}
+\end{figure}
+% ================================================== %
+
+
+
+
+
+
+
+% ================================================== %
+\begin{figure}[ht]
 \includegraphics[width=\reprintcolumnwidth]{figsamp.jpg}
 \caption{\label{fig:FIG1}{Caption here.}}
 
 \raggedright
+{\color{red}
 Note: The only figure formats allowed are the following:
 .pdf, .ps, .eps, or .jpg. Figure files must be named in this fashion:
 Figure\#.xxx, where ``\#'' is the figure number and ``xxx'' is the file format
 (Figure1.eps, Figure2.jpg, Figure3a.ps, Figure3b.ps, etc).
+}
 
 [For these sample pages we have used only figsamp.jpg for convenience]
 \end{figure}
+% ================================================== %
 
-\section{\label{sec:2} Section Two}
 
 An example of another first-level Section with following example text that refers to subsections using
 \verb+\ref{subsec:XXX}+ ...  EXAMPLE: Some background in
 section~\ref{sec:2} and details  in subsection~\ref{subsec:2:1}.
 
-\subsection{\label{subsec:2:1} Sample subsection}
 
 
    \subsubsection{Sample subsubsection\label{subsubsec:1}}
@@ -87,14 +190,24 @@ bibliography. Every citation must have a matching entry in the
 bibliography
 database file (\verb+\filename.bib+).
 
-Make your bibliography by doing: pdflatex filename,  bibtex filename,
-pdflatex filename, pdflatex filename.
 
-{\bfseries\itshape
-Compare the results you get with\\
-{\verb+\documentclass[preprint]{JASA}+ }\\
-vs.\\
-{\verb+\documentclass[preprint,NumberedRefs]{JASA}+ }
-}
+Here is an example of algorithmic:
+
+
+\begin{algorithmic}
+\If {$i\geq maxval$}
+    \State $i\gets 0$
+\Else
+    \If {$i+k\leq maxval$}
+        \State $i\gets i+k$
+    \EndIf
+\EndIf
+\end{algorithmic}
+
+
+\begin{acknowledgments}
+This research was supported by  ...
+\end{acknowledgments}
+
 
 \bibliography{sampbib}
