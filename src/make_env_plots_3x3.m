@@ -51,16 +51,22 @@ num_check = 3;
 itp_c = cell(length(CTD),num_check);
 itp_z = cell(length(CTD),num_check);
 
+disp('finished ITP search! \n');
+
 
 %% loop through CTDs
 for p = 1:length(CTD)
     
-    %% ctd info
+    % ctd info
     ind_below = find(CTD(p).raw_z > 2);
     
     ctd_z{p} = CTD(p).raw_z(ind_below);
     ctd_c{p} = CTD(p).raw_c(ind_below);
     ctd_t(p) = datenum(CTD(p).time,'DD-mmm-yy HHMM');
+    
+    addpath(genpath('./eof_play/'));
+    eof_filepath = '~/.dropboxmit/icex_2020_mat/eeof_itp_Mar2013.nc';
+    [ctd_weight{p},ctd_eofnum{p},yhat{p}] = generate_coeffs_plot(ctd_z{p},ctd_c{p},eof_filepath);
     
     request_depth = max(CTD(p).raw_z);
     request_time = datenum(ctd_t(p));
@@ -140,12 +146,16 @@ end
 %% write to a figure
 
 figure(1); clf;
-ha = tight_subplot(3,3,[.06 .03],[.1 .05],[.1 .02]);
+ha = tight_subplot(1,4,[.06 .03],[.1 .05],[.1 .02]);
 
-for p = 1:9
+eeof_depths  = double(ncread(eof_filepath,'depth'));
+
+pcount = 0;
+for p = [1 4 5 8]
     
+    pcount = pcount + 1;
     % get figure
-    axes(ha(p));
+    axes(ha(pcount));
     
     if strcmp(CTD(p).type,'rsk')
         color = [153 51 153]./256;
@@ -159,31 +169,31 @@ for p = 1:9
         p_itp = plot(itp_c{p,lp},itp_z{p,lp},'color',[5 119 177 80]./256,'linewidth',3);
     end
     p_ctd = plot(ctd_c{p},ctd_z{p},'-','color',color,'linewidth',3);
+    
+    % plot EOF -- 
+    p_eof = plot(yhat{p},eeof_depths, 'ko');
+    
     hold off
     
     beautify_plot();
     title(datestr(ctd_t(p),'DD mmm yy HHMM'));
     
-    if mod(p,3) ~= 1
+    if p > 1
         yticklabels('');
     end
     
-    if p <= 6
-        xticklabels('');
-    end
     
-    if p == 8
-        xlabel('c [m/s]')
-    end
+    xlabel('c [m/s]')
+
     
-    if p == 4
+    if p == 1
         ylabel('depth [m]');
     end
     
     if p == 1
-        legend([p_ctd p_hycom p_itp],'RSK','HYCOM','ITP','location','best')
+        legend([p_ctd p_hycom p_itp p_eof],'RSK','HYCOM','ITP','EOF','location','best')
     elseif p==5
-        legend([p_ctd p_hycom p_itp],'xCTD','HYCOM','ITP','location','best');
+        legend([p_ctd p_hycom p_itp p_eof],'xCTD','HYCOM','ITP','EOF','location','best');
     end
 end
 
