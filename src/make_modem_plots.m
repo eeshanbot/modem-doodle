@@ -46,9 +46,8 @@ plot_comms_data(ttXsrc.h3,colorset,modem_id_list);
 subplot(2,2,4)
 plot_comms_data(ttXsrc.h4,colorset,modem_id_list);
 
-
-
-
+figure(2); clf;
+plot_comms_data(ttXsrc.macrura,colorset,modem_id_list)
 
 %% helper function : sort_comms_data
 function [ttXsrc] = sort_comms_data(modem,srcIDs,time_bound);
