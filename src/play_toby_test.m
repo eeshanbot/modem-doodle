@@ -1,5 +1,7 @@
 %% play_toby_test.m
 
+clear; clc;
+
 %% directory
 dir_toby_test = '~/.dropboxmit/icex_2020_mat/toby_test_sorted/*.mat';
 listing = dir(dir_toby_test);
@@ -12,7 +14,7 @@ listing = dir(dir_toby_test);
 
 dir_group_velocity = '~/.dropboxmit/icex_ipynb/gvels_by_node.mat';
 load(dir_group_velocity);
-gvels_topside = gvels_by_node.hydrohole;
+gvels_hydrohole = gvels_by_node.hydrohole;
 gvels_macrura = gvels_by_node.macrura;
 
 %% plot -- group velocities
