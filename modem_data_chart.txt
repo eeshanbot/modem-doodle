@@ -107,3 +107,17 @@ XCTD:
 Detailed notes:
 target.mit.edu:/data2/ICEX2020_1/icex_2020_arctic_data/detailed_cruise_notes_and_report
 
+
+Buoy Depths
+- Given by HARDWARE
+- Adjust as needed for experiment swap/stand-in
+
+Modem ID  |  Tx Depth [m]  |  Description
+----------|----------------|--------------
+    10    |       90       |      h1
+    11    |       30       |      h2
+    12    |       90       |      h3
+    13    |       30       |      h4
+    16    |       20       |   hydrohole
+
+
