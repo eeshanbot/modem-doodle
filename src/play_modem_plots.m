@@ -50,7 +50,7 @@ figure(2); clf;
 plot_comms_data(ttXsrc.macrura,colorset,modem_id_list)
 
 %% helper function : sort_comms_data
-function [ttXsrc] = sort_comms_data(modem,srcIDs,time_bound);
+function [ttXsrc] = sort_comms_data(modem,srcIDs,time_bound)
 
 % filter for time range
 % filter by receiving ID only
