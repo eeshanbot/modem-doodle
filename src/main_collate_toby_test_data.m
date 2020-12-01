@@ -37,19 +37,23 @@ comm_lbls = {'h1','h2','h3','h4','macrura_10k'};
 comm_ids  = [  10  11   12   13        4       ];
 num_comm_ids = length(comm_lbls);
 
-for itt = 1
+for itt = 1:nTobyTest
     A = load([listing_toby_test(itt).folder '/' listing_toby_test(itt).name]);
+    fprintf('loaded %s ... ',listing_toby_test(itt).name);
     
     % fix naming convention
     nameString = extractBefore(listing_toby_test(itt).name,'.');
     nameString = split(nameString,'_');
     if length(nameString) == 4
-        nameString = sprintf('toby test %s',nameString{4});
+        experimentStr = nameString{4};
+        nameString = sprintf('toby test %s',experimentStr);
     else
+        experimentStr = sprintf('%s-%s',nameString{4},nameString{5});
         nameString = sprintf('toby test %s.%s',nameString{4},nameString{5});
     end
     
     % go by event for each comm id
+    clear event; 
     count = 0;
     for iNCI = 1:num_comm_ids
         temp_id = comm_lbls{iNCI};
@@ -118,6 +122,11 @@ for itt = 1
             end       
         end 
     end
+    
+    %% save as separate mat file
+    filename = sprintf('tobytest-by-event-%s',experimentStr);
+    save(filename,'event');
+    fprintf('saved %s.mat \n',filename);
 end
 
 %% helper function : get_nested_val();
