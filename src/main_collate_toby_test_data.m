@@ -114,8 +114,8 @@ for itt = 1:nTobyTest
                 
                 event(count).sim.range     = smartI2D(gvel_macrura.(node)(index).range);
                 event(count).sim.delay     = smartI2D(gvel_macrura.(node)(index).delay);
-                event(count).sim.gvel      = gvel_macrura.(node)(index).group_velocity;
-                event(count).sim.gvelstd   = gvel_macrura.(node)(index).group_velocity_std;
+                event(count).sim.gvel      = smartI2D(gvel_macrura.(node)(index).group_velocity);
+                event(count).sim.gvelstd   = smartI2D(gvel_macrura.(node)(index).group_velocity_std);
                 event(count).sim.src       = gvel_macrura.(node)(index).source;
                 event(count).sim.rec       = gvel_macrura.(node)(index).receiver;
                 event(count).sim.time      = h_convertTime(gvel_macrura.(node)(index).timestamp,0);
@@ -127,7 +127,7 @@ for itt = 1:nTobyTest
     end
     
     %% save as separate mat file
-    filename = sprintf('tobytest-by-event-%s',experimentStr);
+    filename = sprintf('./data-tobytest-by-event/tobytest-by-event-%s',experimentStr);
     save(filename,'event');
     fprintf(' saved %s.mat \n',filename);
 end
