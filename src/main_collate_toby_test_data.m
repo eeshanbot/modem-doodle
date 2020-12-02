@@ -39,7 +39,7 @@ num_comm_ids = length(comm_lbls);
 
 for itt = 1:nTobyTest
     A = load([listing_toby_test(itt).folder '/' listing_toby_test(itt).name]);
-    fprintf('loaded %s ... ',listing_toby_test(itt).name);
+    fprintf('loaded %s ',listing_toby_test(itt).name);
     
     % fix naming convention
     nameString = extractBefore(listing_toby_test(itt).name,'.');
@@ -80,7 +80,7 @@ for itt = 1:nTobyTest
                 event(count).tx.name        = A.comms.(temp_id).src_nav{iNE}.name;
                 event(count).tx.x           = smartI2D(A.comms.(temp_id).src_nav{iNE}.x);
                 event(count).tx.y           = smartI2D(A.comms.(temp_id).src_nav{iNE}.y);
-                event(count).tx.z           = A.comms.(temp_id).src_nav{iNE}.z;
+                event(count).tx.z           = smartI2D(A.comms.(temp_id).src_nav{iNE}.z);
                 event(count).tx.lat         = smartI2D(A.comms.(temp_id).src_nav{iNE}.lat);
                 event(count).tx.lon         = smartI2D(A.comms.(temp_id).src_nav{iNE}.lon);
                 event(count).tx.depth       = A.comms.(temp_id).src_nav{iNE}.depth;
@@ -91,7 +91,7 @@ for itt = 1:nTobyTest
                 event(count).rx.name        = A.comms.(temp_id).nav{iNE}.name;
                 event(count).rx.x           = smartI2D(A.comms.(temp_id).nav{iNE}.x);
                 event(count).rx.y           = smartI2D(A.comms.(temp_id).nav{iNE}.y);
-                event(count).rx.z           = A.comms.(temp_id).nav{iNE}.z;
+                event(count).rx.z           = smartI2D(A.comms.(temp_id).nav{iNE}.z);
                 event(count).rx.lat         = smartI2D(A.comms.(temp_id).nav{iNE}.lat);
                 event(count).rx.lon         = smartI2D(A.comms.(temp_id).nav{iNE}.lon);
                 event(count).rx.depth       = smartI2D(A.comms.(temp_id).nav{iNE}.depth);
@@ -121,12 +121,15 @@ for itt = 1:nTobyTest
                 event(count).sim.time      = h_convertTime(gvel_macrura.(node)(index).timestamp,0);
             end       
         end 
+        
+        % pretty printing loading
+        fprintf('.');
     end
     
     %% save as separate mat file
     filename = sprintf('tobytest-by-event-%s',experimentStr);
     save(filename,'event');
-    fprintf('saved %s.mat \n',filename);
+    fprintf(' saved %s.mat \n',filename);
 end
 
 %% helper function : get_nested_val();
