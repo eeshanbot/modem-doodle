@@ -14,7 +14,7 @@ set(0,'DefaultAxesFontSize',14)
 
 %% loop through each listing
 
-for iNL = 3
+for iNL = 1
     
     figure(1); clf;
     
@@ -26,7 +26,8 @@ for iNL = 3
     sim_range = sim_range(filter_valid);
     
     owtt = get_nested_val_filter(event,'tag','owtt',filter_valid);
-    gvel = get_nested_val_filter(event,'sim','gvel',filter_valid);
+    sim_delay = get_nested_val_filter(event,'sim','delay',filter_valid);
+    sim_gvel = get_nested_val_filter(event,'sim','gvel',filter_valid);
     
     tx_x = get_nested_val_filter(event,'tx','x',filter_valid);
     tx_y = get_nested_val_filter(event,'tx','y',filter_valid);
@@ -39,55 +40,94 @@ for iNL = 3
     rx_loc = [rx_x; rx_y; rx_z];
     
     dist3 = @(p,q) sqrt(  (p(1,:) - q(1,:)).^2 ...
-                        + (p(2,:) - q(2,:)).^2 ... 
-                        + (p(3,:) - q(3,:)).^2 );
-                    
+        + (p(2,:) - q(2,:)).^2 ...
+        + (p(3,:) - q(3,:)).^2 );
+    
     gps_range = dist3(tx_loc,rx_loc);
+    gvel = gps_range ./ owtt;
     
     
     %% figure: owtt v range
     
+    [f_owtt,xi_owtt]            = ksdensity(owtt,'support','positive','boundaryCorrection','reflection');
+    [f_simowtt,xi_simowtt]      = ksdensity(sim_delay,'support','positive','boundaryCorrection','reflection');
     
-    [f_owtt,xi_owtt]    = ksdensity(owtt,'support','positive','boundaryCorrection','reflection');
-    [f_simrange,xi_simrange]  = ksdensity(sim_range,'support','positive','boundaryCorrection','reflection');
-    [f_gpsrange,xi_gpsrange]      = ksdensity(gps_range,'support','positive','boundaryCorrection','reflection');
-    [f_gvel,xi_gvel]    = ksdensity(gvel,'support','positive','boundaryCorrection','reflection');
+    [f_gpsrange,xi_gpsrange]    = ksdensity(gps_range,'support','positive','boundaryCorrection','reflection');
+    [f_simrange,xi_simrange]    = ksdensity(sim_range,'support','positive','boundaryCorrection','reflection');
     
-    mle_gvel = gvel(f_gvel==max(f_gvel));
-
+    [f_gvel,xi_gvel]            = ksdensity(gvel,'support','positive','boundaryCorrection','reflection');
+    [f_simgvel,xi_simgvel]      = ksdensity(sim_gvel,'support','positive','boundaryCorrection','reflection');
     
-    subplot(4,1,1)
+    mle_gvel = xi_gvel(f_gvel==max(f_gvel));
+    
+    % -- OWTT -- %
+    [f_owtt,f_simowtt,ybounds] = set_y_bounds(f_owtt,f_simowtt);
+    xbounds = set_x_bounds(xi_owtt,xi_simowtt);
+    
+    subplot(5,3,10);
+    
     plot(xi_owtt,f_owtt,'k');
-    xlabel('owtt [s]')
-    ylabel('$f( t )$','Interpreter','LaTeX')
     plot_stats(owtt,xi_owtt,f_owtt);
-    title(event(1).tag.name);
     grid on
-    xbounds = xlim();
+    title('owtt{\it distribution}');
+    set_xy_info('in situ data','k',xbounds,ybounds);
     
-    subplot(4,1,2);
-    plot(xi_simrange,f_simrange,'k');
-    plot_stats(sim_range,xi_simrange,f_simrange);
-    xlabel('sim range [m]')
-    ylabel('$f( r )$','Interpreter','LaTeX')
+    subplot(5,3,13)
+    plot(xi_simowtt,f_simowtt);
+    plot_stats(sim_delay,xi_simowtt,f_simowtt);
     grid on
-    xlim(xbounds .* mle_gvel);
+    set_xy_info('in situ simulation',[0 0.4470 0.7410],xbounds,ybounds);
     
-    subplot(4,1,3)
+    % -- RANGE -- %
+    [f_gpsrange,f_simrange,ybounds] = set_y_bounds(f_gpsrange,f_simrange);
+    xbounds = set_x_bounds(xi_gpsrange,xi_simrange);
+    
+    subplot(5,3,11)
     plot(xi_gpsrange,f_gpsrange,'k');
     plot_stats(gps_range,xi_gpsrange,f_gpsrange);
-    xlabel('gps range [m]');
-    ylabel('$f( r )$','Interpreter','LaTeX')
     grid on
-    xlim(xbounds .* mle_gvel);
+    title('range{\it distribution}')
+    set_xy_info('in situ data','k',xbounds,ybounds);
 
-    subplot(4,1,4)
+
+    subplot(5,3,14);
+    plot(xi_simrange,f_simrange);
+    plot_stats(sim_range,xi_simrange,f_simrange);
+    xlabel('range [m]')
+    grid on
+    set_xy_info('in situ simulation',[0 0.4470 0.7410],xbounds,ybounds);
+
+    
+    % -- GVEL -- %
+    [f_gvel,f_simgvel,ybounds] = set_y_bounds(f_gvel,f_simgvel);
+    xbounds = set_x_bounds(xi_gvel,xi_simgvel);
+    
+    subplot(5,3,12)
     plot(xi_gvel,f_gvel,'k')
     plot_stats(gvel,xi_gvel,f_gvel);
-    xlabel('group velocity [m/s]');
-    ylabel('$f( \nu )$','Interpreter','LaTeX')
     grid on
+    title('horizontal group velocity{\it distribution}')
+    set_xy_info('in situ data','k',xbounds,ybounds);
+
+    
+    subplot(5,3,15)
+    plot(xi_simgvel,f_simgvel)
+    plot_stats(sim_gvel,xi_simgvel,f_simgvel);
+    grid on
+    set_xy_info('in situ simulation',[0 0.4470 0.7410],xbounds,ybounds);
+    
 end
+
+%% figure locations in x,y
+subplot(4,3,[1 2 4 5]);
+plot(rx_x,rx_y,'b*');
+hold on
+plot(tx_x,tx_y,'ro');
+hold off
+grid on
+xlabel('x [m]')
+ylabel('y [m]')
+title(event(1).tag.name);
 
 %% helper function : get_nested_val();
 % get a nested value as an array over all structs
@@ -113,7 +153,43 @@ median_f = interp1(xi,f,median_x);
 mean_f = interp1(xi,f,mean_x);
 
 hold on
-plot([median_x median_x],[0 median_f],'o-','linewidth',1.5,'color',[153 51 153 200]/256);
-plot([mean_x mean_x],[0 mean_f],'o-','linewidth',1.5,'color',[200 78 0 200]/256);
+plot([median_x median_x],[0 median_f],'o-','linewidth',1,'color',[153 51 153 200]/256);
+plot([mean_x mean_x],[0 mean_f],'o-','linewidth',1,'color',[200 78 0 200]/256);
 hold off
+end
+
+%% helper function : set_x_bounds(x1,x2);
+function [bounds] = set_x_bounds(x1,x2)
+
+minx1 = min(x1);
+minx2 = min(x2);
+minval = min(minx1,minx2);
+
+maxx1 = max(x1);
+maxx2 = max(x2);
+maxval = max(maxx1,maxx2);
+
+bounds = [minval maxval];
+
+end
+
+%% helper function : set_y_bounds(y1,y2);
+
+function [y1,y2,bounds] = set_y_bounds(y1,y2)
+
+maxy1 = max(y1);
+maxy2 = max(y2);
+maxval = max(maxy1,maxy2);
+
+bounds = [0 1];
+y1 = y1 ./ maxval;
+y2 = y2 ./ maxval;
+
+end
+
+%% helper function : set_xy_info(lbl,color,bounds)
+function [] = set_xy_info(lbl,color,xbounds,ybounds);
+    xlim(xbounds); ylim(ybounds);
+    yticklabels([]);
+    ylabel(lbl,'fontsize',12,'color',color);
 end
