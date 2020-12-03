@@ -12,7 +12,7 @@ num_listing = numel(listing);
 
 %% loop through each listing
 
-for iNL = 1
+for iNL = 5
     
     figure(1); clf;
     
@@ -31,30 +31,32 @@ for iNL = 1
     tx_y = get_nested_val_filter(event,'tx','y',filter_valid);
     tx_z = get_nested_val_filter(event,'tx','z',filter_valid);
     tx_loc = [tx_x; tx_y; tx_z];
-    
+    holder = ones(length(event),1);
+
     rx_x = get_nested_val_filter(event,'rx','x',filter_valid);
     rx_y = get_nested_val_filter(event,'rx','y',filter_valid);
     rx_z = get_nested_val_filter(event,'rx','z',filter_valid);
     rx_loc = [rx_x; rx_y; rx_z];
     
     dist3 = @(p,q) sqrt(  (p(1,:) - q(1,:)).^2 ...
-        + (p(2,:) - q(2,:)).^2 ...
-        + (p(3,:) - q(3,:)).^2 );
+                        + (p(2,:) - q(2,:)).^2 ...
+                        + (p(3,:) - q(3,:)).^2 );
     
     gps_range = dist3(tx_loc,rx_loc);
     gvel = gps_range ./ owtt;
     
-    
     %% figure: owtt v range
     
-    [f_owtt,xi_owtt]            = ksdensity(owtt,'support','positive','boundaryCorrection','reflection');
-    [f_simowtt,xi_simowtt]      = ksdensity(sim_delay,'support','positive','boundaryCorrection','reflection');
+    common_parameters = {'support','positive','bandwidth',0.025};
+
+    [f_owtt,xi_owtt]            = ksdensity(owtt,common_parameters{:});
+    [f_simowtt,xi_simowtt]      = ksdensity(sim_delay,common_parameters{:});
     
-    [f_gpsrange,xi_gpsrange]    = ksdensity(gps_range,'support','positive','boundaryCorrection','reflection');
-    [f_simrange,xi_simrange]    = ksdensity(sim_range,'support','positive','boundaryCorrection','reflection');
+    [f_gpsrange,xi_gpsrange]    = ksdensity(gps_range,common_parameters{:});
+    [f_simrange,xi_simrange]    = ksdensity(sim_range,common_parameters{:});
     
-    [f_gvel,xi_gvel]            = ksdensity(gvel,'support','positive','boundaryCorrection','reflection');
-    [f_simgvel,xi_simgvel]      = ksdensity(sim_gvel,'support','positive','boundaryCorrection','reflection');
+    [f_gvel,xi_gvel]            = ksdensity(gvel,common_parameters{:});
+    [f_simgvel,xi_simgvel]      = ksdensity(sim_gvel,common_parameters{:});
     
     mle_gvel = xi_gvel(f_gvel==max(f_gvel));
     
@@ -94,7 +96,6 @@ for iNL = 1
     xlabel('[m]')
     grid on
     set_xy_info('in situ simulation',[0 0.4470 0.7410],xbounds,ybounds);
-
     
     % -- GVEL -- %
     [f_gvel,f_simgvel,ybounds] = set_y_bounds(f_gvel,f_simgvel);
@@ -117,15 +118,29 @@ for iNL = 1
 end
 
 %% figure locations in x,y
-subplot(4,3,[1 2 4 5]);
+subplot(4,3,[1 4.5]);
 plot(rx_x,rx_y,'b*');
 hold on
 plot(tx_x,tx_y,'ro');
+plot([rx_x tx_x],[rx_y tx_y],'color',[0 0 0 0.1]);
 hold off
 grid on
 xlabel('x [m]')
 ylabel('y [m]')
 title({[event(1).tag.name ' : ' num2str(length(event)) ' contacts'],[event(1).tag.tstr ' to ' event(end).tag.tstr]});
+axis equal
+
+subplot(4,3,[2.5 6])
+hold on
+for nz = 1:numel(rx_z)
+    plot([0 1 ],[rx_z(nz) tx_z(nz)],'o-','color',[0 0 0 0.1])
+end
+grid on
+ylabel('depth [m]');
+xticks([0 1])
+xticklabels({'tx','rx'})
+xlim([-0.5 1.5])
+yticks([-90 -30 -20 0]);
 
 %% helper function : get_nested_val();
 % get a nested value as an array over all structs
@@ -154,6 +169,13 @@ hold on
 plot([median_x median_x],[0 median_f],'o-','linewidth',1,'color',[153 51 153 200]/256);
 plot([mean_x mean_x],[0 mean_f],'o-','linewidth',1,'color',[200 78 0 200]/256);
 hold off
+
+% plot all vals projected onto xi,f
+q = interp1(xi,f,vals);
+hold on
+plot(vals,q,'ko')
+hold off
+
 end
 
 %% helper function : set_x_bounds(x1,x2);
