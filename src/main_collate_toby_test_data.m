@@ -110,7 +110,7 @@ for itt = 1:nTobyTest
                 event(count).sim.gvelNode  = node; 
                 
                 time_array = h_convertTime(get_nested_val(gvel_macrura,node,'timestamp'),0);
-                [~,index] = min(abs(time_array-t0));
+                [time_diff,index] = min(abs(time_array-t0));
                 
                 event(count).sim.range     = smartI2D(gvel_macrura.(node)(index).range);
                 event(count).sim.delay     = smartI2D(gvel_macrura.(node)(index).delay);
@@ -118,6 +118,7 @@ for itt = 1:nTobyTest
                 event(count).sim.gvelstd   = smartI2D(gvel_macrura.(node)(index).group_velocity_std);
                 event(count).sim.src       = gvel_macrura.(node)(index).source;
                 event(count).sim.rec       = gvel_macrura.(node)(index).receiver;
+                event(count).sim.timeDiff  = time_diff * 24 * 3600;
                 event(count).sim.time      = h_convertTime(gvel_macrura.(node)(index).timestamp,0);
             end       
         end 
