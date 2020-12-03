@@ -10,8 +10,6 @@ location = './data-tobytest-by-event/*.mat';
 listing = dir(location);
 num_listing = numel(listing);
 
-set(0,'DefaultAxesFontSize',14)
-
 %% loop through each listing
 
 for iNL = 1
@@ -77,6 +75,7 @@ for iNL = 1
     plot_stats(sim_delay,xi_simowtt,f_simowtt);
     grid on
     set_xy_info('in situ simulation',[0 0.4470 0.7410],xbounds,ybounds);
+    xlabel('[s]');
     
     % -- RANGE -- %
     [f_gpsrange,f_simrange,ybounds] = set_y_bounds(f_gpsrange,f_simrange);
@@ -89,11 +88,10 @@ for iNL = 1
     title('range{\it distribution}')
     set_xy_info('in situ data','k',xbounds,ybounds);
 
-
     subplot(5,3,14);
     plot(xi_simrange,f_simrange);
     plot_stats(sim_range,xi_simrange,f_simrange);
-    xlabel('range [m]')
+    xlabel('[m]')
     grid on
     set_xy_info('in situ simulation',[0 0.4470 0.7410],xbounds,ybounds);
 
@@ -115,7 +113,7 @@ for iNL = 1
     plot_stats(sim_gvel,xi_simgvel,f_simgvel);
     grid on
     set_xy_info('in situ simulation',[0 0.4470 0.7410],xbounds,ybounds);
-    
+    xlabel('[m/s]');
 end
 
 %% figure locations in x,y
@@ -127,7 +125,7 @@ hold off
 grid on
 xlabel('x [m]')
 ylabel('y [m]')
-title(event(1).tag.name);
+title({[event(1).tag.name ' : ' num2str(length(event)) ' contacts'],[event(1).tag.tstr ' to ' event(end).tag.tstr]});
 
 %% helper function : get_nested_val();
 % get a nested value as an array over all structs
@@ -190,6 +188,7 @@ end
 %% helper function : set_xy_info(lbl,color,bounds)
 function [] = set_xy_info(lbl,color,xbounds,ybounds);
     xlim(xbounds); ylim(ybounds);
+    yticks([0:0.25:1]);
     yticklabels([]);
     ylabel(lbl,'fontsize',12,'color',color);
 end
