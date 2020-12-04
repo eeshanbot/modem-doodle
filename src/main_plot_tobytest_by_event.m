@@ -101,7 +101,7 @@ ylabel('z [m]');
 xticks([0 1])
 xticklabels({'tx','rx'})
 title([event(1).tag.tstr ' to ' event(end).tag.tstr]);
-xlim([-0.2 1.2])
+xlim([-0.1 1.1])
 yticks([-90 -30 -20 0]);
 
 %% helper function : set_xy_bounds(x1,x2);
