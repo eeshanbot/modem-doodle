@@ -24,6 +24,7 @@ for iNL = 4
     owtt = h_get_nested_val_filter(event,'tag','owtt');
     sim_delay = h_get_nested_val_filter(event,'sim','delay');
     sim_gvel = h_get_nested_val_filter(event,'sim','gvel');
+    sim_time = h_get_nested_val_filter(event,'sim','time');
     
     tx_x = h_get_nested_val_filter(event,'tx','x');
     tx_y = h_get_nested_val_filter(event,'tx','y');
@@ -40,35 +41,34 @@ for iNL = 4
                         + (p(3,:) - q(3,:)).^2 );
     
     gps_range = dist3(tx_loc,rx_loc);
-    gvel = gps_range ./ owtt;
     
     %% figure: data
-    subplot(5,3,[10 13]);
-    scatter(owtt,sim_delay,100,'filled','MarkerFaceAlpha',0.3)
+    subplot(5,3,[12 15]);
+    scatter(owtt,gps_range,100,'filled','MarkerFaceAlpha',0.3)
     grid on
-    title('owtt [s]')
-    set_xy_bounds(owtt,sim_delay,owtt,sim_delay);
-    ylabel('simulated')
-    xlabel('data')
+    title('data')
+    set_xy_bounds(owtt,sim_delay,gps_range,sim_range);
+    ylabel('range [m]')
+    xlabel('owtt [s]')
     
     %% figure: simulation
     subplot(5,3,[11 14])
-    scatter(gps_range,sim_range,100,'filled','MarkerFaceAlpha',0.3)
+    scatter(sim_delay,sim_range,100,'filled','MarkerFaceAlpha',0.3)
     hold on
     grid on
-    title('range [m]')
-    ylabel('simulated')
-    xlabel('data')
-    set_xy_bounds(gps_range,sim_range,gps_range,sim_range);
+    title('in-situ estimate')
+    ylabel('range [m]')
+    xlabel('owtt [s]')
+    set_xy_bounds(owtt, sim_delay,gps_range,sim_range);
     
-    %% figure: gvel
-    subplot(5,3,[12 15])
-    scatter(gvel,sim_gvel,100,'filled','MarkerFaceAlpha',0.3)
-    title('horizontal group velocity [m/s]')
-    ylabel('simulated')
-    xlabel('data')
+    %% figure: gvel -- timeline
+    subplot(5,3,[10 13])
+    scatter(sim_time,sim_gvel,100,'filled','MarkerFaceAlpha',0.3)
+    title('estimated horizontal group velocity [m/s]')
+    ylabel('group velocity [m/s]')
+    xlabel('time')
     grid on
-    axis equal
+    datetick('x');
     
 end
 
@@ -115,6 +115,4 @@ max_yval = max([max(y1(:)) max(y2(:))]);
 
 xlim([min_xval max_xval]);
 ylim([min_yval max_yval]);
-
-axis square
 end
