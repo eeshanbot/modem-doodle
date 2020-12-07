@@ -14,7 +14,7 @@ num_listing = numel(listing);
 
 %% loop through each listing
 
-for iNL = 2
+for iNL = 4
     
     figure(1); clf;
     
@@ -51,25 +51,26 @@ for iNL = 2
     tag_tx = h_get_nested_val_filter(event,'tag','src');
     tag_rx = h_get_nested_val_filter(event,'tag','rec');
     unique_tag_rx = sort(unique(tag_rx));
-    
-    % tetradic color wheel
-    tetradic_colors = 1/256.* ...
-                  [0   0   0  ;   ...  % black
-                   5   119 177  ;   ...  % persimmon
-                   177 62  5 ;  ...  % eno
-                   120 177 5;  ...  % ironweed
-                   62  5   177];  ...  % shale blue
-                   
-    diff_shapes = {'o','>','^','<','v'};
-    
-    modem_ids = [4 10 11 12 13];
-    
-    for utr = unique_tag_rx
-        indx = find(modem_ids == utr);
-        marker_shape{utr} = diff_shapes{indx};
-        marker_color{utr} = [tetradic_colors(indx,:)];
-    end
 end
+
+%% tetradic color wheel
+tetradic_colors = 1/256.* ...
+    [0   0   0  ;   ...  % black
+    5   119 177  ;   ...  % persimmon
+    177 62  5 ;  ...  % eno
+    120 177 5;  ...  % ironweed
+    62  5   177];  ...  % shale blue
+    
+diff_shapes = {'o','>','^','<','v'};
+
+modem_ids = [4 10 11 12 13];
+
+for utr = unique_tag_rx
+    indx = find(modem_ids == utr);
+    marker_shape{utr} = diff_shapes{indx};
+    marker_color{utr} = [tetradic_colors(indx,:)];
+end
+
 
 %% figure locations in x,y
 subplot(4,3,[1 4.5]);
@@ -83,10 +84,10 @@ legendstr = {};
 for utr = unique_tag_rx
     index = find(tag_rx == utr);
     scatter(rx_x(index(1)),rx_y(index(1)),250,marker_color{utr},marker_shape{utr},'filled');
-    %plot(tx_x(index),tx_y(index),'r*','markersize',15);
+    plot(tx_x(index),tx_y(index),'ro','markersize',25,'HandleVisibility','off');
     legendstr{end+1} = num2str(utr);
 end
-legend(legendstr,'location','best');
+legend(legendstr,'location','best','fontsize',11);
 hold off
 grid on
 xlabel('x [m]')
