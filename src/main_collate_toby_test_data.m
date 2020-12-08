@@ -71,9 +71,9 @@ for itt = 1:nTobyTest
                 
                 %% information from comms.(*).event
                 event(count).tag.owtt       = A.comms.(temp_id).event{iNE}.travel_time;
-                event(count).tag.src        = A.comms.(temp_id).event{iNE}.src;
+                event(count).tag.src        = smartI2D(A.comms.(temp_id).event{iNE}.src);
                 event(count).tag.dest       = A.comms.(temp_id).event{iNE}.dest;
-                event(count).tag.rec        = comm_ids(iNCI);
+                event(count).tag.rec        = smartI2D(comm_ids(iNCI));
                 event(count).tag.name       = nameString;
                 event(count).tag.tstr       = h_convertTime(A.comms.(temp_id).event{iNE}.arr_time,1);
                 event(count).tag.time       = h_convertTime(A.comms.(temp_id).event{iNE}.arr_time,0);
@@ -152,7 +152,6 @@ for itt = 1:nTobyTest
                 event(count).simHydrohole.rec       = gvel_hydrohole.(node)(mac_index).receiver;
                 event(count).simHydrohole.timeDiff  = time_diff_macrura * 24 * 3600;
                 event(count).simHydrohole.time      = h_convertTime(gvel_hydrohole.(node)(mac_index).timestamp,0);
-                
             end       
         end 
         
@@ -163,7 +162,7 @@ for itt = 1:nTobyTest
     %% save as separate mat file
     filename = sprintf('./data-tobytest-by-event/tobytest-by-event-%s',experimentStr);
     save(filename,'event');
-    coconut testfprintf(' saved %s.mat \n',filename);
+    fprintf(' saved %s.mat \n',filename);
 end
 
 %% helper function : get_nested_val();
