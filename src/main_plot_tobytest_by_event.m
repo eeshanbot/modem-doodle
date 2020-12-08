@@ -69,7 +69,7 @@ for iNL = 4
     sim_gvel_std    = h_get_nested_val_filter(event,'simMacrura','gvelstd',filter);
     sim_time        = h_get_nested_val_filter(event,'simMacrura','time',filter);
     
-    med_gvel = mean(sim_gvel);
+    med_gvel = median(sim_gvel);
     std_gvel = std(sim_gvel);
     
     tag_tx          = h_get_nested_val_filter(event,'tag','src',filter);
