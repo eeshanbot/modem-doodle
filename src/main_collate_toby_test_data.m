@@ -41,7 +41,7 @@ comm_lbls = {'h1','h2','h3','h4','macrura_10k'};
 comm_ids  = [  10  11   12   13        4       ];
 num_comm_ids = length(comm_lbls);
 
-for itt = 1%1:nTobyTest
+for itt = 1:nTobyTest
     A = load([listing_toby_test(itt).folder '/' listing_toby_test(itt).name]);
     fprintf('loaded %s ',listing_toby_test(itt).name);
     
@@ -69,7 +69,7 @@ for itt = 1%1:nTobyTest
             for iNE = 1:num_events
                 count = count + 1;
                 
-                % information from comms.(*).event
+                %% information from comms.(*).event
                 event(count).tag.owtt       = A.comms.(temp_id).event{iNE}.travel_time;
                 event(count).tag.src        = A.comms.(temp_id).event{iNE}.src;
                 event(count).tag.dest       = A.comms.(temp_id).event{iNE}.dest;
@@ -80,7 +80,7 @@ for itt = 1%1:nTobyTest
                 
                 event(count).tx.id          = A.comms.(temp_id).event{iNE}.src;
 
-                % information from comms.(*).src_nav
+                %% information from comms.(*).src_nav
                 event(count).tx.name        = A.comms.(temp_id).src_nav{iNE}.name;
                 event(count).tx.x           = smartI2D(A.comms.(temp_id).src_nav{iNE}.x);
                 event(count).tx.y           = smartI2D(A.comms.(temp_id).src_nav{iNE}.y);
@@ -90,7 +90,13 @@ for itt = 1%1:nTobyTest
                 event(count).tx.depth       = A.comms.(temp_id).src_nav{iNE}.depth;
                 event(count).tx.time        = h_convertTime(A.comms.(temp_id).src_nav{iNE}.time,0);
                 
-                % information from comms.(*).nav
+                % check tx.z --- values of 0 are actually -20
+                if event(count).tx.z == 0
+                    event(count).tx.z = -20;
+                    event(count).tx.depth = 20;
+                end
+                
+                %% information from comms.(*).nav
                 event(count).rx.id          = comm_ids(iNCI);
                 event(count).rx.name        = A.comms.(temp_id).nav{iNE}.name;
                 event(count).rx.x           = smartI2D(A.comms.(temp_id).nav{iNE}.x);
@@ -101,6 +107,14 @@ for itt = 1%1:nTobyTest
                 event(count).rx.depth       = smartI2D(A.comms.(temp_id).nav{iNE}.depth);
                 event(count).rx.time        = h_convertTime(A.comms.(temp_id).nav{iNE}.time,0);
                 
+                % check tx.z --- values of 0 are actually -20
+                if event(count).rx.z == 0
+                    event(count).rx.z = -20;
+                    event(count).rx.depth = 20;
+                end
+                
+                %% information from gvels_macrura - filter by src AND time
+
                 % necessary variables for getting gvel information
                 % t0 = time, pointer = node
                 t0 = event(count).tag.time;
@@ -110,7 +124,6 @@ for itt = 1%1:nTobyTest
                     node = event(count).tx.name;
                 end
         
-                % information from gvels_macrura - filter by src AND time
                 event(count).simMacrura.gvelNode  = node; 
                 
                 time_array_macrura = h_convertTime(get_nested_val(gvel_macrura,node,'timestamp'),0);
@@ -125,7 +138,7 @@ for itt = 1%1:nTobyTest
                 event(count).simMacrura.timeDiff  = time_diff_macrura * 24 * 3600;
                 event(count).simMacrura.time      = h_convertTime(gvel_macrura.(node)(mac_index).timestamp,0);
                 
-                % information from gvels_hydrohole - filter by src AND time
+                %% information from gvels_hydrohole - filter by src AND time
                 event(count).simHydrohole.gvelNode = node;
                 
                 time_array_hydrohole = h_convertTime(get_nested_val(gvel_hydrohole,node,'timestamp'),0);
@@ -149,8 +162,8 @@ for itt = 1%1:nTobyTest
     
     %% save as separate mat file
     filename = sprintf('./data-tobytest-by-event/tobytest-by-event-%s',experimentStr);
-    %save(filename,'event');
-    %fprintf(' saved %s.mat \n',filename);
+    save(filename,'event');
+    coconut testfprintf(' saved %s.mat \n',filename);
 end
 
 %% helper function : get_nested_val();
