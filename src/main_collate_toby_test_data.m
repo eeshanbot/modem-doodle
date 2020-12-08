@@ -14,6 +14,7 @@ clear; clc;
 dir_group_velocity = '~/.dropboxmit/icex_ipynb/gvels_by_node.mat';
 load(dir_group_velocity);
 gvel_macrura = gvels_by_node.macrura;
+gvel_hydrohole = gvels_by_node.hydrohole;
 clear gvels_by_node
 
 % transform gvel_macrura structure, so it can be easily searched
@@ -23,6 +24,9 @@ num_gvel_lbls = length(gvel_lbls);
 for iGL = 1:num_gvel_lbls
     temp = [gvel_macrura.(gvel_lbls{iGL}){:}];
     gvel_macrura.(gvel_lbls{iGL}) = temp;
+    
+    temp = [gvel_hydrohole.(gvel_lbls{iGL}){:}];
+    gvel_hydrohole.(gvel_lbls{iGL}) = temp;
 end
 clear temp;
 
@@ -37,7 +41,7 @@ comm_lbls = {'h1','h2','h3','h4','macrura_10k'};
 comm_ids  = [  10  11   12   13        4       ];
 num_comm_ids = length(comm_lbls);
 
-for itt = 1:nTobyTest
+for itt = 1%1:nTobyTest
     A = load([listing_toby_test(itt).folder '/' listing_toby_test(itt).name]);
     fprintf('loaded %s ',listing_toby_test(itt).name);
     
@@ -107,19 +111,35 @@ for itt = 1:nTobyTest
                 end
         
                 % information from gvels_macrura - filter by src AND time
-                event(count).sim.gvelNode  = node; 
+                event(count).simMacrura.gvelNode  = node; 
                 
-                time_array = h_convertTime(get_nested_val(gvel_macrura,node,'timestamp'),0);
-                [time_diff,index] = min(abs(time_array-t0));
+                time_array_macrura = h_convertTime(get_nested_val(gvel_macrura,node,'timestamp'),0);
+                [time_diff_macrura,mac_index] = min(abs(time_array_macrura-t0));
                 
-                event(count).sim.range     = smartI2D(gvel_macrura.(node)(index).range);
-                event(count).sim.delay     = smartI2D(gvel_macrura.(node)(index).delay);
-                event(count).sim.gvel      = smartI2D(gvel_macrura.(node)(index).group_velocity);
-                event(count).sim.gvelstd   = smartI2D(gvel_macrura.(node)(index).group_velocity_std);
-                event(count).sim.src       = gvel_macrura.(node)(index).source;
-                event(count).sim.rec       = gvel_macrura.(node)(index).receiver;
-                event(count).sim.timeDiff  = time_diff * 24 * 3600;
-                event(count).sim.time      = h_convertTime(gvel_macrura.(node)(index).timestamp,0);
+                event(count).simMacrura.range     = smartI2D(gvel_macrura.(node)(mac_index).range);
+                event(count).simMacrura.delay     = smartI2D(gvel_macrura.(node)(mac_index).delay);
+                event(count).simMacrura.gvel      = smartI2D(gvel_macrura.(node)(mac_index).group_velocity);
+                event(count).simMacrura.gvelstd   = smartI2D(gvel_macrura.(node)(mac_index).group_velocity_std);
+                event(count).simMacrura.src       = gvel_macrura.(node)(mac_index).source;
+                event(count).simMacrura.rec       = gvel_macrura.(node)(mac_index).receiver;
+                event(count).simMacrura.timeDiff  = time_diff_macrura * 24 * 3600;
+                event(count).simMacrura.time      = h_convertTime(gvel_macrura.(node)(mac_index).timestamp,0);
+                
+                % information from gvels_hydrohole - filter by src AND time
+                event(count).simHydrohole.gvelNode = node;
+                
+                time_array_hydrohole = h_convertTime(get_nested_val(gvel_hydrohole,node,'timestamp'),0);
+                [time_diff_hydrohole,hh_index] = min(abs(time_array_hydrohole-t0));
+                
+                event(count).simHydrohole.range     = smartI2D(gvel_hydrohole.(node)(hh_index).range);
+                event(count).simHydrohole.delay     = smartI2D(gvel_hydrohole.(node)(hh_index).delay);
+                event(count).simHydrohole.gvel      = smartI2D(gvel_hydrohole.(node)(mac_index).group_velocity);
+                event(count).simHydrohole.gvelstd   = smartI2D(gvel_hydrohole.(node)(mac_index).group_velocity_std);
+                event(count).simHydrohole.src       = gvel_hydrohole.(node)(mac_index).source;
+                event(count).simHydrohole.rec       = gvel_hydrohole.(node)(mac_index).receiver;
+                event(count).simHydrohole.timeDiff  = time_diff_macrura * 24 * 3600;
+                event(count).simHydrohole.time      = h_convertTime(gvel_hydrohole.(node)(mac_index).timestamp,0);
+                
             end       
         end 
         
@@ -129,8 +149,8 @@ for itt = 1:nTobyTest
     
     %% save as separate mat file
     filename = sprintf('./data-tobytest-by-event/tobytest-by-event-%s',experimentStr);
-    save(filename,'event');
-    fprintf(' saved %s.mat \n',filename);
+    %save(filename,'event');
+    %fprintf(' saved %s.mat \n',filename);
 end
 
 %% helper function : get_nested_val();
