@@ -5,7 +5,10 @@
 %% prep workspace
 clear; clc;
 
-lg_font_size = 12;
+lg_font_size = 13;
+marker_size = 200;
+
+set(0,'defaultAxesFontSize',14)
 
 %% load toby test data by event
 location = './data-tobytest-by-event/*.mat';
@@ -14,7 +17,7 @@ num_listing = numel(listing);
 
 %% loop through each listing
 
-for iNL = 4
+for iNL = 5
     
     figure(1); clf;
     
@@ -70,7 +73,6 @@ for iNL = 4
     sim_time        = h_get_nested_val_filter(event,'simMacrura','time',filter);
     
     med_gvel = median(sim_gvel);
-    std_gvel = std(sim_gvel);
     
     tag_tx          = h_get_nested_val_filter(event,'tag','src',filter);
     unique_tag_tx   = sort(unique(tag_tx));
@@ -81,7 +83,7 @@ for iNL = 4
     exp_modem_id    = union(unique_tag_rx,unique_tag_tx);
     
     num_events      = sum(filter);
-    alpha_color     = 2./num_events;
+    alpha_color     = 1./num_events;
     alpha_grey      = [0.6 0.6 0.6];
 end
 
@@ -105,7 +107,7 @@ end
 
 
 %% figure locations in x,y
-subplot(4,3,[1 4]);
+subplot(6,3,[1 4]);
 hold on
 for nx = 1:num_events
     plot([rx_x(nx) tx_x(nx)],[rx_y(nx) tx_y(nx)],'color',[alpha_grey alpha_color],'linewidth',7,'HandleVisibility','off');
@@ -120,21 +122,23 @@ for node = exp_modem_id
     
     irx = find(tag_rx == node);
     if ~isempty(irx)
-        L(legendCount) = scatter(rx_x(irx),rx_y(irx),250,marker_color{node},marker_shape{node},'filled');
+        L(legendCount) = scatter(rx_x(irx),rx_y(irx),marker_size,marker_color{node},marker_shape{node},'filled');
         legendStr{end+1} = num2str(node);
     end
     
     itx = find(tag_tx == node);
     if ~isempty(itx)
-        L(legendCount) = scatter(tx_x(itx),tx_y(itx),250,marker_color{node},marker_shape{node},'filled');
+        L(legendCount) = scatter(tx_x(itx),tx_y(itx),marker_size,marker_color{node},marker_shape{node},'filled');
         if ~contains(legendStr,num2str(node))
             legendStr{end+1} = num2str(node);
         end
     end
 end
 
+L(legendCount+1) = scatter(tx_x,tx_y,marker_size.*1.8,'ro');
+legendStr{end+1} = 'tx';
+
 hold off
-axis equal
 legend(L,legendStr,'location','best','fontsize',lg_font_size);
 grid on
 xlabel('x [m]')
@@ -143,10 +147,10 @@ title([event(1).tag.name ' : ' num2str(length(event)) ' contacts'])
 
 %% figure for contacts in z
 
-subplot(4,3,[2 5])
+subplot(6,3,[2 5])
 hold on
 for nz = 1:num_events
-    plot([0 1 ],[tx_z(nz) rx_z(nz)],'-','color',[alpha_grey 5.*alpha_color],'linewidth',7)
+    plot([0 1 ],[tx_z(nz) rx_z(nz)],'-','color',[alpha_grey num_events./5.*alpha_color],'linewidth',7)
 end
 
 % plot by rx node
@@ -155,7 +159,7 @@ for utr = unique_tag_rx
     rxc = rxc -1;
     index = find(tag_rx == utr);
     rx_place = ones(size(index)) + 0.1 * (numel(unique_tag_rx) - rxc);
-    scatter(rx_place,rx_z(index),250,marker_color{utr},marker_shape{utr},'filled');
+    scatter(rx_place,rx_z(index),marker_size,marker_color{utr},marker_shape{utr},'filled');
 end
 
 % plot by tx node
@@ -164,7 +168,7 @@ for utt = unique_tag_tx
     txc = txc + 1;
     index = find(tag_tx == utt);
     tx_place = zeros(size(index)) - 0.1 * (numel(unique_tag_tx) - txc);
-    scatter(tx_place,tx_z(index),250,marker_color{utt},marker_shape{utt},'filled')
+    scatter(tx_place,tx_z(index),marker_size,marker_color{utt},marker_shape{utt},'filled')
 end
 
 grid on
@@ -177,29 +181,29 @@ ylim([-100 0])
 yticks([-90 -30 -20 0]);
 
 %% figure: data range vs owtt
-subplot(5,3,[12 15]);
+subplot(7,3,[12 15]);
 
 % plot by rx node
 plot([0 10],[0 10.*med_gvel],'-','color',[0.3 0.3 0.3 0.3])
 hold on
 for utr = unique_tag_rx
     index = find(tag_rx == utr);
-    scatter(data_owtt(index),data_range(index),100,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.2)
+    scatter(data_owtt(index),data_range(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.2)
 end
 hold off
 grid on
 title('in-situ data: range vs owtt')
 set_xy_bounds(data_owtt,sim_owtt,data_range,sim_range);
 ylabel('range [m]')
-xlabel('owtt [s]')
+xticklabels([])
 
 %% figure: prediction range vs owtt
-subplot(5,3,[11 14])
+subplot(7,3,[18 21])
 plot([0 10],[0 10.*med_gvel],'-','color',[0.3 0.3 0.3 0.3])
 hold on
 for utr = unique_tag_rx
     index = find(tag_rx == utr);
-    scatter(sim_owtt(index),sim_range(index),100,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.1)
+    scatter(sim_owtt(index),sim_range(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.1)
 end
 hold off
 grid on
@@ -209,11 +213,11 @@ xlabel('owtt [s]')
 set_xy_bounds(data_owtt, sim_owtt,data_range,sim_range);
 
 %% figure: gvel -- timeline
-subplot(5,3,[10 13])
+subplot(7,3,[10 13 16 19])
 hold on
 for utr = unique_tag_rx
     index = find(tag_rx == utr);
-    scatter(sim_time(index),sim_gvel(index),100,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3,'handlevisibility','off')
+    scatter(sim_time(index),sim_gvel(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3,'handlevisibility','off')
 end
 hline(med_gvel,'color',[0.3 0.3 0.3 0.3]);
 hold off
@@ -225,12 +229,12 @@ datetick('x');
 set_xy_bounds(sim_time,sim_time,sim_gvel,sim_gvel);
 legend('median group velocity','fontsize',lg_font_size,'location','best')
 
-%% figure: owtt -- timeline
-subplot(4,3,3)
+%% figure: data owtt -- timeline
+subplot(7,3,[11 14])
 hold on
 for utr = unique_tag_rx
     index = find(tag_rx == utr);
-    scatter(data_time(index),data_owtt(index),100,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3)
+    scatter(data_time(index),data_owtt(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3)
 end
 hold off
 datetick('x');
@@ -238,12 +242,14 @@ grid on
 title('in-situ data: owtt')
 ylabel('[s]')
 set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
+xticklabels([])
 
-subplot(4,3,6)
+%% figure : sim owtt -- timeline
+subplot(7,3,[17 20])
 hold on
 for utr = unique_tag_rx
     index = find(tag_rx == utr);
-    scatter(sim_time(index),sim_owtt(index),100,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3)
+    scatter(sim_time(index),sim_owtt(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3)
 end
 hold off
 datetick('x');
@@ -251,6 +257,7 @@ grid on
 title('in-situ prediction: owtt')
 ylabel('[s]')
 set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
+xlabel('time [hr:mm]');
 
 %% helper function : set_xy_bounds(x1,x2);
 function [] = set_xy_bounds(x1,x2,y1,y2)
