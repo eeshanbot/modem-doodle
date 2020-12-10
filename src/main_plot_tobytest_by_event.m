@@ -7,16 +7,16 @@ clear; clc;
 
 lg_font_size = 13;
 marker_size = 200;
+alpha_grey      = [0.6 0.6 0.6];
 
-set(0,'defaultAxesFontSize',14)
+set(0,'defaultAxesFontSize',13)
 
 %% load toby test data by event
 location = './data-tobytest-by-event/*.mat';
 listing = dir(location);
 num_listing = numel(listing);
 
-%% loop through each listing
-
+%%  pick a toby test event!
 for iNL = 5
     
     figure(1); clf;
@@ -30,11 +30,11 @@ for iNL = 5
     % gps data to range
     tx_x    = h_get_nested_val_filter(event,'tx','x');
     tx_y    = h_get_nested_val_filter(event,'tx','y');
-    tx_z    = h_get_nested_val_filter(event,'tx','z');
+    tx_z    = h_get_nested_val_filter(event,'tx','depth');
     
     rx_x    = h_get_nested_val_filter(event,'rx','x');
     rx_y    = h_get_nested_val_filter(event,'rx','y');
-    rx_z    = h_get_nested_val_filter(event,'rx','z');
+    rx_z    = h_get_nested_val_filter(event,'rx','depth');
     
     dist3 = @(px,py,pz,qx,qy,qz) ...
         sqrt((px - qx).^2 + ...
@@ -74,17 +74,34 @@ for iNL = 5
     
     med_gvel = median(sim_gvel);
     
+    % get tx/rx tags
     tag_tx          = h_get_nested_val_filter(event,'tag','src',filter);
     unique_tag_tx   = sort(unique(tag_tx));
-    
     tag_rx          = h_get_nested_val_filter(event,'tag','rec',filter);
     unique_tag_rx   = sort(unique(tag_rx));
-    
     exp_modem_id    = union(unique_tag_rx,unique_tag_tx);
     
+    % useful information
     num_events      = sum(filter);
     alpha_color     = 1./num_events;
-    alpha_grey      = [0.6 0.6 0.6];
+    
+    % sound speed estimate
+    toby_test_eof_bool = [1 1 0 1 1 0 0 0 1];
+    
+    eof_bool = toby_test_eof_bool(iNL);
+    
+    if eof_bool
+        disp('toby test has eof ON')
+    else
+        disp('toby test has eof OFF');
+    end
+    
+    OBJ_EOF = eb_load_eeof_file('eeof_itp_Mar2013.nc');
+    weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].';
+    
+    ssp_estimate = OBJ_EOF.baseval + (OBJ_EOF.eofs * weights).*eof_bool;
+    [RT,ZT,TL] = run_pe(ssp_estimate,OBJ_EOF.depth);
+    
 end
 
 %% tetradic color wheel
@@ -107,7 +124,7 @@ end
 
 
 %% figure locations in x,y
-subplot(6,3,[1 4]);
+subplot(6,3,[3 6]);
 hold on
 for nx = 1:num_events
     plot([rx_x(nx) tx_x(nx)],[rx_y(nx) tx_y(nx)],'color',[alpha_grey alpha_color],'linewidth',7,'HandleVisibility','off');
@@ -120,19 +137,21 @@ for node = exp_modem_id
     
     legendCount = legendCount + 1;
     
-    irx = find(tag_rx == node);
-    if ~isempty(irx)
-        L(legendCount) = scatter(rx_x(irx),rx_y(irx),marker_size,marker_color{node},marker_shape{node},'filled');
-        legendStr{end+1} = num2str(node);
-    end
-    
     itx = find(tag_tx == node);
     if ~isempty(itx)
         L(legendCount) = scatter(tx_x(itx),tx_y(itx),marker_size,marker_color{node},marker_shape{node},'filled');
+        legendStr{end+1} = num2str(node);
+    end
+    
+    irx = find(tag_rx == node);
+    if ~isempty(irx)
+        L(legendCount) = scatter(rx_x(irx),rx_y(irx),marker_size,marker_color{node},marker_shape{node},'filled');
         if ~contains(legendStr,num2str(node))
             legendStr{end+1} = num2str(node);
         end
     end
+    
+
 end
 
 L(legendCount+1) = scatter(tx_x,tx_y,marker_size.*1.8,'ro');
@@ -143,7 +162,7 @@ legend(L,legendStr,'location','best','fontsize',lg_font_size);
 grid on
 xlabel('x [m]')
 ylabel('y [m]')
-title([event(1).tag.name ' : ' num2str(length(event)) ' contacts'])
+title([event(1).tag.tstr ' to ' event(end).tag.tstr],'fontsize',lg_font_size+1);
 
 %% figure for contacts in z
 
@@ -160,6 +179,17 @@ for utr = unique_tag_rx
     index = find(tag_rx == utr);
     rx_place = ones(size(index)) + 0.1 * (numel(unique_tag_rx) - rxc);
     scatter(rx_place,rx_z(index),marker_size,marker_color{utr},marker_shape{utr},'filled');
+    
+    unique_rx_z_index = unique(rx_z(index));
+    for urzi = unique_rx_z_index
+        nContacts = sum(rx_z(index) == urzi);
+        if urzi == 30
+            buffer = 6;
+        else
+            buffer = -6;
+        end
+        text(rx_place(1),urzi + buffer, num2str(nContacts),'HorizontalAlignment','center');
+    end
 end
 
 % plot by tx node
@@ -169,16 +199,28 @@ for utt = unique_tag_tx
     index = find(tag_tx == utt);
     tx_place = zeros(size(index)) - 0.1 * (numel(unique_tag_tx) - txc);
     scatter(tx_place,tx_z(index),marker_size,marker_color{utt},marker_shape{utt},'filled')
+    
+    unique_tx_z_index = unique(tx_z(index));
+    for utzi = unique_tx_z_index
+        nContacts = sum(tx_z(index) == utzi);
+        if utzi == 30
+            buffer = 6;
+        else
+            buffer = -6;
+        end
+        text(tx_place(1),utzi + buffer, num2str(nContacts),'HorizontalAlignment','center');
+    end
 end
 
 grid on
 ylabel('z [m]');
 xticks([0 1])
 xticklabels({'tx','rx'})
-title([event(1).tag.tstr ' to ' event(end).tag.tstr]);
 xlim([-0.4 1.4])
-ylim([-100 0])
-yticks([-90 -30 -20 0]);
+ylim([0 100])
+set(gca,'ydir','reverse')
+yticks([0 20 30 90]);
+title([event(1).tag.name ' : ' num2str(length(event)) ' contacts'])
 
 %% figure: data range vs owtt
 subplot(7,3,[12 15]);
@@ -192,10 +234,13 @@ for utr = unique_tag_rx
 end
 hold off
 grid on
-title('in-situ data: range vs owtt')
+title('in-situ data: range vs owtt','fontsize',lg_font_size+1)
 set_xy_bounds(data_owtt,sim_owtt,data_range,sim_range);
 ylabel('range [m]')
 xticklabels([])
+str = sprintf('median group velocity = %3.1f m/s',med_gvel);
+legend(str,'fontsize',lg_font_size-1,'location','best')
+
 
 %% figure: prediction range vs owtt
 subplot(7,3,[18 21])
@@ -207,13 +252,13 @@ for utr = unique_tag_rx
 end
 hold off
 grid on
-title('in-situ prediction: range vs owtt')
+title('in-situ prediction: range vs owtt','fontsize',lg_font_size+1)
 ylabel('range [m]')
 xlabel('owtt [s]')
 set_xy_bounds(data_owtt, sim_owtt,data_range,sim_range);
 
 %% figure: gvel -- timeline
-subplot(7,3,[10 13 16 19])
+subplot(7,9,[28 57])
 hold on
 for utr = unique_tag_rx
     index = find(tag_rx == utr);
@@ -221,13 +266,12 @@ for utr = unique_tag_rx
 end
 hline(med_gvel,'color',[0.3 0.3 0.3 0.3]);
 hold off
-title('predicted \nu')
+title(['predicted \nu, EOF = ' num2str(eof_bool)],'fontsize',lg_font_size+1)
 ylabel('group velocity [m/s]')
 xlabel('time [hr:mm]')
 grid on
 datetick('x');
 set_xy_bounds(sim_time,sim_time,sim_gvel,sim_gvel);
-legend('median group velocity','fontsize',lg_font_size,'location','best')
 
 %% figure: data owtt -- timeline
 subplot(7,3,[11 14])
@@ -239,7 +283,7 @@ end
 hold off
 datetick('x');
 grid on
-title('in-situ data: owtt')
+title('in-situ data: owtt','fontsize',lg_font_size+1)
 ylabel('[s]')
 set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
 xticklabels([])
@@ -254,10 +298,36 @@ end
 hold off
 datetick('x');
 grid on
-title('in-situ prediction: owtt')
+title('in-situ prediction: owtt','fontsize',lg_font_size+1)
 ylabel('[s]')
 set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
 xlabel('time [hr:mm]');
+
+%% figure : sound speed estimate + TL
+subplot(6,9,[1 10])
+plot(OBJ_EOF.baseval,OBJ_EOF.depth,'color',alpha_grey);
+hold on
+plot(ssp_estimate,OBJ_EOF.depth,'o')
+hold off
+title('sound speed estimate','fontsize',lg_font_size+1)
+ylim([0 300])
+grid on
+set(gca,'ydir','reverse')
+ylabel('z [m]')
+xlabel('c [m/s]')
+
+subplot(6,9,[2 3 11 12])
+imagesc(RT,ZT,TL);
+title('transmission loss','fontsize',lg_font_size+1)
+colormap(cmocean('thermal',15));
+shading flat
+cb = colorbar;
+title(cb,'db')
+yticklabels([])
+caxis([-75 -45])
+ylim([0 300])
+xlabel('range [m]','fontsize',lg_font_size-2);
+
 
 %% helper function : set_xy_bounds(x1,x2);
 function [] = set_xy_bounds(x1,x2,y1,y2)
