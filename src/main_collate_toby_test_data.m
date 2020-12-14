@@ -1,8 +1,9 @@
 %% main_collate_toby_test_data.m
 
-% runs through each toby_test file and creates new working files by event
-% outputs a new mat file for each toby test:
-% 
+% runs through each toby_test file and creates new working files by tx
+% depth and EOF status
+% outputs a new mat file for each comparison
+%
 % tag       owtt, src, dest, rec, name, gvelNode, tstr, time
 % tx        id, name, x, y, z, lat, lon, depth, time
 % rx        id, name, x, y, z, lat, lon, depth, time
@@ -35,12 +36,17 @@ dir_toby_test = '~/.dropboxmit/icex_2020_mat/toby_test_sorted/*.mat';
 listing_toby_test = dir(dir_toby_test);
 nTobyTest = length(listing_toby_test);
 
+% toby test boolean --- 1 = EOF weights, 0 = baseval
+% numbered experiments:  1 2 3 4 5 6 7.1 7.2 8
+tt_eeof_bool =          [1 1 0 1 1 0 0   0   1];
+
 %% loop through each toby test
 
 comm_lbls = {'h1','h2','h3','h4','macrura_10k'};
 comm_ids  = [  10  11   12   13        4       ];
 num_comm_ids = length(comm_lbls);
 
+count = 0;
 for itt = 1:nTobyTest
     A = load([listing_toby_test(itt).folder '/' listing_toby_test(itt).name]);
     fprintf('loaded %s ',listing_toby_test(itt).name);
@@ -57,8 +63,6 @@ for itt = 1:nTobyTest
     end
     
     % go by event for each comm id
-    clear event; 
-    count = 0;
     for iNCI = 1:num_comm_ids
         temp_id = comm_lbls{iNCI};
         
@@ -77,9 +81,10 @@ for itt = 1:nTobyTest
                 event(count).tag.name       = nameString;
                 event(count).tag.tstr       = h_convertTime(A.comms.(temp_id).event{iNE}.arr_time,1);
                 event(count).tag.time       = h_convertTime(A.comms.(temp_id).event{iNE}.arr_time,0);
+                event(count).tag.eeof       = tt_eeof_bool(itt);
                 
                 event(count).tx.id          = A.comms.(temp_id).event{iNE}.src;
-
+                
                 %% information from comms.(*).src_nav
                 event(count).tx.name        = A.comms.(temp_id).src_nav{iNE}.name;
                 event(count).tx.x           = smartI2D(A.comms.(temp_id).src_nav{iNE}.x);
@@ -114,7 +119,7 @@ for itt = 1:nTobyTest
                 end
                 
                 %% information from gvels_macrura - filter by src AND time
-
+                
                 % necessary variables for getting gvel information
                 % t0 = time, pointer = node
                 t0 = event(count).tag.time;
@@ -123,8 +128,8 @@ for itt = 1:nTobyTest
                 elseif comm_ids(iNCI) == 4
                     node = event(count).tx.name;
                 end
-        
-                event(count).simMacrura.gvelNode  = node; 
+                
+                event(count).simMacrura.gvelNode  = node;
                 
                 time_array_macrura = h_convertTime(get_nested_val(gvel_macrura,node,'timestamp'),0);
                 [time_diff_macrura,mac_index] = min(abs(time_array_macrura-t0));
@@ -152,18 +157,20 @@ for itt = 1:nTobyTest
                 event(count).simHydrohole.rec       = gvel_hydrohole.(node)(mac_index).receiver;
                 event(count).simHydrohole.timeDiff  = time_diff_macrura * 24 * 3600;
                 event(count).simHydrohole.time      = h_convertTime(gvel_hydrohole.(node)(mac_index).timestamp,0);
-            end       
-        end 
+            end
+        end
         
         % pretty printing loading
         fprintf('.');
     end
     
-    %% save as separate mat file
-    filename = sprintf('./data-tobytest-by-event/tobytest-by-event-%s',experimentStr);
-    save(filename,'event');
-    fprintf(' saved %s.mat \n',filename);
+    fprintf('\n');
+    
 end
+filename = sprintf('./data-tobytest-by-design/tobytest-all');
+
+save(filename,'event');
+fprintf(' saved %s.mat \n',filename);
 
 %% helper function : get_nested_val();
 % get a nested value as an array over all structs
@@ -180,11 +187,11 @@ function [dbl] = smartI2D(input)
 % class(input)
 
 if isa(input,'char')
-   dbl = str2double(input);
+    dbl = str2double(input);
 elseif isa(input,'double')
-   dbl = input;
+    dbl = input;
 else
-   dbl = double(input);
+    dbl = double(input);
 end
 
 end
