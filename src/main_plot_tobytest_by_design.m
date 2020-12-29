@@ -5,21 +5,23 @@
 %% prep workspace
 clear; clc;
 
-lg_font_size = 13;
+lg_font_size = 14;
 marker_size = 200;
 alpha_grey      = [0.6 0.6 0.6];
 alpha_color     = .05;
-
-
-set(0,'defaultAxesFontSize',13)
+set(0,'defaultAxesFontSize',14)
 
 %% load toby test data by event
 location = './data-tobytest-by-design/tobytest_tx*.mat';
 listing = dir(location);
 num_listing = numel(listing);
 
+% from cruise.def --- March 10th 1530 (only used for plotting purposes)
+olat = 71.17733;
+olon = -142.40413;
+
 %%  pick a toby test event!
-for iNL = 1:num_listing
+for iNL = 2 % num_listing
     
     figure(iNL); clf;
     
@@ -44,16 +46,18 @@ for iNL = 1:num_listing
         (pz - qz).^2 );
     
     data_range = dist3(tx_x,tx_y,tx_z,rx_x,rx_y,rx_z);
+    data_2D_range = dist3(tx_x,tx_y,zeros(size(tx_x)),rx_x,rx_y,zeros(size(rx_x)));
     
     % filter real data to pull simulated data
     % realistic bounds (>0.2 s AND > 500 m);
     t_filter = data_owtt >= 0.2;
-    r_filter = data_range >= 500;
+    r_filter = data_2D_range >= 500;
     filter = and(t_filter,r_filter);
     
     sim_owtt = h_get_nested_val_filter(experiment,'simMacrura','delay');
     s_filter = sim_owtt > 0.2;
     filter = and(filter,s_filter);
+    data_2D_range = data_2D_range(filter);
     
     % re-index
     data_owtt = data_owtt(filter);
@@ -65,7 +69,14 @@ for iNL = 1:num_listing
     rx_y = rx_y(filter);
     rx_z = rx_z(filter);
     
+    % lat/lon data
+    tx_lat          = h_get_nested_val_filter(experiment,'tx','lat',filter);
+    tx_lon          = h_get_nested_val_filter(experiment,'tx','lon',filter);
+    rx_lat          = h_get_nested_val_filter(experiment,'rx','lat',filter);
+    rx_lon          = h_get_nested_val_filter(experiment,'rx','lon',filter);
+    
     data_time = h_get_nested_val_filter(experiment,'tag','time',filter);
+    fprintf('%s to %s \n',datestr(data_time(1)),datestr(data_time(end)));
     
     % get in-situ simulation data
     sim_range       = h_get_nested_val_filter(experiment,'simMacrura','range',filter);
@@ -80,165 +91,180 @@ for iNL = 1:num_listing
     tag_tx          = h_get_nested_val_filter(experiment,'tag','src',filter);
     unique_tag_tx   = sort(unique(tag_tx));
     tag_rx          = h_get_nested_val_filter(experiment,'tag','rec',filter);
-    unique_tag_rx   = sort(unique(tag_rx));
-    exp_modem_id    = union(unique_tag_rx,unique_tag_tx);
+    unique_rx_cluster   = sort(unique(tag_rx));
+    unique_rx_cluster    = union(unique_rx_cluster,unique_tag_tx);
     
     % useful information
     num_events      = sum(filter);
     
     % sound speed estimate
     toby_test_eof_bool = h_get_nested_val_filter(experiment,'tag','eeof');
-    
     eof_bool = toby_test_eof_bool(1);
-    
     OBJ_EOF = eb_load_eeof_file('eeof_itp_Mar2013.nc');
-    weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].';
-    
+    weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].'; % manually written down weights from Toby's notes
     ssp_estimate = OBJ_EOF.baseval + (OBJ_EOF.eofs * weights).*eof_bool;
-    [RT,ZT,TL] = run_pe(ssp_estimate,OBJ_EOF.depth);
     
-    %% tetradic color wheel
-    tetradic_colors = 1/256.* ...
-        [0   0   0  ;   ...  % black
-        5   119 177  ;   ...  % persimmon
-        177 62  5 ;  ...  % eno
-        120 177 5;  ...  % ironweed
-        62  5   177];  ...  % shale blue
+    % filename
+    bathyfile = '~/missions-lamss/cruise/icex20/data/environment/noaa_bathy_file.nc';
+    
+    lat = ncread(bathyfile,'lat');
+    lon = ncread(bathyfile,'lon');
+    bathy = ncread(bathyfile,'Band1');
+    min_lat = 71.15; max_lat = 71.2;
+    min_lon = -142.48; max_lon = -142.33;
+    ilat1 = find(lat<=min_lat,1,'last');
+    ilat2 = find(lat>=max_lat,1,'first');
+    ilon1 = find(lon<=min_lon,1,'last');
+    ilon2 = find(lon>=max_lon,1,'first');
+    plot_lon = lon(ilon1:ilon2);
+    plot_lat = lat(ilat1:ilat2);
+    [XX,YY] = meshgrid(plot_lat,plot_lon);
+    
+    plotBathy.zz = abs(bathy(ilon1:ilon2,ilat1:ilat2));
+    plotBathy.mean = round(mean(plotBathy.zz(:)));
+    [plotBathy.xx,plotBathy.yy] = ll2xy_whoi(XX,YY,olat,olon);
+    [plotBathy.rxX,plotBathy.rxY] = ll2xy_whoi(rx_lat,rx_lon,olat,olon);
+    [plotBathy.txX,plotBathy.txY] = ll2xy_whoi(tx_lat,tx_lon,olat,olon);
+    
+    % ray trace
+    zs = mode(tx_z);
+    Cq = interp1(OBJ_EOF.depth,ssp_estimate,0:1:plotBathy.mean);
+    [R,Z] = run_rt(Cq,0:1:plotBathy.mean,zs,max(data_owtt));
+    
+    % reindex nodes for x/y by clustering?
+    rx_xyz = [rx_x; rx_y; rx_z].';
+    rx_cluster = clusterdata(rx_xyz,'Distance','Euclidean','maxclust',4);
+    unique_rx_cluster = unique(rx_cluster.');
+    
+    % tetradic color wheel
+    tetradic_colors = 1/256.*[ ...
+        177 0 204  ;   ...  
+        7 201 0 ;  ...  
+        0 114 201;  ...  
+        255 123 0];  ...  
         
-    diff_shapes = {'o','>','^','<','v'};
+    marker_shape = {'<','^','v','>'};
+    marker_label = {'west','north','south','east'};
     
-    modem_id = [4 10 11 12 13];
-    
-    for mi = modem_id
-        indx = find(modem_id == mi);
-        marker_shape{mi} = diff_shapes{indx};
-        marker_color{mi} = [tetradic_colors(indx,:)];
+    for mi = unique_rx_cluster
+        indx = find(rx_cluster == mi);
+        marker_color{mi} = [tetradic_colors(mi,:)];
     end
     
+    %% figure : ssp, raytrace + contacts in range-independent space
+    
+    figure(1); clf;
+    subplot(1,3,1)
+    plot(ssp_estimate,OBJ_EOF.depth,'o')
+    hold on
+    plot(OBJ_EOF.baseval,OBJ_EOF.depth,'color',alpha_grey);
+    hold off
+    title('sound speed estimate','fontsize',lg_font_size+1)
+    ylim([0 300])
+    grid on
+    set(gca,'ydir','reverse')
+    ylabel('z [m]')
+    xlabel('c [m/s]')
+    
+    subplot(1,3,[1.9 3])
+    hold on
+    for nrz = 1:numel(R)
+        plot(R{nrz},Z{nrz},'color',[alpha_grey 0.2],'handlevisibility','off');
+    end
+    hold off
+    title(['ray trace, zs=' num2str(zs) ' m'])
+    yticklabels([])
+    axis tight
+    ylim([0 300])
+    xlim([0 2100])
+    xlabel('range [m]');
+    set(gca,'ydir','reverse')
+    
+    % labels for legend
+    legendStr = {};
+    legendCount = 1;
+    
+    hold on
+    L1(legendCount) = scatter(0,zs,marker_size,'r','o','linewidth',2);
+    legendStr{legendCount} = 'tx';
+    for node = unique_rx_cluster
+        index = find(rx_cluster == node);
+        legendCount = legendCount + 1;
+        L1(legendCount) = scatter(data_2D_range(index),rx_z(index),...
+            marker_size,marker_color{node},marker_shape{node},'filled');
+        legendStr{legendCount} = marker_label{node};
+        
+        % text underneath
+        modem_depth = [30 90];
+        for imd = modem_depth
+            total = sum(rx_z(index) == imd);
+            text(mean(data_2D_range(index)),imd+10,num2str(total),'HorizontalAlignment','center','fontsize',12)
+        end
+    end
+    hold off
+    
+    legend(L1,legendStr,'location','SouthEast','fontsize',lg_font_size);
     
     %% figure locations in x,y
-    subplot(6,3,[3 6]);
-    hold on
-    for nx = 1:num_events
-        plot([rx_x(nx) tx_x(nx)],[rx_y(nx) tx_y(nx)],'color',[alpha_grey alpha_color],'linewidth',7,'HandleVisibility','off');
-    end
     
-    % plot by rx/tx node
-    legendStr = {};
-    legendCount = 0;
-    clear L;
-    for node = exp_modem_id
-        
-        legendCount = legendCount + 1;
-        
-        itx = find(tag_tx == node);
-        if ~isempty(itx)
-            L(legendCount) = scatter(tx_x(itx),tx_y(itx),marker_size,marker_color{node},marker_shape{node},'filled');
-            legendStr{legendCount} = num2str(node);
-        end
+    figure(2)
+    
+    minZ = round(min(plotBathy.zz(:)),1);
+    maxZ = round(max(plotBathy.zz(:)),1);
+    levels = minZ:20:maxZ;
+    [C,h] = contourf(plotBathy.xx,plotBathy.yy,plotBathy.zz,[minZ:20:maxZ]);
+    cmocean('-gray',numel(levels));
+    shading flat
+    
+    clabel(C,h,'LabelSpacing',1200,'color','w','fontweight','bold','BackgroundColor','k');
 
-        irx = find(tag_rx == node);
-        if ~isempty(irx)
-                L(legendCount) = scatter(rx_x(irx),rx_y(irx),marker_size,marker_color{node},marker_shape{node},'filled');
-                legendStr{legendCount} = num2str(node);
-        end 
+    
+	hold on
+    for nx = 1:num_events
+        plot([plotBathy.rxX(nx) plotBathy.txX(nx)],[plotBathy.rxY(nx) plotBathy.txY(nx)],'color',[1 1 1 alpha_color],'linewidth',7,'HandleVisibility','off');
     end
     
-    L(legendCount+1) = scatter(tx_x,tx_y,marker_size.*1.8,'ro');
-    legendStr{end+1} = 'tx';
+    legendCount = 1;
+    L(legendCount) = scatter(plotBathy.txX,plotBathy.txY,marker_size,'r','o');
     
+    for node = unique_rx_cluster
+        legendCount = legendCount + 1;
+        index = find(rx_cluster == node);
+        L(legendCount) = scatter(plotBathy.rxX(index),plotBathy.rxY(index),marker_size,marker_color{node},marker_shape{node},'filled');
+    end
     hold off
-    legend(L,legendStr,'location','best','fontsize',lg_font_size);
-    grid on
     xlabel('x [m]')
     ylabel('y [m]')
-    title([experiment(1).tag.tstr ' to ' experiment(end).tag.tstr],'fontsize',lg_font_size+1);
+    title('Bird''s Eye View of Camp Seadragon with Bathymetry [m]');
+
+    legend(L,legendStr,'location','northwest','fontsize',lg_font_size);
     
-    %% figure for contacts in z
-    
-    subplot(6,3,[2 5])
-    hold on
-    for nz = 1:num_events
-        plot([0 1 ],[tx_z(nz) rx_z(nz)],'-','color',[alpha_grey alpha_color],'linewidth',7)
-    end
-    
-    % plot by rx node
-    rxc = numel(unique_tag_rx)+1;
-    for utr = unique_tag_rx
-        rxc = rxc -1;
-        index = find(tag_rx == utr);
-        rx_place = ones(size(index)) + 0.13 * (numel(unique_tag_rx) - rxc);
-        scatter(rx_place,rx_z(index),marker_size,marker_color{utr},marker_shape{utr},'filled');
-        
-        unique_rx_z_index = unique(rx_z(index));
-        for urzi = unique_rx_z_index
-            nContacts = sum(rx_z(index) == urzi);
-            if urzi == 30
-                buffer = 6;
-            else
-                buffer = -6;
-            end
-            text(rx_place(1),urzi + buffer, num2str(nContacts),'HorizontalAlignment','center');
-        end
-    end
-    
-    % plot by tx node
-    txc = 0;
-    for utt = unique_tag_tx
-        txc = txc + 1;
-        index = find(tag_tx == utt);
-        tx_place = zeros(size(index)) - .13 * (numel(unique_tag_tx) - txc);
-        scatter(tx_place,tx_z(index),marker_size,marker_color{utt},marker_shape{utt},'filled')
-        
-        unique_tx_z_index = unique(tx_z(index));
-        for utzi = unique_tx_z_index
-            nContacts = sum(tx_z(index) == utzi);
-            if utzi == 30
-                buffer = 6;
-            else
-                buffer = -6;
-            end
-            text(tx_place(1),utzi + buffer, num2str(nContacts),'HorizontalAlignment','center');
-        end
-    end
-    
-    grid on
-    ylabel('z [m]');
-    xticks([0 1])
-    xticklabels({'tx','rx'})
-    xlim([-0.6 1.6])
-    ylim([0 100])
-    set(gca,'ydir','reverse')
-    yticks([0 20 30 90]);
-    title(['tx depth = ' num2str(mode(tx_z)) 'm, ' num2str(length(experiment)) ' contacts'])
-    
-    %% figure: data range vs owtt
-    subplot(7,3,[12 15]);
-    
+    %% figure: range vs owtt
+    figure(3);
+    % data
+    subplot(1,2,1);
     % plot by rx node
     plot([0 10],[0 10.*med_gvel],'-','color',[0.3 0.3 0.3 0.3])
     hold on
-    for utr = unique_tag_rx
-        index = find(tag_rx == utr);
-        scatter(data_owtt(index),data_range(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.2)
+    for node = unique_rx_cluster
+        index = find(rx_cluster == node);
+        scatter(data_owtt(index),data_range(index),marker_size,marker_color{node},marker_shape{node},'filled','MarkerFaceAlpha',0.2)
     end
     hold off
     grid on
     title('in-situ data: range vs owtt','fontsize',lg_font_size+1)
     set_xy_bounds(data_owtt,sim_owtt,data_range,sim_range);
     ylabel('range [m]')
-    xticklabels([])
     str = sprintf('median group velocity = %3.1f m/s',med_gvel);
     legend(str,'fontsize',lg_font_size-1,'location','best')
     
-    
-    %% figure: prediction range vs owtt
-    subplot(7,3,[18 21])
+    % prediction range vs owtt
+    subplot(1,2,2);
     plot([0 10],[0 10.*med_gvel],'-','color',[0.3 0.3 0.3 0.3])
     hold on
-    for utr = unique_tag_rx
-        index = find(tag_rx == utr);
-        scatter(sim_owtt(index),sim_range(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.1)
+    for node = unique_rx_cluster
+        index = find(rx_cluster == node);
+        scatter(sim_owtt(index),sim_range(index),marker_size,marker_color{node},marker_shape{node},'filled','MarkerFaceAlpha',0.1)
     end
     hold off
     grid on
@@ -247,12 +273,15 @@ for iNL = 1:num_listing
     xlabel('owtt [s]')
     set_xy_bounds(data_owtt, sim_owtt,data_range,sim_range);
     
-    %% figure: gvel -- timeline
-    subplot(7,9,[28 57])
+    %% figure: timeline
+    figure(4); clf
+    
+    % gvel -- timeline
+    subplot(3,1,1);
     hold on
-    for utr = unique_tag_rx
-        index = find(tag_rx == utr);
-        scatter(sim_time(index),sim_gvel(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3,'handlevisibility','off')
+    for node = unique_rx_cluster
+        index = find(rx_cluster == node);
+        scatter(sim_time(index),sim_gvel(index),marker_size,marker_color{node},marker_shape{node},'filled','MarkerFaceAlpha',0.3,'handlevisibility','off')
     end
     hline(med_gvel,'color',[0.3 0.3 0.3 0.3]);
     hold off
@@ -261,18 +290,18 @@ for iNL = 1:num_listing
     else
         eof_str = 'off';
     end
-    title(['predicted horizontal group velocity , EOF = ' eof_str],'fontsize',lg_font_size+1)
+    title(['predicted horizontal group velocity, EOF = ' eof_str],'fontsize',lg_font_size+1)
     ylabel('\nu_g [m/s]')
-    xlabel('time [hr:mm]')
     grid on
     datetick('x');
+    set_xy_bounds(data_time,sim_time,sim_gvel,sim_gvel);
     
-    %% figure: data owtt -- timeline
-    subplot(7,3,[11 14])
+    % data owtt -- timeline
+    subplot(3,1,2)
     hold on
-    for utr = unique_tag_rx
-        index = find(tag_rx == utr);
-        scatter(data_time(index),data_owtt(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3)
+    for node = unique_rx_cluster
+        index = find(rx_cluster == node);
+        scatter(data_time(index),data_owtt(index),marker_size,marker_color{node},marker_shape{node},'filled','MarkerFaceAlpha',0.3)
     end
     hold off
     datetick('x');
@@ -280,14 +309,13 @@ for iNL = 1:num_listing
     title('in-situ data: owtt','fontsize',lg_font_size+1)
     ylabel('[s]')
     set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
-    xticklabels([])
     
-    %% figure : sim owtt -- timeline
-    subplot(7,3,[17 20])
+    % sim owtt -- timeline
+    subplot(3,1,3)
     hold on
-    for utr = unique_tag_rx
-        index = find(tag_rx == utr);
-        scatter(sim_time(index),sim_owtt(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3)
+    for node = unique_rx_cluster
+        index = find(rx_cluster == node);
+        scatter(sim_time(index),sim_owtt(index),marker_size,marker_color{node},marker_shape{node},'filled','MarkerFaceAlpha',0.3)
     end
     hold off
     datetick('x');
@@ -296,31 +324,6 @@ for iNL = 1:num_listing
     ylabel('[s]')
     set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
     xlabel('time [hr:mm]');
-    
-    %% figure : sound speed estimate + TL
-    subplot(6,9,[1 10])
-    plot(OBJ_EOF.baseval,OBJ_EOF.depth,'color',alpha_grey);
-    hold on
-    plot(ssp_estimate,OBJ_EOF.depth,'o')
-    hold off
-    title('sound speed estimate','fontsize',lg_font_size+1)
-    ylim([0 200])
-    grid on
-    set(gca,'ydir','reverse')
-    ylabel('z [m]')
-    xlabel('c [m/s]')
-    
-    subplot(6,9,[2 3 11 12])
-    imagesc(RT,ZT,TL);
-    title('transmission loss','fontsize',lg_font_size+1)
-    colormap(cmocean('thermal',15));
-    shading flat
-    cb = colorbar;
-    title(cb,'db')
-    yticklabels([])
-    caxis([-75 -45])
-    ylim([0 200])
-    xlabel('range [m]','fontsize',lg_font_size-2);
     
 end
 
