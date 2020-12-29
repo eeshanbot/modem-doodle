@@ -21,7 +21,7 @@ olat = 71.17733;
 olon = -142.40413;
 
 %%  pick a toby test event!
-for iNL = 2 % num_listing
+for iNL = 1 % num_listing
     
     figure(iNL); clf;
     
@@ -134,17 +134,22 @@ for iNL = 2 % num_listing
     % reindex nodes for x/y by clustering?
     rx_xyz = [rx_x; rx_y; rx_z].';
     rx_cluster = clusterdata(rx_xyz,'Distance','Euclidean','maxclust',4);
-    unique_rx_cluster = unique(rx_cluster.');
+    rx_cluster = rx_cluster.';
+    unique_rx_cluster = unique(rx_cluster);
     
     % tetradic color wheel
     tetradic_colors = 1/256.*[ ...
-        177 0 204  ;   ...  
-        7 201 0 ;  ...  
-        0 114 201;  ...  
-        255 123 0];  ...  
+        177 0 204  ;   ...
+        7 201 0 ;  ...
+        0 114 201;  ...
+        255 123 0];  ...
         
-    marker_shape = {'<','^','v','>'};
     marker_label = {'west','north','south','east'};
+    
+    % modem depths
+    modem_depth = [30 90];
+    marker_shape(30) = '^';
+    marker_shape(90) = 'v';
     
     for mi = unique_rx_cluster
         indx = find(rx_cluster == mi);
@@ -188,15 +193,13 @@ for iNL = 2 % num_listing
     L1(legendCount) = scatter(0,zs,marker_size,'r','o','linewidth',2);
     legendStr{legendCount} = 'tx';
     for node = unique_rx_cluster
-        index = find(rx_cluster == node);
-        legendCount = legendCount + 1;
-        L1(legendCount) = scatter(data_2D_range(index),rx_z(index),...
-            marker_size,marker_color{node},marker_shape{node},'filled');
-        legendStr{legendCount} = marker_label{node};
-        
-        % text underneath
-        modem_depth = [30 90];
         for imd = modem_depth
+            index = find(rx_cluster == node & rx_z == imd);
+            legendCount = legendCount + 1;
+            L1(legendCount) = scatter(data_2D_range(index),rx_z(index),...
+                                        marker_size,marker_color{node},marker_shape(imd),'filled');
+            legendStr{legendCount} = [marker_label{node} ', ' num2str(imd) 'm'];
+
             total = sum(rx_z(index) == imd);
             text(mean(data_2D_range(index)),imd+10,num2str(total),'HorizontalAlignment','center','fontsize',12)
         end
@@ -217,9 +220,8 @@ for iNL = 2 % num_listing
     shading flat
     
     clabel(C,h,'LabelSpacing',1200,'color','w','fontweight','bold','BackgroundColor','k');
-
     
-	hold on
+    hold on
     for nx = 1:num_events
         plot([plotBathy.rxX(nx) plotBathy.txX(nx)],[plotBathy.rxY(nx) plotBathy.txY(nx)],'color',[1 1 1 alpha_color],'linewidth',7,'HandleVisibility','off');
     end
@@ -228,15 +230,17 @@ for iNL = 2 % num_listing
     L(legendCount) = scatter(plotBathy.txX,plotBathy.txY,marker_size,'r','o');
     
     for node = unique_rx_cluster
+        for imd = modem_depth
         legendCount = legendCount + 1;
-        index = find(rx_cluster == node);
-        L(legendCount) = scatter(plotBathy.rxX(index),plotBathy.rxY(index),marker_size,marker_color{node},marker_shape{node},'filled');
+        index = find(rx_cluster == node & rx_z == imd);
+        L(legendCount) = scatter(plotBathy.rxX(index),plotBathy.rxY(index),marker_size,marker_color{node},marker_shape(imd),'filled');
+        end
     end
     hold off
     xlabel('x [m]')
     ylabel('y [m]')
     title('Bird''s Eye View of Camp Seadragon with Bathymetry [m]');
-
+    
     legend(L,legendStr,'location','northwest','fontsize',lg_font_size);
     
     %% figure: range vs owtt
@@ -247,8 +251,10 @@ for iNL = 2 % num_listing
     plot([0 10],[0 10.*med_gvel],'-','color',[0.3 0.3 0.3 0.3])
     hold on
     for node = unique_rx_cluster
-        index = find(rx_cluster == node);
-        scatter(data_owtt(index),data_range(index),marker_size,marker_color{node},marker_shape{node},'filled','MarkerFaceAlpha',0.2)
+        for imd = modem_depth
+        index = find(rx_cluster == node & rx_z == imd);
+        scatter(data_owtt(index),data_range(index),marker_size,marker_color{node},marker_shape(imd),'filled','MarkerFaceAlpha',0.3)
+        end
     end
     hold off
     grid on
@@ -263,8 +269,10 @@ for iNL = 2 % num_listing
     plot([0 10],[0 10.*med_gvel],'-','color',[0.3 0.3 0.3 0.3])
     hold on
     for node = unique_rx_cluster
-        index = find(rx_cluster == node);
-        scatter(sim_owtt(index),sim_range(index),marker_size,marker_color{node},marker_shape{node},'filled','MarkerFaceAlpha',0.1)
+        for imd = modem_depth
+        index = find(rx_cluster == node & rx_z == imd);
+        scatter(sim_owtt(index),sim_range(index),marker_size,marker_color{node},marker_shape(imd),'filled','MarkerFaceAlpha',0.3)
+        end
     end
     hold off
     grid on
@@ -280,8 +288,10 @@ for iNL = 2 % num_listing
     subplot(3,1,1);
     hold on
     for node = unique_rx_cluster
-        index = find(rx_cluster == node);
-        scatter(sim_time(index),sim_gvel(index),marker_size,marker_color{node},marker_shape{node},'filled','MarkerFaceAlpha',0.3,'handlevisibility','off')
+        for imd = modem_depth
+        index = find(rx_cluster == node & rx_z == imd);
+        scatter(sim_time(index),sim_gvel(index),marker_size,marker_color{node},marker_shape(imd),'filled','MarkerFaceAlpha',0.3,'handlevisibility','off')
+        end
     end
     hline(med_gvel,'color',[0.3 0.3 0.3 0.3]);
     hold off
@@ -300,8 +310,10 @@ for iNL = 2 % num_listing
     subplot(3,1,2)
     hold on
     for node = unique_rx_cluster
-        index = find(rx_cluster == node);
-        scatter(data_time(index),data_owtt(index),marker_size,marker_color{node},marker_shape{node},'filled','MarkerFaceAlpha',0.3)
+        for imd = modem_depth
+        index = find(rx_cluster == node & rx_z == imd);
+        scatter(data_time(index),data_owtt(index),marker_size,marker_color{node},marker_shape(imd),'filled','MarkerFaceAlpha',0.3)
+        end
     end
     hold off
     datetick('x');
@@ -314,8 +326,10 @@ for iNL = 2 % num_listing
     subplot(3,1,3)
     hold on
     for node = unique_rx_cluster
-        index = find(rx_cluster == node);
-        scatter(sim_time(index),sim_owtt(index),marker_size,marker_color{node},marker_shape{node},'filled','MarkerFaceAlpha',0.3)
+        for imd = modem_depth
+        index = find(rx_cluster == node & rx_z == imd);
+        scatter(sim_time(index),sim_owtt(index),marker_size,marker_color{node},marker_shape(imd),'filled','MarkerFaceAlpha',0.3)
+        end
     end
     hold off
     datetick('x');
