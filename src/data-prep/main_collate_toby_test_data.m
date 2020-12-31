@@ -167,7 +167,7 @@ for itt = 1:nTobyTest
     fprintf('\n');
     
 end
-filename = sprintf('./data-tobytest-by-design/tobytest-all');
+filename = sprintf('tobytest-all');
 
 save(filename,'event');
 fprintf(' saved %s.mat \n',filename);

@@ -24,7 +24,7 @@ for utd = unique_tx_depth
         index_eeof  = eeof_bool == ute;
         index = and(index_depth,index_eeof);
         
-        str = sprintf('./data-tobytest-by-design/tobytest_txz%d_eeof%d',utd,ute);
+        str = sprintf('tobytest_txz%d_eeof%d',utd,ute);
         
         experiment = event(index);
         save(str,'experiment');
