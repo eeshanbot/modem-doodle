@@ -21,7 +21,7 @@ olat = 71.17733;
 olon = -142.40413;
 
 %%  pick a toby test event!
-for iNL = 1 % num_listing
+for iNL = 2 % num_listing
     
     figure(iNL); clf;
     

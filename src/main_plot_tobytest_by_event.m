@@ -17,7 +17,7 @@ listing = dir(location);
 num_listing = numel(listing);
 
 %%  pick a toby test event!
-for iNL = 5
+for iNL = 4
     
     figure(1); clf;
     
