@@ -1,4 +1,4 @@
-%% plot_raw_locs.m
+%% main_plot_itp_raw_locs.m
 
 %% prep workspace
 clear; clc;
@@ -19,7 +19,7 @@ newcolors = distinguishable_colors(7);
 for l = 1:length(listing)
     filepath = fullfile([listing(l).folder '/' listing(l).name]);
     
-    [timestamp, lon, lat] = itp_import_rawloc(filepath);
+    [timestamp, lon, lat] = itp_import_buoy_loc(filepath);
     
     fprintf('%s | %s | %s \n',listing(l).name(1:6),datestr(min(timestamp)),datestr(max(timestamp))) 
     
