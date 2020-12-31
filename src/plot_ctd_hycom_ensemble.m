@@ -1,4 +1,3 @@
-%% make_env_plots.m
 % eeshan bhatt
 % eesh@mit.edu
 
