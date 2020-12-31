@@ -1,4 +1,4 @@
-function info = itp_import_loc(filename, startRow, endRow)
+function info = itp_import_profiler_loc(filename, startRow, endRow)
 %IMPORTFILE Import numeric data from a text file as a matrix.
 %   ITP103GRD0000 = IMPORTFILE(FILENAME) Reads data from text file FILENAME
 %   for the default selection.

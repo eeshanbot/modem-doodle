@@ -1,4 +1,4 @@
-function [year,day,pressure,temp,salinity,oxygen] = importfile_itp(filename, startRow, endRow)
+function [year,day,pressure,temp,salinity,oxygen] = itp_import_profiler_data(filename, startRow, endRow)
 %IMPORTFILE_ITP Import numeric data from a text file as column vectors.
 %   [YEAR,DAY,PRESSURE,TEMP,SALINITY,OXYGEN] = IMPORTFILE1(FILENAME) Reads
 %   data from text file FILENAME for the default selection.

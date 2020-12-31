@@ -1,4 +1,4 @@
-function [timestamp,lon,lat] = itp_import_rawloc(filename)
+function [timestamp,lon,lat] = itp_import_buoy_loc(filename)
 
 B = load(filename);
 
