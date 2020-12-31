@@ -1,4 +1,4 @@
-%% make_env_plots.m
+%% plot_ctd_hycom_itp.m
 % eeshan bhatt
 % eesh@mit.edu
 
@@ -39,7 +39,7 @@ for cc = 1:length(listing)
     dat_file_path = fullfile(listing(cc).folder, listing(cc).name);
     
     itp_search.filepath(cc)   = dat_file_path;
-    info                        = itp_import_loc(dat_file_path);
+    info                      = itp_import_profiler_loc(dat_file_path);
     
     itp_search.lon(cc)        = info.lon;
     itp_search.lat(cc)        = info.lat;
@@ -51,7 +51,7 @@ num_check = 3;
 itp_c = cell(length(CTD),num_check);
 itp_z = cell(length(CTD),num_check);
 
-disp('finished ITP search! \n');
+disp('finished ITP search!');
 
 
 %% loop through CTDs
@@ -66,7 +66,6 @@ for p = 1:length(CTD)
     
     addpath(genpath('./eof_play/'));
     eof_filepath = '~/.dropboxmit/icex_2020_mat/eeof_itp_Mar2013.nc';
-    [ctd_weight{p},ctd_eofnum{p},yhat{p}] = generate_coeffs_plot(ctd_z{p},ctd_c{p},eof_filepath);
     
     request_depth = max(CTD(p).raw_z);
     request_time = datenum(ctd_t(p));
@@ -125,7 +124,7 @@ for p = 1:length(CTD)
         num_obs = 0;
         while (num_obs < 200)
             count = count + 1;
-            [~,~,pressure,temp,salinity,~] = importfile_itp(itp_search.filepath(best_index(count)));
+            [~,~,pressure,temp,salinity,~] = itp_import_profiler_data(itp_search.filepath(best_index(count)));
             num_obs = length(pressure);
             
             itp_z{p,lp} = pressureToDepth(pressure,itp_search.lat(best_index(count)));
@@ -146,23 +145,25 @@ end
 %% write to a figure
 
 figure(1); clf;
-ha = tight_subplot(1,4,[.06 .03],[.1 .05],[.1 .02]);
+ha = tight_subplot(3,3,[.06 .03],[.1 .05],[.1 .02]);
 
 eeof_depths  = double(ncread(eof_filepath,'depth'));
 
 pcount = 0;
-for p = [1 4 5 8]
+for p = 1:9
     
+    % axes count -- not always equal to CTD count
     pcount = pcount + 1;
-    % get figure
     axes(ha(pcount));
     
+    % change color for RSK vs XCTD
     if strcmp(CTD(p).type,'rsk')
         color = [153 51 153]./256;
     elseif strcmp(CTD(p).type,'xctd')
         color = [200 87 0]./256;
     end
     
+    % plot hycom, itp, and ctd
     p_hycom = plot(hycom_c{p},hycom_z{p},'color',[181 181 181 220]./256,'linewidth',3);
     hold on
     for lp = 1:num_check
@@ -170,30 +171,32 @@ for p = [1 4 5 8]
     end
     p_ctd = plot(ctd_c{p},ctd_z{p},'-','color',color,'linewidth',3);
     
-    % plot EOF -- 
-    p_eof = plot(yhat{p},eeof_depths, 'ko');
-    
     hold off
-    
-    beautify_plot();
     title(datestr(ctd_t(p),'DD mmm yy HHMM'));
     
-    if p > 1
-        yticklabels('');
-    end
-    
-    
-    xlabel('c [m/s]')
+    % plot modifications
+    beautify_plot();
 
-    
-    if p == 1
+    if p == 4
         ylabel('depth [m]');
     end
     
+    if mod(p,3)~=1
+        yticklabels([])
+    end
+    
+    if p <=6
+        xticklabels([]);
+    end
+    
+    if p == 8
+        xlabel('c [m/s]');
+    end
+    
     if p == 1
-        legend([p_ctd p_hycom p_itp p_eof],'RSK','HYCOM','ITP','EOF','location','best')
+        legend([p_ctd p_hycom p_itp],'RSK','HYCOM','ITP','location','best')
     elseif p==5
-        legend([p_ctd p_hycom p_itp p_eof],'xCTD','HYCOM','ITP','EOF','location','best');
+        legend([p_ctd p_hycom p_itp],'xCTD','HYCOM','ITP','location','best');
     end
 end
 
@@ -203,7 +206,7 @@ function [loc] = find_start(list,val)
 end
 
 %% helper function: beautify_plot()
-function [] = beautify_plot();
+function [] = beautify_plot()
 set(gca,'ydir','reverse')
 grid on
 ylim([0 500])

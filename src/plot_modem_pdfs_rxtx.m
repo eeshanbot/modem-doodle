@@ -1,4 +1,4 @@
-%% make_modem_plots.m
+%% plot_modem_pdfs_rxtx.m
 
 %% prep workspace
 clear; clc;
