@@ -1,6 +1,6 @@
 all: preprint reprint
 
-# with bibligraphy:
+# with bibliography:
 #
 # pdflatex - first pass reads in all references
 # bibtex   - reads aux file and styles bibliography
