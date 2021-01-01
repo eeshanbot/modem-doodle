@@ -1,4 +1,6 @@
 %% main_plot_tobytest_by_event
+% explore data by each toby test
+% see notes for time divisions
 
 % eeshan bhatt
 
@@ -12,7 +14,7 @@ alpha_grey      = [0.6 0.6 0.6];
 set(0,'defaultAxesFontSize',13)
 
 %% load toby test data by event
-location = './data-tobytest-by-event/*.mat';
+location = '../data/data-tobytest-by-event/*.mat';
 listing = dir(location);
 num_listing = numel(listing);
 
@@ -96,12 +98,6 @@ for iNL = 4
         disp('toby test has eof OFF');
     end
     
-    OBJ_EOF = eb_load_eeof_file('eeof_itp_Mar2013.nc');
-    weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].';
-    
-    ssp_estimate = OBJ_EOF.baseval + (OBJ_EOF.eofs * weights).*eof_bool;
-    [RT,ZT,TL] = run_pe(ssp_estimate,OBJ_EOF.depth);
-    
 end
 
 %% tetradic color wheel
@@ -124,7 +120,7 @@ end
 
 
 %% figure locations in x,y
-subplot(6,3,[3 6]);
+subplot(6,3,[2 5]);
 hold on
 for nx = 1:num_events
     plot([rx_x(nx) tx_x(nx)],[rx_y(nx) tx_y(nx)],'color',[alpha_grey alpha_color],'linewidth',7,'HandleVisibility','off');
@@ -166,7 +162,7 @@ title([event(1).tag.tstr ' to ' event(end).tag.tstr],'fontsize',lg_font_size+1);
 
 %% figure for contacts in z
 
-subplot(6,3,[2 5])
+subplot(6,3,[1 4])
 hold on
 for nz = 1:num_events
     plot([0 1 ],[tx_z(nz) rx_z(nz)],'-','color',[alpha_grey num_events./5.*alpha_color],'linewidth',7)
@@ -222,8 +218,52 @@ set(gca,'ydir','reverse')
 yticks([0 20 30 90]);
 title([event(1).tag.name ' : ' num2str(length(event)) ' contacts'])
 
+%% figure: gvel -- timeline
+subplot(6,3,[3 6])
+hold on
+for utr = unique_tag_rx
+    index = find(tag_rx == utr);
+    scatter(sim_time(index),sim_gvel(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3,'handlevisibility','off')
+end
+hline(med_gvel,'color',[0.3 0.3 0.3 0.3]);
+hold off
+title(['predicted \nu, EOF = ' num2str(eof_bool)],'fontsize',lg_font_size+1)
+ylabel('group velocity [m/s]')
+grid on
+datetick('x');
+h_set_xy_bounds(sim_time,sim_time,sim_gvel,sim_gvel);
+
+%% figure: data owtt -- timeline
+subplot(12,3,[18 24])
+hold on
+for utr = unique_tag_rx
+    index = find(tag_rx == utr);
+    scatter(data_time(index),data_owtt(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3)
+end
+hold off
+datetick('x');
+grid on
+title('in-situ data: owtt','fontsize',lg_font_size+1)
+ylabel('[s]')
+h_set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
+
+%% figure : sim owtt -- timeline
+subplot(12,3,[30 36])
+hold on
+for utr = unique_tag_rx
+    index = find(tag_rx == utr);
+    scatter(sim_time(index),sim_owtt(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3)
+end
+hold off
+datetick('x');
+grid on
+title('in-situ prediction: owtt','fontsize',lg_font_size+1)
+ylabel('[s]')
+h_set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
+xlabel('time [hr:mm]');
+
 %% figure: data range vs owtt
-subplot(7,3,[12 15]);
+subplot(12,3,[17 23]);
 
 % plot by rx node
 plot([0 10],[0 10.*med_gvel],'-','color',[0.3 0.3 0.3 0.3])
@@ -235,15 +275,14 @@ end
 hold off
 grid on
 title('in-situ data: range vs owtt','fontsize',lg_font_size+1)
-set_xy_bounds(data_owtt,sim_owtt,data_range,sim_range);
+h_set_xy_bounds(data_owtt,sim_owtt,data_range,sim_range);
 ylabel('range [m]')
-xticklabels([])
 str = sprintf('median group velocity = %3.1f m/s',med_gvel);
 legend(str,'fontsize',lg_font_size-1,'location','best')
 
 
 %% figure: prediction range vs owtt
-subplot(7,3,[18 21])
+subplot(12,3,[29 35])
 plot([0 10],[0 10.*med_gvel],'-','color',[0.3 0.3 0.3 0.3])
 hold on
 for utr = unique_tag_rx
@@ -255,92 +294,35 @@ grid on
 title('in-situ prediction: range vs owtt','fontsize',lg_font_size+1)
 ylabel('range [m]')
 xlabel('owtt [s]')
-set_xy_bounds(data_owtt, sim_owtt,data_range,sim_range);
+h_set_xy_bounds(data_owtt, sim_owtt,data_range,sim_range);
 
-%% figure: gvel -- timeline
-subplot(7,9,[28 57])
+
+
+%% figure : unity comparisons
+subplot(12,3,[16 22])
+plot([0 10],[0 10],':','color',alpha_grey);
 hold on
 for utr = unique_tag_rx
     index = find(tag_rx == utr);
-    scatter(sim_time(index),sim_gvel(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3,'handlevisibility','off')
+    scatter(data_owtt(index),sim_owtt(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.1)
 end
-hline(med_gvel,'color',[0.3 0.3 0.3 0.3]);
 hold off
-title(['predicted \nu, EOF = ' num2str(eof_bool)],'fontsize',lg_font_size+1)
-ylabel('group velocity [m/s]')
-xlabel('time [hr:mm]')
+h_set_xy_bounds(data_owtt,sim_owtt,data_owtt,sim_owtt);
 grid on
-datetick('x');
-set_xy_bounds(sim_time,sim_time,sim_gvel,sim_gvel);
+xlabel('data owtt [s]')
+ylabel('predicted owtt [s]')
+title('owtt comparison');
 
-%% figure: data owtt -- timeline
-subplot(7,3,[11 14])
+subplot(12,3,[28 34])
+plot([0 4000],[0 4000],':','color',alpha_grey);
 hold on
 for utr = unique_tag_rx
     index = find(tag_rx == utr);
-    scatter(data_time(index),data_owtt(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3)
+    scatter(data_range(index),sim_range(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.1)
 end
 hold off
-datetick('x');
+h_set_xy_bounds(data_range,sim_range,data_range,sim_range);
 grid on
-title('in-situ data: owtt','fontsize',lg_font_size+1)
-ylabel('[s]')
-set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
-xticklabels([])
-
-%% figure : sim owtt -- timeline
-subplot(7,3,[17 20])
-hold on
-for utr = unique_tag_rx
-    index = find(tag_rx == utr);
-    scatter(sim_time(index),sim_owtt(index),marker_size,marker_color{utr},marker_shape{utr},'filled','MarkerFaceAlpha',0.3)
-end
-hold off
-datetick('x');
-grid on
-title('in-situ prediction: owtt','fontsize',lg_font_size+1)
-ylabel('[s]')
-set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
-xlabel('time [hr:mm]');
-
-%% figure : sound speed estimate + TL
-subplot(6,9,[1 10])
-plot(OBJ_EOF.baseval,OBJ_EOF.depth,'color',alpha_grey);
-hold on
-plot(ssp_estimate,OBJ_EOF.depth,'o')
-hold off
-title('sound speed estimate','fontsize',lg_font_size+1)
-ylim([0 300])
-grid on
-set(gca,'ydir','reverse')
-ylabel('z [m]')
-xlabel('c [m/s]')
-
-subplot(6,9,[2 3 11 12])
-imagesc(RT,ZT,TL);
-title('transmission loss','fontsize',lg_font_size+1)
-colormap(cmocean('thermal',15));
-shading flat
-cb = colorbar;
-title(cb,'db')
-yticklabels([])
-caxis([-75 -45])
-ylim([0 300])
-xlabel('range [m]','fontsize',lg_font_size-2);
-
-
-%% helper function : set_xy_bounds(x1,x2);
-function [] = set_xy_bounds(x1,x2,y1,y2)
-
-x_std = std([x1(:); x2(:)]);
-y_std = std([y1(:); y2(:)]);
-
-min_xval = min([min(x1(:)) min(x2(:))])-x_std/5;
-max_xval = max([max(x1(:)) max(x2(:))])+x_std/5;
-
-min_yval = min([min(y1(:)) min(y2(:))])-y_std/5;
-max_yval = max([max(y1(:)) max(y2(:))])+y_std/5;
-
-xlim([min_xval max_xval]);
-ylim([min_yval max_yval]);
-end
+xlabel('data range [m]')
+ylabel('predicted range [m]')
+title('range comparison')
