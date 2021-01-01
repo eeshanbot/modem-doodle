@@ -338,9 +338,7 @@ for iNL = 2 % num_listing
     ylabel('[s]')
     set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
     xlabel('time [hr:mm]');
-    
 end
-
 
 %% helper function : set_xy_bounds(x1,x2);
 function [] = set_xy_bounds(x1,x2,y1,y2)
