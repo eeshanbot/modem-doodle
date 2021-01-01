@@ -332,6 +332,6 @@ for iNL = 1:num_listing
     filename = ['dashboard-' event(1).tag.name];
     filename = strrep(filename,' ','-');
     filename = strrep(filename,'.','-');
-    export_fig(filename, '-pdf','-png')
+    % export_fig(filename, '-pdf','-png')
     
 end
