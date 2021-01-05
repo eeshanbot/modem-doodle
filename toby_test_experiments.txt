@@ -24,8 +24,7 @@ Exp 2:
 
 Exp 3:
   1. 10:30 > 11:30
-  - EEOF weights 
-  - ^ I think this is actually baseline, see toby notes (EB)
+  - baseline
   - Rx deep
   - H1 as macrura
 
