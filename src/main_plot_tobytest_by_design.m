@@ -12,7 +12,7 @@ alpha_color     = .05;
 set(0,'defaultAxesFontSize',14)
 
 %% load toby test data by event
-location = './data-tobytest-by-design/tobytest_tx*.mat';
+location = '../data/data-tobytest-by-design/tobytest_tx*.mat';
 listing = dir(location);
 num_listing = numel(listing);
 
@@ -100,7 +100,7 @@ for iNL = 2 % num_listing
     % sound speed estimate
     toby_test_eof_bool = h_get_nested_val_filter(experiment,'tag','eeof');
     eof_bool = toby_test_eof_bool(1);
-    OBJ_EOF = eb_load_eeof_file('eeof_itp_Mar2013.nc');
+    OBJ_EOF = eb_read_eeof('eeof_itp_Mar2013.nc',true);
     weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].'; % manually written down weights from Toby's notes
     ssp_estimate = OBJ_EOF.baseval + (OBJ_EOF.eofs * weights).*eof_bool;
     
@@ -122,9 +122,9 @@ for iNL = 2 % num_listing
     
     plotBathy.zz = abs(bathy(ilon1:ilon2,ilat1:ilat2));
     plotBathy.mean = round(mean(plotBathy.zz(:)));
-    [plotBathy.xx,plotBathy.yy] = ll2xy_whoi(XX,YY,olat,olon);
-    [plotBathy.rxX,plotBathy.rxY] = ll2xy_whoi(rx_lat,rx_lon,olat,olon);
-    [plotBathy.txX,plotBathy.txY] = ll2xy_whoi(tx_lat,tx_lon,olat,olon);
+    [plotBathy.xx,plotBathy.yy] = eb_ll2xy(XX,YY,olat,olon);
+    [plotBathy.rxX,plotBathy.rxY] = eb_ll2xy(rx_lat,rx_lon,olat,olon);
+    [plotBathy.txX,plotBathy.txY] = eb_ll2xy(tx_lat,tx_lon,olat,olon);
     
     % ray trace
     zs = mode(tx_z);
@@ -259,7 +259,7 @@ for iNL = 2 % num_listing
     hold off
     grid on
     title('in-situ data: range vs owtt','fontsize',lg_font_size+1)
-    set_xy_bounds(data_owtt,sim_owtt,data_range,sim_range);
+    h_set_xy_bounds(data_owtt,sim_owtt,data_range,sim_range);
     ylabel('range [m]')
     str = sprintf('median group velocity = %3.1f m/s',med_gvel);
     legend(str,'fontsize',lg_font_size-1,'location','best')
@@ -279,7 +279,7 @@ for iNL = 2 % num_listing
     title('in-situ prediction: range vs owtt','fontsize',lg_font_size+1)
     ylabel('range [m]')
     xlabel('owtt [s]')
-    set_xy_bounds(data_owtt, sim_owtt,data_range,sim_range);
+    h_set_xy_bounds(data_owtt, sim_owtt,data_range,sim_range);
     
     %% figure: timeline
     figure(4); clf
@@ -304,7 +304,7 @@ for iNL = 2 % num_listing
     ylabel('\nu_g [m/s]')
     grid on
     datetick('x');
-    set_xy_bounds(data_time,sim_time,sim_gvel,sim_gvel);
+    h_set_xy_bounds(data_time,sim_time,sim_gvel,sim_gvel);
     
     % data owtt -- timeline
     subplot(3,1,2)
@@ -320,7 +320,7 @@ for iNL = 2 % num_listing
     grid on
     title('in-situ data: owtt','fontsize',lg_font_size+1)
     ylabel('[s]')
-    set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
+    h_set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
     
     % sim owtt -- timeline
     subplot(3,1,3)
@@ -336,22 +336,6 @@ for iNL = 2 % num_listing
     grid on
     title('in-situ prediction: owtt','fontsize',lg_font_size+1)
     ylabel('[s]')
-    set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
+    h_set_xy_bounds(data_time,sim_time,data_owtt,sim_owtt)
     xlabel('time [hr:mm]');
-end
-
-%% helper function : set_xy_bounds(x1,x2);
-function [] = set_xy_bounds(x1,x2,y1,y2)
-
-x_std = std([x1(:); x2(:)]);
-y_std = std([y1(:); y2(:)]);
-
-min_xval = min([min(x1(:)) min(x2(:))])-x_std/5;
-max_xval = max([max(x1(:)) max(x2(:))])+x_std/5;
-
-min_yval = min([min(y1(:)) min(y2(:))])-y_std/5;
-max_yval = max([max(y1(:)) max(y2(:))])+y_std/5;
-
-xlim([min_xval max_xval]);
-ylim([min_yval max_yval]);
 end

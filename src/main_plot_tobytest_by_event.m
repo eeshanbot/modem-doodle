@@ -20,7 +20,7 @@ listing = dir(location);
 num_listing = numel(listing);
 
 %%  pick a toby test event!
-for iNL = 1:num_listing
+for iNL = 3
     
     figure(iNL); clf;
     
@@ -29,6 +29,7 @@ for iNL = 1:num_listing
     
     % one way travel time data
     data_owtt = h_get_nested_val_filter(event,'tag','owtt');
+    fprintf('num events = %d',numel(data_owtt));
     
     % gps data to range
     tx_x    = h_get_nested_val_filter(event,'tx','x');
@@ -57,7 +58,8 @@ for iNL = 1:num_listing
     filter = and(filter,s_filter);
     
     % re-index
-    data_owtt = data_owtt(filter);
+    data_owtt = data_owtt(filter);     
+    fprintf('filter events = %d',numel(data_owtt));
     data_range = data_range(filter);
     tx_x = tx_x(filter);
     tx_y = tx_y(filter);
