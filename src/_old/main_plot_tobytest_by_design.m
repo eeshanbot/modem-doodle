@@ -12,7 +12,7 @@ alpha_color     = .05;
 set(0,'defaultAxesFontSize',14)
 
 %% load toby test data by event
-location = '../data/data-tobytest-by-design/tobytest_tx*.mat';
+location = '../data/_data-tobytest-by-design/tobytest_tx*.mat';
 listing = dir(location);
 num_listing = numel(listing);
 
