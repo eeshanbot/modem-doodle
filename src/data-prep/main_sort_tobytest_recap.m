@@ -6,12 +6,10 @@ clear; clc;
 %% load all event data
 load('./tobytest-recap-clean.mat');
 
-addpath('../');
-
 %% filters
 
-tx_depth = h_get_nested_val_filter(event,'tx','depth');
-eeof_bool = h_get_nested_val_filter(event,'tag','eeof');
+tx_depth = h_unpack_val(event,'tx','depth');
+eeof_bool = h_unpack_val(event,'tag','eeof');
 
 % unique tx, eeof_bool
 unique_tx_depth = sort(unique(tx_depth));
@@ -31,4 +29,10 @@ for utd = unique_tx_depth
         experiment = event(index);
         save(str,'experiment');
     end
+end
+
+%% helper function : h_unpack_val
+function [array] = h_unpack_val(obj,lvl1,lvl2)
+stuff = [obj.(lvl1)];
+array = [stuff.(lvl2)];
 end
