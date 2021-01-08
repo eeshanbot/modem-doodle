@@ -8,7 +8,7 @@ lg_font_size = 14;
 marker_size = 200;
 alpha_grey      = [0.6 0.6 0.6];
 alpha_color     = .05;
-set(0,'defaultAxesFontSize',14)
+set(0,'defaultAxesFontSize',18)
 
 %% load toby test data by event
 location = '../data/tobytest-tx*.mat';
@@ -20,7 +20,7 @@ olat = 71.17733;
 olon = -142.40413;
 
 %%  pick a toby test event!
-for iNL = 2 % num_listing
+for iNL = 6 % num_listing
     % load event
     load([listing(iNL).folder '/' listing(iNL).name]);
 end
@@ -125,7 +125,7 @@ plot(ssp_estimate,OBJ_EOF.depth,'o')
 hold on
 plot(OBJ_EOF.baseval,OBJ_EOF.depth,'color',alpha_grey);
 hold off
-title('sound speed estimate','fontsize',lg_font_size+1)
+title('sound speed estimate')
 ylim([0 300])
 grid on
 set(gca,'ydir','reverse')
@@ -172,7 +172,7 @@ legend(L1,legendStr,'location','SouthEast','fontsize',lg_font_size);
 
 %% figure locations in x,y
 
-figure(2)
+figure(2); clf;
 
 minZ = round(min(plotBathy.zz(:)),1);
 maxZ = round(max(plotBathy.zz(:)),1);
@@ -207,44 +207,54 @@ title('Bird''s Eye View of Camp Seadragon with Bathymetry [m]');
 legend(L,legendStr,'location','northwest','fontsize',lg_font_size);
 
 %% figure: range vs owtt -- by gvel anomaly
-figure(3);
+figure(3); clf;
+
+data_rangeGvelAnomaly = med_gvel.*data_owtt - data_range;
+sim_rangeGvelAnomaly  = med_gvel.*sim_owtt - sim_range;
+
 % data
 subplot(1,2,1);
-% plot by rx node
-plot([0 10],[0 10.*med_gvel],'-','color',[0.3 0.3 0.3 0.3])
+
+% plot zero line
+plot([0 10],[0 0],'-','color',[0 0 0 0.5]);
+% plot by rx
 hold on
 for node = unique_rx
     node = node{1}; % change from cell to char
     for imd = rx_depth
         index = find(strcmp(tag_rx,node) & rx_z == imd);
-        scatter(data_owtt(index),data_range(index),marker_size,colorModemMap(node),marker_shape(imd),'filled','MarkerFaceAlpha',0.3)
+        scatter(data_owtt(index),data_rangeGvelAnomaly(index)...
+            ,marker_size,colorModemMap(node),marker_shape(imd),'filled','MarkerFaceAlpha',2.*alpha_color)
     end
 end
 hold off
 grid on
-title('in-situ data: range vs owtt','fontsize',lg_font_size+1)
-h_set_xy_bounds(data_owtt,sim_owtt,data_range,sim_range);
-ylabel('range [m]')
+title('in-situ data: range vs owtt')
+h_set_xy_bounds(data_owtt,sim_owtt,data_rangeGvelAnomaly,sim_rangeGvelAnomaly);
+title('{\it data} range anomaly')
 str = sprintf('median group velocity = %3.1f m/s',med_gvel);
-legend(str,'fontsize',lg_font_size-1,'location','best')
+legend(str,'fontsize',lg_font_size-1,'location','south')
+xlabel('one way travel time [s]');
+ylabel('range anomaly [m]');
 
-% prediction range vs owtt
+% prediction
 subplot(1,2,2);
-plot([0 10],[0 10.*med_gvel],'-','color',[0.3 0.3 0.3 0.3])
+plot([0 10],[0 0],'-','color',[0 0 0 0.5]);
 hold on
 for node = unique_rx
     node = node{1}; % change from cell to char  
     for imd = rx_depth
         index = find(strcmp(tag_rx,node) & rx_z == imd);
-        scatter(sim_owtt(index),sim_range(index),marker_size,colorModemMap(node),marker_shape(imd),'filled','MarkerFaceAlpha',0.3)
+        scatter(sim_owtt(index),sim_rangeGvelAnomaly(index),...
+            marker_size,colorModemMap(node),marker_shape(imd),'filled','MarkerFaceAlpha',2.*alpha_color)
     end
 end
 hold off
 grid on
-title('in-situ prediction: range vs owtt','fontsize',lg_font_size+1)
-ylabel('range [m]')
-xlabel('owtt [s]')
-h_set_xy_bounds(data_owtt, sim_owtt,data_range,sim_range);
+title('{\it prediction} range anomaly')
+ylabel('range anomaly [m]')
+xlabel('one way travel time [s]')
+h_set_xy_bounds(data_owtt, sim_owtt,data_rangeGvelAnomaly,sim_rangeGvelAnomaly);
 
 %% figure: timeline
 figure(4); clf
