@@ -50,8 +50,8 @@ OBJ.num_events      = numel(OBJ.tag_tx);
 
 % sound speed estimate
 toby_test_eof_bool = h_get_nested_val_filter(experiment,'tag','eeof');
+OBJ.eof_bool = boolean(toby_test_eof_bool);
 eof_bool = toby_test_eof_bool(1);
-OBJ.eof_bool = eof_bool;
 OBJ_EOF = eb_read_eeof('eeof_itp_Mar2013.nc',true);
 weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].'; % manually written down weights from Toby's notes
 OBJ.ssp_estimate = OBJ_EOF.baseval + (OBJ_EOF.eofs * weights).*eof_bool;
