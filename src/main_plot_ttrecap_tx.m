@@ -10,7 +10,7 @@ alpha_grey      = [0.6 0.6 0.6];
 alpha_color     = .035;
 
 % depth_switch = [20 30 90];
-zs = 20;
+zs = 90;
 
 % tetradic colors to link modem colors
 modem_colors = {[177 0 204]./256,[7 201 0]./256,[0 114 201]./256,[255 123 0]./256,[80 80 80]./256};
@@ -106,92 +106,91 @@ legend(Lgd,LgdStr,'location','bestoutside')
 title(['Bird''s Eye View of Camp Seadragon, zs = ' num2str(zs) 'm'],'fontsize',20);
 
 %% figure 2 : x/y drift over experiment time
-figure(2); clf;
-[ixlgd,Lgd,LgdStr] = lgd_init();
-
-for ml = modem_labels
-    ml = ml{1}; % cell array to character
-    
-    rec_xval = [];
-    rec_yval = [];
-    rec_date = [];
-    rec_xval = [];
-    src_yval = [];
-    src_status  = boolean([]);;
-    src_date = [];
-    
-    for cfg = 1:2
-        % ping rx
-        tag_rx = CONFIG{cfg}.tag_rx;
-        
-        % grab data from this node
-        index = find(strcmp(tag_rx,ml));
-        
-        rec_xval = [rec_xval CONFIG{cfg}.rx_x(index)];
-        rec_yval = [rec_yval CONFIG{cfg}.rx_y(index)];
-        
-        rec_date  = [rec_date CONFIG{cfg}.data_time(index)];
-        
-        % ping tx
-        tag_tx = CONFIG{cfg}.tag_tx;
-        index = find(strcmp(tag_tx,ml));
-        if ~isempty(index)
-            rec_xval = [rec_xval CONFIG{cfg}.tx_x(index)];
-            rec_yval = [rec_yval CONFIG{cfg}.tx_y(index)];
-            rec_date = [rec_date CONFIG{cfg}.data_time(index)];
-            
-            % for patch --- experiment status
-            src_status = [src_status CONFIG{cfg}.eof_bool(index)];
-            src_date = [src_date CONFIG{cfg}.data_time(index)];
-        end
-    end
-    
-    % plot if exists
-    if ~isempty(rec_xval)
-        ixlgd = ixlgd + 1;
-        % sort in time
-        [rec_date,index] = sort(rec_date);
-        rec_xval = rec_xval(index); rec_xval = rec_xval - rec_xval(1);
-        rec_yval = rec_yval(index); rec_yval = rec_yval - rec_yval(1);
-        
-        k = 20 .* 1/60 .* 1/24; % X min moving average in days
-        rec_xval_fit = movmean(rec_xval,k,'SamplePoints',rec_date);
-        rec_yval_fit = movmean(rec_yval,k,'Samplepoints',rec_date);  
-        
-        % xval scatter
-        subplot(2,1,1)
-        hold on
-        Lgd(ixlgd) = scatter(rec_date,rec_xval,markerSize/2,markerModemMap(ml),'filled','MarkerFaceAlpha',10.*alpha_color);
-        LgdStr{ixlgd} = ml;
-        plot(rec_date,rec_xval_fit,'-','linewidth',3,'color',[markerModemMap(ml) 10.*alpha_color]);
-        datetick('x');
-        grid on
-        ylabel('x-direction [m]');
-        axis tight
-
-        % yval scatter
-        subplot(2,1,2)
-        hold on
-        scatter(rec_date,rec_yval,markerSize/2,markerModemMap(ml),'filled','MarkerFaceAlpha',10.*alpha_color);
-        plot(rec_date,rec_yval_fit,'-','linewidth',3,'color',[markerModemMap(ml) 10.*alpha_color]);
-        datetick('x');
-        grid on
-        xlabel('time [hh:mm]');
-        ylabel('y-direction [m]');
-        axis tight
-    end
-end
-
-subplot(2,1,1); 
-hold off
-title('Ice Floe Drift Recorded from Modem Buoy GPS');
-plot_patch(src_date(src_status));
-
-
-subplot(2,1,2);
-hold off
-legend(Lgd,LgdStr,'location','bestoutside');
-plot_patch(src_date(src_status));
+% figure(2); clf;
+% [ixlgd,Lgd,LgdStr] = lgd_init();
+% 
+%     src_status  = boolean([]);
+%     src_date = [];
+% 
+% for ml = modem_labels
+%     ml = ml{1}; % cell array to character
+%     
+%     rec_xval = [];
+%     rec_yval = [];
+%     rec_date = [];
+%     
+%     for cfg = 1:2
+%         % ping rx
+%         tag_rx = CONFIG{cfg}.tag_rx;
+%         
+%         % grab data from this node
+%         index = find(strcmp(tag_rx,ml));
+%         
+%         rec_xval = [rec_xval CONFIG{cfg}.rx_x(index)];
+%         rec_yval = [rec_yval CONFIG{cfg}.rx_y(index)];
+%         
+%         rec_date  = [rec_date CONFIG{cfg}.data_time(index)];
+%         
+%         % ping tx
+%         tag_tx = CONFIG{cfg}.tag_tx;
+%         index = find(strcmp(tag_tx,ml));
+%         if ~isempty(index)
+%             rec_xval = [rec_xval CONFIG{cfg}.tx_x(index)];
+%             rec_yval = [rec_yval CONFIG{cfg}.tx_y(index)];
+%             rec_date = [rec_date CONFIG{cfg}.data_time(index)];
+%             
+%             % for patch --- experiment status
+%             src_status = [src_status CONFIG{cfg}.eof_bool(index)];
+%             src_date = [src_date CONFIG{cfg}.data_time(index)];
+%         end
+%     end
+%     
+%     % plot if exists
+%     if ~isempty(rec_xval)
+%         ixlgd = ixlgd + 1;
+%         % sort in time
+%         [rec_date,index] = sort(rec_date);
+%         rec_xval = rec_xval(index); rec_xval = rec_xval - rec_xval(1);
+%         rec_yval = rec_yval(index); rec_yval = rec_yval - rec_yval(1);
+%         
+%         k = 20 .* 1/60 .* 1/24; % X min moving average in days
+%         rec_xval_fit = movmean(rec_xval,k,'SamplePoints',rec_date);
+%         rec_yval_fit = movmean(rec_yval,k,'Samplepoints',rec_date);  
+%         
+%         % xval scatter
+%         subplot(2,1,1)
+%         hold on
+%         Lgd(ixlgd) = scatter(rec_date,rec_xval,markerSize/2,markerModemMap(ml),'filled','MarkerFaceAlpha',10.*alpha_color);
+%         LgdStr{ixlgd} = ml;
+%         plot(rec_date,rec_xval_fit,'-','linewidth',3,'color',[markerModemMap(ml) 10.*alpha_color]);
+%         datetick('x');
+%         grid on
+%         ylabel('x-direction [m]');
+%         axis tight
+% 
+%         % yval scatter
+%         subplot(2,1,2)
+%         hold on
+%         scatter(rec_date,rec_yval,markerSize/2,markerModemMap(ml),'filled','MarkerFaceAlpha',10.*alpha_color);
+%         plot(rec_date,rec_yval_fit,'-','linewidth',3,'color',[markerModemMap(ml) 10.*alpha_color]);
+%         datetick('x');
+%         grid on
+%         xlabel('time [hh:mm]');
+%         ylabel('y-direction [m]');
+%         axis tight
+%     end
+% end
+% 
+% subplot(2,1,1); 
+% hold off
+% title('Ice Floe Drift Recorded from Modem Buoy GPS');
+% plot_patch(src_date(src_status));
+% 
+% 
+% subplot(2,1,2);
+% hold off
+% legend(Lgd,LgdStr,'location','bestoutside');
+% plot_patch(src_date(src_status));
 
 %% figure 3 : ray trace differences
 
