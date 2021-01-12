@@ -17,6 +17,8 @@ A = good_events;
 clear good_events;
 num_events = length(A);
 
+addpath('../');
+
 %% convert to indexed structure (helper script reads this style)
 no_gvel_info_count = 0;
 for k = 1:num_events
@@ -40,10 +42,10 @@ for k = 1:num_events
    event(k).tx.name     = A{k}.tx_nav.name;
    event(k).tx.x        = A{k}.tx_nav.x;
    event(k).tx.y        = A{k}.tx_nav.y;
-   event(k).tx.z        = A{k}.tx_nav.z;
+   event(k).tx.z        = A{k}.tx_depth;
    event(k).tx.lat      = A{k}.tx_nav.lat;
    event(k).tx.lon      = A{k}.tx_nav.lon;
-   event(k).tx.depth    = smartI2D(A{k}.tx_nav.depth);
+   event(k).tx.depth    = smartI2D(A{k}.tx_depth);
    event(k).tx.time     = A{k}.tx_nav.time;
    
    % information for event.rx
