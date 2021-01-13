@@ -11,14 +11,20 @@ alpha_grey      = [0.6 0.6 0.6];
 alpha_color     = .035;
 
 % tetradic colors to link modem colors
-modem_colors = {[177 0 204]./256,[7 201 0]./256,[0 114 201]./256,[255 123 0]./256};
-modem_labels = {'North','South','East','West'};
+modem_colors = {[177 0 204]./256,[7 201 0]./256,[0 114 201]./256,[255 123 0]./256,[40 40 40]./256};
+modem_labels = {'North','South','East','West','Camp'};
 markerModemMap = containers.Map(modem_labels,modem_colors);
 
 % legend information
 ixlgd = 0;
 Lgd = [];
 LgdStr = {};
+
+% modem depths
+rx_depth = [20 30 90];
+markerShape(20) = 's';
+markerShape(30) = '^';
+markerShape(90) = 'v';
 
 %% load toby test data recap all
 load '../data/tobytest-recap-clean.mat'
@@ -30,22 +36,21 @@ figure(1); clf;
 
 for node = modem_labels
     node = node{1}; % cell array to character
-    
-    ixlgd = ixlgd + 1;
-    
+        
     rx_index = find(strcmp(RECAP.tag_rx,node));
     rx_x = RECAP.rx_x(rx_index);
     rx_y = RECAP.rx_y(rx_index);
     rx_t = RECAP.data_time(rx_index);
+    rx_z = RECAP.rx_z(rx_index);
         
-    %     tx_index = find(strcmp(RECAP.tag_tx,node));
-    %     tx_x = RECAP.tx_x(tx_index);
-    %     tx_y = RECAP.tx_y(tx_index);
-    %     tx_t = RECAP.data_time(tx_index);
-    %
-    %     xval = [rx_x tx_x];
-    %     yval = [rx_y tx_y];
-    %     tval = [rx_t tx_t];
+%         tx_index = find(strcmp(RECAP.tag_tx,node));
+%         tx_x = RECAP.tx_x(tx_index);
+%         tx_y = RECAP.tx_y(tx_index);
+%         tx_t = RECAP.data_time(tx_index);
+%     
+%         xval = [rx_x tx_x];
+%         yval = [rx_y tx_y];
+%         tval = [rx_t tx_t];
     
     xval = rx_x;
     yval = rx_y;
@@ -57,8 +62,15 @@ for node = modem_labels
     
     % x subplot
     subplot(2,1,1)
-    Lgd(ixlgd) = scatter(tval, xval - xval(1),markerSize,markerModemMap(node),'filled','MarkerFaceAlpha',0.3);
-    LgdStr{ixlgd} = node;
+    hold on
+    for irz = rx_depth
+        index = find(irz == rx_z);
+        if sum(index) > 0
+            ixlgd = ixlgd + 1;
+            Lgd(ixlgd) = scatter(tval(index), xval(index) - xval(1),markerSize,markerModemMap(node),markerShape(irz),'filled','MarkerFaceAlpha',0.3);
+            LgdStr{ixlgd} = [num2str(irz) ' m | ' node];
+        end
+    end
     hold on
     grid on
     datetick('x');
@@ -83,20 +95,20 @@ end
 eof_bool = RECAP.eof_bool;
 eof_time = RECAP.data_time;
 tx_z = RECAP.tx_z;
-
+rx_z = RECAP.rx_z;
 
 [eof_time,idx] = sort(eof_time);
 eof_bool = eof_bool(idx);
 
 subplot(2,1,1);
-plot_patch(eof_bool,eof_time,tx_z);
+plot_patch(eof_bool,eof_time,tx_z,rx_z);
 
 subplot(2,1,2);
-plot_patch(eof_bool,eof_time,tx_z);
+plot_patch(eof_bool,eof_time,tx_z,rx_z);
 
 
 %% helper function : plot_patch
-function [] = plot_patch(eof_bool,eof_time,tx_z)
+function [] = plot_patch(eof_bool,eof_time,tx_z,rx_z)
 
 % get ybounds
 ybounds = ylim();
@@ -120,13 +132,23 @@ for k = 1:numel(kindex)/2
     
     patchTime = [eof_time(kindex(2*k-1)) eof_time(kindex(2*k))];
     
+    % tx label
     src_depth = tx_z( kindex(2*k-1) : kindex(2*k) );
-    zstr = ['zs = '];
+    txstr = ['zs = '];
     for uz = unique(src_depth)
-        zstr = [zstr num2str(uz) ', '];
+        txstr = [txstr num2str(uz) ', '];
     end
-    zstr = zstr(1:end-2);
-    zstr = [zstr ' m'];
+    txstr = txstr(1:end-2);
+    txstr = [txstr ' m'];
+    
+    % rx label
+    rec_depth = rx_z( kindex(2*k-1) : kindex(2*k) );
+    rxstr = ['zr = '];
+    for ur = unique(rec_depth)
+        rxstr = [rxstr num2str(ur) ', '];
+    end
+    rxstr = rxstr(1:end-2);
+    rxstr = [rxstr ' m'];
     
     buffer = 4;
     
@@ -139,25 +161,40 @@ for k = 1:numel(kindex)/2
     p.EdgeColor = 'none';
     p.FaceAlpha = .2;
         
-    text(patchTime(end),max(patchVal),zstr,'HorizontalAlignment','right','fontsize',10,'fontangle','italic','VerticalAlignment','bottom')
-    %text(patchTime(end),ybounds(1)+1,'  BASEVAL','HorizontalAlignment','left','fontsize',12,'fontangle','italic')
+    text(patchTime(1),max(patchVal),txstr,...
+        'HorizontalAlignment','left','fontsize',10,'fontangle','italic','VerticalAlignment','bottom')
+    text(patchTime(end),max(patchVal),rxstr,...
+        'HorizontalAlignment','right','fontsize',10,'fontangle','italic','VerticalAlignment','top')
 end
 
 % loop through blanks -- eeof OFF
 for k = 1:numel(kindex)/2 - 1
     patchTime = [eof_time(kindex(2*k):kindex(2*k+1))];
     
+    % tx label
     src_depth = tx_z( kindex(2*k) : kindex(2*k+1) );
-
-    zstr = ['zs = '];
+    txstr = ['zs = '];
     for uz = unique(src_depth)
-        zstr = [zstr num2str(uz) ', '];
+        txstr = [txstr num2str(uz) ', '];
     end
-    zstr = zstr(1:end-2);
-    zstr = [zstr ' m'];
+    txstr = txstr(1:end-2);
+    txstr = [txstr ' m'];
     
-    text(patchTime(end),max(patchVal),zstr,...
-        'HorizontalAlignment','right','fontsize',10,'fontangle','italic','VerticalAlignment','bottom')
+    % rx label
+    % rx label
+    rec_depth = rx_z( kindex(2*k) : kindex(2*k+1) );
+    rxstr = ['zr = '];
+    for ur = unique(rec_depth)
+        rxstr = [rxstr num2str(ur) ', '];
+    end
+    rxstr = rxstr(1:end-2);
+    rxstr = [rxstr ' m'];
+    
+    text(patchTime(1),max(patchVal),txstr,...
+       'HorizontalAlignment','left','fontsize',10,'fontangle','italic','VerticalAlignment','bottom')
+   text(patchTime(end),max(patchVal),rxstr,...
+        'HorizontalAlignment','right','fontsize',10,'fontangle','italic','VerticalAlignment','top')
+
 end
         
 end
