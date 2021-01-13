@@ -40,23 +40,25 @@ figure(1); clf;
 
 figure(2); clf;
 
+figure(3); clf;
+
 for node = modem_labels
     node = node{1}; % cell array to character
-        
+    
     rx_index = find(strcmp(RECAP.tag_rx,node));
     rx_x = RECAP.rx_x(rx_index);
     rx_y = RECAP.rx_y(rx_index);
     rx_t = RECAP.data_time(rx_index);
     rx_z = RECAP.rx_z(rx_index);
-        
-%         tx_index = find(strcmp(RECAP.tag_tx,node));
-%         tx_x = RECAP.tx_x(tx_index);
-%         tx_y = RECAP.tx_y(tx_index);
-%         tx_t = RECAP.data_time(tx_index);
-%     
-%         xval = [rx_x tx_x];
-%         yval = [rx_y tx_y];
-%         tval = [rx_t tx_t];
+    
+    %         tx_index = find(strcmp(RECAP.tag_tx,node));
+    %         tx_x = RECAP.tx_x(tx_index);
+    %         tx_y = RECAP.tx_y(tx_index);
+    %         tx_t = RECAP.data_time(tx_index);
+    %
+    %         xval = [rx_x tx_x];
+    %         yval = [rx_y tx_y];
+    %         tval = [rx_t tx_t];
     
     xval = rx_x - rx_x(1);
     yval = rx_y - rx_y(1);
@@ -71,7 +73,7 @@ for node = modem_labels
     figure(1);
     hold on
     ixlgd1 = ixlgd1 + 1;
-    Lgd1(ixlgd1) = scatter(tval, rval,markerSize,markerModemMap(node),'s','filled','MarkerFaceAlpha',0.3);
+    Lgd1(ixlgd1) = scatter(tval, rval,markerSize,markerModemMap(node),'o','filled','MarkerFaceAlpha',0.3);
     LgdStr1{ixlgd1} = node;
     grid on
     datetick('x');
@@ -79,7 +81,7 @@ for node = modem_labels
     axis tight
     xlabel('time [hr:mm]');
     legend(Lgd1,LgdStr1,'location','bestoutside');
-
+    
     %% figure : rx/tx depth
     figure(2);
     
@@ -135,7 +137,42 @@ for node = modem_labels
     yticks(plotval);
     yticklabels({'90','30','20'});
     
-        
+    %% figure 3 --- tx rx chart
+    
+    figure(3); hold on
+    
+    % txrx chart maps
+    plotval = [10 20 30 40 50];
+    txrxZMap = containers.Map(modem_labels, plotval);
+    % mapping for offset
+    N = 3;
+    plotspread = linspace(0,N,3) - N/2;
+    txrxOffsetMap = containers.Map([20 30 90],plotspread);
+    
+    % tx values
+    unique_tx_z = unique(tx_z);
+    for utz = unique_tx_z
+        scatter(0, txrxZMap(node),...
+            markerSize,markerModemMap(node),markerShape(utz),'filled');
+    end
+    
+    %rx connections
+    rx_node = RECAP.tag_rx(tx_index);
+    rx_z    = RECAP.rx_z(tx_index);
+    
+    for r = 1:numel(rx_node)
+        scatter(1+offsetMap(rx_node{r})/10,txrxZMap(node)+txrxOffsetMap(rx_z(r)),...
+            markerSize,markerModemMap(rx_node{r}),markerShape(rx_z(r)),'filled');
+    end
+    
+    
+    yticks(plotval);
+    yticklabels([]);
+    ylim([plotval(1)-10 plotval(end)+10]);
+    xticks([0 1]);
+    xticklabels({'tx','rx'})
+    xlim([-0.1 1.5]);
+    
 end
 
 %% plot baseval/eeof patch
@@ -163,6 +200,11 @@ subplot(2,1,2)
 title('RX depth throughout experiment');
 plot_patch(eof_bool,eof_time);
 hold off
+
+% figure 3
+figure(3)
+title('modem connections')
+
 
 
 %% helper function : plot_patch
@@ -202,17 +244,15 @@ for k = 1:numel(kindex)/2
     p.FaceAlpha = .137;
     
     text(patchTime(1),max(patchVal),' eeof',...
-       'HorizontalAlignment','left','fontsize',13,'fontangle','italic','VerticalAlignment','top')
+        'HorizontalAlignment','left','fontsize',13,'fontangle','italic','VerticalAlignment','top')
 end
 
 % loop through blanks -- eeof OFF
 for k = 1:numel(kindex)/2 - 1
     patchTime = [eof_time(kindex(2*k):kindex(2*k+1))];
     
-   text(patchTime(1),max(patchVal),' baseval',...
-       'HorizontalAlignment','left','fontsize',13,'fontangle','italic','VerticalAlignment','top')
-
-
+    text(patchTime(1),max(patchVal),' baseval',...
+        'HorizontalAlignment','left','fontsize',13,'fontangle','italic','VerticalAlignment','top')
 end
-        
+
 end
