@@ -113,7 +113,7 @@ figure(2); clf;
 [ixlgd,Lgd,LgdStr] = lgd_init();
 
 plotDepth = 400;
-   
+
 for cfg = 1:2
     
     subplot(2,4,cfg*4-3)
@@ -141,7 +141,7 @@ for cfg = 1:2
     set(gca,'ydir','reverse')
     
     hold on
-    ixlgd = 1;
+    ixlgd = ixlgd+1;
     Lgd(ixlgd) = scatter(0,zs,markerSize,'r','o','linewidth',2);
     LgdStr{ixlgd} = [num2str(zs) 'm | tx'];
     for node = CONFIG{cfg}.unique_rx
@@ -161,10 +161,80 @@ for cfg = 1:2
         end
     end
     hold off
-
+    
 end
 
 legend(Lgd,LgdStr,'location','SouthEast','fontsize',lg_font_size);
+
+%% figure 3 : timeline
+
+figure(3); clf;
+[ixlgd,Lgd,LgdStr] = lgd_init();
+
+for cfg = 1:2  
+    for node = CONFIG{cfg}.unique_rx
+        node = node{1};
+        for imd = rx_depth
+            index = find(strcmp(CONFIG{cfg}.tag_rx,node) & CONFIG{cfg}.rx_z == imd);
+            
+            if sum(index) > 0
+                % group velocity estimates (simulation)
+                subplot(3,1,3);
+                hold on
+                scatter(CONFIG{cfg}.sim_time(index),CONFIG{cfg}.sim_gvel(index),...
+                    markerSize,markerModemMap(node),markerShape(imd),'filled','MarkerFaceAlpha',0.3)
+                
+                % data owtt
+                subplot(3,1,1);
+                hold on
+                scatter(CONFIG{cfg}.data_time(index),CONFIG{cfg}.data_owtt(index),...
+                    markerSize,markerModemMap(node),markerShape(imd),'filled','MarkerFaceAlpha',0.3);
+                
+                % sim owtt
+                subplot(3,1,2);
+                hold on
+                scatter(CONFIG{cfg}.sim_time(index),CONFIG{cfg}.sim_owtt(index),...
+                    markerSize,markerModemMap(node),markerShape(imd),'filled','MarkerFaceAlpha',0.3);
+            end
+        end
+    end
+    
+    
+end
+
+
+eof_bool = [CONFIG{1}.eof_bool CONFIG{2}.eof_bool];
+eof_time = [CONFIG{1}.data_time CONFIG{2}.data_time];
+[eof_time,order] = sort(eof_time);
+eof_bool = eof_bool(order);
+
+subplot(3,1,3);
+axis tight
+h_set_xy_bounds(eof_time,eof_time,CONFIG{1}.sim_gvel,CONFIG{2}.sim_gvel);
+datetick('x');
+title('group velocity | in situ prediction');
+ylabel('c [m/s]');
+xlabel('time [hr:mm]')
+%plot_patch(eof_bool,eof_time);
+grid on
+
+subplot(3,1,1);
+axis tight
+h_set_xy_bounds(eof_time,eof_time,CONFIG{1}.data_owtt,CONFIG{2}.data_owtt);
+datetick('x');
+title('one way travel time | data');
+ylabel('time [s]')
+%plot_patch(eof_bool,eof_time);
+grid on
+
+subplot(3,1,2);
+axis tight
+h_set_xy_bounds(eof_time,eof_time,CONFIG{1}.sim_owtt,CONFIG{2}.sim_owtt);
+datetick('x');
+title('one way travel time | in situ prediction');
+ylabel('time [s]')
+%plot_patch(eof_bool,eof_time);
+grid on
 
 
 
@@ -173,6 +243,58 @@ function [ixlgd,Lgd,LgdStr] = lgd_init()
 ixlgd = 0;
 Lgd = [];
 LgdStr = {};
+end
+
+%% helper function : plot_patch
+function [] = plot_patch(eof_bool,eof_time)
+
+% get ybounds
+ybounds = ylim();
+
+% figure out how many patches we neek
+kindex = find(diff(eof_bool)~=0);
+
+bool_open = eof_bool(1);
+bool_close = eof_bool(end);
+
+if bool_open
+    kindex = [1 kindex];
+end
+
+if bool_close
+    kindex = [kindex numel(eof_time)];
+end
+
+% loop through patches -- eeof ON
+for k = 1:numel(kindex)/2
+    
+    patchTime = [eof_time(kindex(2*k-1)) eof_time(kindex(2*k))];
+    
+    buffer = 4;
+    
+    patchTime = [patchTime(1) patchTime patchTime(end)];
+    patchVal = ybounds(2).*ones(size(patchTime));
+    patchVal(1) = ybounds(1)-1;
+    patchVal(end) = ybounds(1)-1;
+    p = patch(patchTime,patchVal,'w','handlevisibility','off');
+    p.FaceColor = [0.7 0.7 0.7];
+    p.EdgeColor = 'none';
+    p.FaceAlpha = .137;
+    
+    text(patchTime(1),max(patchVal),' eeof',...
+        'HorizontalAlignment','left','fontsize',13,'fontangle','italic','VerticalAlignment','top')
+end
+
+% loop through blanks -- eeof OFF
+for k = 1:numel(kindex)/2 - 1
+    patchTime = [eof_time(kindex(2*k):kindex(2*k+1))];
+    
+    text(patchTime(1),max(patchVal),' baseval',...
+        'HorizontalAlignment','left','fontsize',13,'fontangle','italic','VerticalAlignment','top')
+    
+    
+end
+
 end
 
 
