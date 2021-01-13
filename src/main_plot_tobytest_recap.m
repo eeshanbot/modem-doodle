@@ -20,67 +20,67 @@ olat = 71.17733;
 olon = -142.40413;
 
 %%  pick a toby test event!
-for iNL = 6 % num_listing
+for iNL = 1 % num_listing
     % load event
     load([listing(iNL).folder '/' listing(iNL).name]);
 end
 
 %% load data usefully with h_get_nested_val_filter
 
-% % one way travel time data
-% data_owtt = h_get_nested_val_filter(experiment,'tag','owtt');
-% 
-% % gps data to range
-% tx_x    = h_get_nested_val_filter(experiment,'tx','x');
-% tx_y    = h_get_nested_val_filter(experiment,'tx','y');
-% tx_z    = h_get_nested_val_filter(experiment,'tx','depth');
-% 
-% rx_x    = h_get_nested_val_filter(experiment,'rx','x');
-% rx_y    = h_get_nested_val_filter(experiment,'rx','y');
-% rx_z    = h_get_nested_val_filter(experiment,'rx','depth');
-% 
-% dist3 = @(px,py,pz,qx,qy,qz) ...
-%     sqrt((px - qx).^2 + ...
-%     (py - qy).^2 + ...
-%     (pz - qz).^2 );
-% 
-% data_range = dist3(tx_x,tx_y,tx_z,rx_x,rx_y,rx_z);
-% data_2D_range = dist3(tx_x,tx_y,zeros(size(tx_x)),rx_x,rx_y,zeros(size(rx_x)));
-% 
-% sim_owtt = h_get_nested_val_filter(experiment,'gvel','delay');
-% data_2D_range = data_2D_range;
-% 
-% % lat/lon data
-% tx_lat          = h_get_nested_val_filter(experiment,'tx','lat');
-% tx_lon          = h_get_nested_val_filter(experiment,'tx','lon');
-% rx_lat          = h_get_nested_val_filter(experiment,'rx','lat');
-% rx_lon          = h_get_nested_val_filter(experiment,'rx','lon');
-% 
-% data_time = h_get_nested_val_filter(experiment,'tag','time');
-% fprintf('%s to %s \n',datestr(data_time(1)),datestr(data_time(end)));
-% 
-% % get in-situ simulation data
-% sim_range       = h_get_nested_val_filter(experiment,'gvel','range');
-% sim_owtt        = h_get_nested_val_filter(experiment,'gvel','delay');
-% sim_gvel        = h_get_nested_val_filter(experiment,'gvel','gvel');
-% sim_gvel_std    = h_get_nested_val_filter(experiment,'gvel','gvelstd');
-% sim_time        = h_get_nested_val_filter(experiment,'gvel','time');
-% 
-% med_gvel = median(sim_gvel,'omitnan');
-% 
-% % get tx/rx tags
-% tag_tx          = h_get_nested_val_filter(experiment,'tag','src');
-% unique_tx       = sort(unique(tag_tx));
-% tag_rx          = h_get_nested_val_filter(experiment,'tag','rec');
-% unique_rx       = sort(unique(tag_rx));
-% num_events      = numel(tag_tx);
-% 
-% % sound speed estimate
-% toby_test_eof_bool = h_get_nested_val_filter(experiment,'tag','eeof');
-% eof_bool = toby_test_eof_bool(1);
-% OBJ_EOF = eb_read_eeof('eeof_itp_Mar2013.nc',true);
-% weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].'; % manually written down weights from Toby's notes
-% ssp_estimate = OBJ_EOF.baseval + (OBJ_EOF.eofs * weights).*eof_bool;
+% one way travel time data
+data_owtt = h_get_nested_val_filter(experiment,'tag','owtt');
+
+% gps data to range
+tx_x    = h_get_nested_val_filter(experiment,'tx','x');
+tx_y    = h_get_nested_val_filter(experiment,'tx','y');
+tx_z    = h_get_nested_val_filter(experiment,'tx','depth');
+
+rx_x    = h_get_nested_val_filter(experiment,'rx','x');
+rx_y    = h_get_nested_val_filter(experiment,'rx','y');
+rx_z    = h_get_nested_val_filter(experiment,'rx','depth');
+
+dist3 = @(px,py,pz,qx,qy,qz) ...
+    sqrt((px - qx).^2 + ...
+    (py - qy).^2 + ...
+    (pz - qz).^2 );
+
+data_range = dist3(tx_x,tx_y,tx_z,rx_x,rx_y,rx_z);
+data_2D_range = dist3(tx_x,tx_y,zeros(size(tx_x)),rx_x,rx_y,zeros(size(rx_x)));
+
+sim_owtt = h_get_nested_val_filter(experiment,'gvel','delay');
+data_2D_range = data_2D_range;
+
+% lat/lon data
+tx_lat          = h_get_nested_val_filter(experiment,'tx','lat');
+tx_lon          = h_get_nested_val_filter(experiment,'tx','lon');
+rx_lat          = h_get_nested_val_filter(experiment,'rx','lat');
+rx_lon          = h_get_nested_val_filter(experiment,'rx','lon');
+
+data_time = h_get_nested_val_filter(experiment,'tag','time');
+fprintf('%s to %s \n',datestr(data_time(1)),datestr(data_time(end)));
+
+% get in-situ simulation data
+sim_range       = h_get_nested_val_filter(experiment,'gvel','range');
+sim_owtt        = h_get_nested_val_filter(experiment,'gvel','delay');
+sim_gvel        = h_get_nested_val_filter(experiment,'gvel','gvel');
+sim_gvel_std    = h_get_nested_val_filter(experiment,'gvel','gvelstd');
+sim_time        = h_get_nested_val_filter(experiment,'gvel','time');
+
+med_gvel = median(sim_gvel,'omitnan');
+
+% get tx/rx tags
+tag_tx          = h_get_nested_val_filter(experiment,'tag','src');
+unique_tx       = sort(unique(tag_tx));
+tag_rx          = h_get_nested_val_filter(experiment,'tag','rec');
+unique_rx       = sort(unique(tag_rx));
+num_events      = numel(tag_tx);
+
+% sound speed estimate
+toby_test_eof_bool = h_get_nested_val_filter(experiment,'tag','eeof');
+eof_bool = toby_test_eof_bool(1);
+OBJ_EOF = eb_read_eeof('eeof_itp_Mar2013.nc',true);
+weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].'; % manually written down weights from Toby's notes
+ssp_estimate = OBJ_EOF.baseval + (OBJ_EOF.eofs * weights).*eof_bool;
 
 % bathymetric data
 bathyfile = '~/missions-lamss/cruise/icex20/data/environment/noaa_bathy_file.nc';
@@ -209,8 +209,8 @@ legend(L,legendStr,'location','northwest','fontsize',lg_font_size);
 %% figure: range vs owtt -- by gvel anomaly
 figure(3); clf;
 
-data_rangeGvelAnomaly = med_gvel.*data_owtt - data_range;
-sim_rangeGvelAnomaly  = med_gvel.*sim_owtt - sim_range;
+data_rangeGvelAnomaly = data_range - med_gvel.*data_owtt;
+sim_rangeGvelAnomaly  = sim_range - med_gvel.*sim_owtt;
 
 % data
 subplot(1,2,1);
