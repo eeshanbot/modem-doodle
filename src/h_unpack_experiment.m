@@ -39,7 +39,9 @@ OBJ.sim_gvel        = h_get_nested_val_filter(experiment,'gvel','gvel');
 OBJ.sim_gvel_std    = h_get_nested_val_filter(experiment,'gvel','gvelstd');
 OBJ.sim_time        = h_get_nested_val_filter(experiment,'gvel','time');
 
-OBJ.med_gvel = median(OBJ.sim_gvel,'omitnan');
+OBJ.gvel_med        = median(OBJ.sim_gvel,'omitnan');
+OBJ.gvel_mean       = mean(OBJ.sim_gvel,'omitnan');
+OBJ.gvel_num        = sum(~isnan(OBJ.sim_gvel));
 
 % get tx/rx tags
 OBJ.tag_tx          = h_get_nested_val_filter(experiment,'tag','src');

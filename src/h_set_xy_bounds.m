@@ -14,8 +14,8 @@ x_std = std([x1(:); x2(:)]);
 y_std = std([y1(:); y2(:)]);
 
 % min/max for x
-min_xval = min([min(x1(:)) min(x2(:))])-x_std/5;
-max_xval = max([max(x1(:)) max(x2(:))])+x_std/5;
+min_xval = min([min(x1(:)) min(x2(:))])-x_std/10;
+max_xval = max([max(x1(:)) max(x2(:))])+x_std/10;
 
 % min/max for y
 min_yval = min([min(y1(:)) min(y2(:))])-y_std/5;
