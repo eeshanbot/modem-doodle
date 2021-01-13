@@ -10,7 +10,7 @@ alpha_grey      = [0.6 0.6 0.6];
 alpha_color     = .035;
 
 % depth_switch = [20 30 90];
-zs = 90;
+zs = 30;
 
 % tetradic colors to link modem colors
 modem_colors = {[177 0 204]./256,[7 201 0]./256,[0 114 201]./256,[255 123 0]./256,[80 80 80]./256};
@@ -41,6 +41,8 @@ A = load([listing(2).folder '/' listing(2).name]);
 EEOF = h_unpack_experiment(A.experiment);
 
 % create cell array of structure
+BASE.title = 'baseval';
+EEOF.title = 'eeof';
 CONFIG = {BASE EEOF};
 clear BASE EEOF;
 
@@ -107,8 +109,62 @@ title(['Bird''s Eye View of Camp Seadragon, zs = ' num2str(zs) 'm'],'fontsize',2
 
 %% figure 2 : ray trace differences
 
-% figure(2); clf;
-% [ixlgd,Lgd,LgdStr] = lgd_init();
+figure(2); clf;
+[ixlgd,Lgd,LgdStr] = lgd_init();
+
+plotDepth = 400;
+   
+for cfg = 1:2
+    
+    subplot(2,4,cfg*4-3)
+    plot(CONFIG{cfg}.ssp_estimate,CONFIG{cfg}.ssp_depth,'.-','markersize',20)
+    set(gca,'ydir','reverse')
+    grid on
+    ylim([0 plotDepth]);
+    xlabel('c [m/s]');
+    ylabel('z [m/s]');
+    title([CONFIG{cfg}.title ' ssp']);
+    
+    subplot(2,4,[cfg*4-2 cfg*4]);
+    hold on
+    num_rays = numel(CONFIG{cfg}.raytraceR);
+    for nrz = 1:num_rays
+        plot(CONFIG{cfg}.raytraceR{nrz},CONFIG{cfg}.raytraceZ{nrz},'color',[alpha_grey 0.2],'handlevisibility','off');
+    end
+    hold off
+    title(['ray trace, z_0=' num2str(zs) ' m'])
+    yticklabels([])
+    axis tight
+    ylim([0 plotDepth])
+    xlim([0 1800])
+    xlabel('range [m]');
+    set(gca,'ydir','reverse')
+    
+    hold on
+    ixlgd = 1;
+    Lgd(ixlgd) = scatter(0,zs,markerSize,'r','o','linewidth',2);
+    LgdStr{ixlgd} = [num2str(zs) 'm | tx'];
+    for node = CONFIG{cfg}.unique_rx
+        node = node{1}; % change from cell to char
+        for imd = rx_depth
+            index = find(strcmp(CONFIG{cfg}.tag_rx,node) & CONFIG{cfg}.rx_z == imd);
+            if sum(index) > 0
+                ixlgd = ixlgd + 1;
+                Lgd(ixlgd) = scatter(CONFIG{cfg}.data_range(index),CONFIG{cfg}.rx_z(index),...
+                    markerSize,markerModemMap(node),markerShape(imd),'filled');
+                LgdStr{ixlgd} = [num2str(imd) 'm | ' node];
+                
+                total = sum(CONFIG{cfg}.rx_z(index) == imd);
+                text(mean(CONFIG{cfg}.data_range(index)),imd+14,num2str(total),...
+                    'HorizontalAlignment','center','VerticalAlignment','top','fontsize',12)
+            end
+        end
+    end
+    hold off
+
+end
+
+legend(Lgd,LgdStr,'location','SouthEast','fontsize',lg_font_size);
 
 
 
