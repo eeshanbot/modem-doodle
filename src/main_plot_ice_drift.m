@@ -6,7 +6,7 @@
 clear; clc;
 
 lg_font_size = 14;
-markerSize = 50;
+markerSize = 75;
 alpha_grey      = [0.6 0.6 0.6];
 alpha_color     = .035;
 
@@ -16,9 +16,13 @@ modem_labels = {'North','South','East','West','Camp'};
 markerModemMap = containers.Map(modem_labels,modem_colors);
 
 % legend information
-ixlgd = 0;
-Lgd = [];
-LgdStr = {};
+ixlgd1 = 0;
+Lgd1 = [];
+LgdStr1 = {};
+
+ixlgd2 = 0;
+Lgd2 = [];
+LgdStr2 = {};
 
 % modem depths
 rx_depth = [20 30 90];
@@ -33,6 +37,8 @@ RECAP = h_unpack_experiment(event);
 %% loop
 
 figure(1); clf;
+
+figure(2); clf;
 
 for node = modem_labels
     node = node{1}; % cell array to character
@@ -52,63 +58,115 @@ for node = modem_labels
 %         yval = [rx_y tx_y];
 %         tval = [rx_t tx_t];
     
-    xval = rx_x;
-    yval = rx_y;
+    xval = rx_x - rx_x(1);
+    yval = rx_y - rx_y(1);
+    rval = sqrt(xval.^2 + yval.^2);
     tval = rx_t;
     
     [tval,time_index] = sort(tval);
     xval = xval(time_index);
     yval = yval(time_index);
     
-    % x subplot
-    subplot(2,1,1)
+    %% figure: ice drift
+    figure(1);
     hold on
-    for irz = rx_depth
-        index = find(irz == rx_z);
-        if sum(index) > 0
-            ixlgd = ixlgd + 1;
-            Lgd(ixlgd) = scatter(tval(index), xval(index) - xval(1),markerSize,markerModemMap(node),markerShape(irz),'filled','MarkerFaceAlpha',0.3);
-            LgdStr{ixlgd} = [num2str(irz) ' m | ' node];
-        end
-    end
-    hold on
+    ixlgd1 = ixlgd1 + 1;
+    Lgd1(ixlgd1) = scatter(tval, rval,markerSize,markerModemMap(node),'s','filled','MarkerFaceAlpha',0.3);
+    LgdStr1{ixlgd1} = node;
     grid on
     datetick('x');
-    ylabel('x-dir drift [m]');
+    ylabel('drift [m]');
     axis tight
-    
-    % y subplot
-    subplot(2,1,2);
-    scatter(tval, yval - yval(1),markerSize,markerModemMap(node),'filled','MarkerFaceAlpha',0.3);
-    hold on
-    grid on
-    datetick('x');
     xlabel('time [hr:mm]');
-    ylabel('y-dir drift [m]')
-    legend(Lgd,LgdStr);
+    legend(Lgd1,LgdStr1,'location','bestoutside');
+
+    %% figure : rx/tx depth
+    figure(2);
+    
+    % mapping for depth
+    plotval = -[30 20 10];
+    plotZMap = containers.Map([90 30 20],plotval);
+    
+    % mapping for offset
+    N = 4;
+    plotspread = linspace(0,N,5) - N/2;
+    offsetMap = containers.Map(modem_labels,plotspread);
+    
+    % rx depths
+    subplot(2,1,2);
+    hold on
+    
+    clear yrx trx;
+    for k = 1:numel(rx_z)
+        yrx(k) = plotZMap(rx_z(k)) + offsetMap(node);
+    end
+    
+    scatter(tval,yrx,markerSize,markerModemMap(node),'s','filled','MarkerFaceAlpha',0.5);
+    grid on
+    datetick('x');
+    ylabel('depth [m]');
     axis tight
+    ylim([-35 -5])
+    yticks(plotval);
+    yticklabels({'90','30','20'});
+    xlabel('time [hr:mm]');
     
-    sgtitle({'Ice Floe Drift Recorded from Modem Buoy GPS',' '},'fontsize',22);
+    % tx depths
+    subplot(2,1,1);
+    hold on
     
+    tx_index = find(strcmp(RECAP.tag_tx,node));
+    tx_z = RECAP.tx_z(tx_index);
+    tval = RECAP.data_time(tx_index);
+    
+    for k = 1:numel(tx_z)
+        trx(k) = plotZMap(tx_z(k)) + offsetMap(node);
+    end
+    
+    ixlgd2 = ixlgd2 + 1;
+    Lgd2(ixlgd2) = scatter(tval,trx,markerSize,markerModemMap(node),'s','filled','MarkerFaceAlpha',0.5);
+    LgdStr2{ixlgd2} = node;
+    legend(Lgd2,LgdStr2,'location','BestOutside');
+    grid on
+    datetick('x');
+    ylabel('depth [m]');
+    axis tight
+    ylim([-35 -5])
+    yticks(plotval);
+    yticklabels({'90','30','20'});
+    
+        
 end
+
+%% plot baseval/eeof patch
 
 eof_bool = RECAP.eof_bool;
 eof_time = RECAP.data_time;
 tx_z = RECAP.tx_z;
 rx_z = RECAP.rx_z;
 
-[eof_time,idx] = sort(eof_time);
-eof_bool = eof_bool(idx);
+% figure 1
+figure(1);
+plot_patch(eof_bool,eof_time)
+title('Ice Floe Drift from Modem Buoy GPS');
+hold off
+
+% figure 2
+figure(2);
 
 subplot(2,1,1);
-plot_patch(eof_bool,eof_time,tx_z,rx_z);
+title('TX depth throughout experiment');
+plot_patch(eof_bool,eof_time);
+hold off
 
-subplot(2,1,2);
-plot_patch(eof_bool,eof_time,tx_z,rx_z);
+subplot(2,1,2)
+title('RX depth throughout experiment');
+plot_patch(eof_bool,eof_time);
+hold off
 
 
 %% helper function : plot_patch
-function [] = plot_patch(eof_bool,eof_time,tx_z,rx_z)
+function [] = plot_patch(eof_bool,eof_time)
 
 % get ybounds
 ybounds = ylim();
@@ -132,68 +190,28 @@ for k = 1:numel(kindex)/2
     
     patchTime = [eof_time(kindex(2*k-1)) eof_time(kindex(2*k))];
     
-    % tx label
-    src_depth = tx_z( kindex(2*k-1) : kindex(2*k) );
-    txstr = ['zs = '];
-    for uz = unique(src_depth)
-        txstr = [txstr num2str(uz) ', '];
-    end
-    txstr = txstr(1:end-2);
-    txstr = [txstr ' m'];
-    
-    % rx label
-    rec_depth = rx_z( kindex(2*k-1) : kindex(2*k) );
-    rxstr = ['zr = '];
-    for ur = unique(rec_depth)
-        rxstr = [rxstr num2str(ur) ', '];
-    end
-    rxstr = rxstr(1:end-2);
-    rxstr = [rxstr ' m'];
-    
     buffer = 4;
     
     patchTime = [patchTime(1) patchTime patchTime(end)];
-    patchVal = ybounds(2).*ones(size(patchTime))+1;
+    patchVal = ybounds(2).*ones(size(patchTime));
     patchVal(1) = ybounds(1)-1;
     patchVal(end) = ybounds(1)-1;
     p = patch(patchTime,patchVal,'w','handlevisibility','off');
     p.FaceColor = [0.7 0.7 0.7];
     p.EdgeColor = 'none';
-    p.FaceAlpha = .2;
-        
-    text(patchTime(1),max(patchVal),txstr,...
-        'HorizontalAlignment','left','fontsize',10,'fontangle','italic','VerticalAlignment','bottom')
-    text(patchTime(end),max(patchVal),rxstr,...
-        'HorizontalAlignment','right','fontsize',10,'fontangle','italic','VerticalAlignment','top')
+    p.FaceAlpha = .137;
+    
+    text(patchTime(1),max(patchVal),' eeof',...
+       'HorizontalAlignment','left','fontsize',13,'fontangle','italic','VerticalAlignment','top')
 end
 
 % loop through blanks -- eeof OFF
 for k = 1:numel(kindex)/2 - 1
     patchTime = [eof_time(kindex(2*k):kindex(2*k+1))];
     
-    % tx label
-    src_depth = tx_z( kindex(2*k) : kindex(2*k+1) );
-    txstr = ['zs = '];
-    for uz = unique(src_depth)
-        txstr = [txstr num2str(uz) ', '];
-    end
-    txstr = txstr(1:end-2);
-    txstr = [txstr ' m'];
-    
-    % rx label
-    % rx label
-    rec_depth = rx_z( kindex(2*k) : kindex(2*k+1) );
-    rxstr = ['zr = '];
-    for ur = unique(rec_depth)
-        rxstr = [rxstr num2str(ur) ', '];
-    end
-    rxstr = rxstr(1:end-2);
-    rxstr = [rxstr ' m'];
-    
-    text(patchTime(1),max(patchVal),txstr,...
-       'HorizontalAlignment','left','fontsize',10,'fontangle','italic','VerticalAlignment','bottom')
-   text(patchTime(end),max(patchVal),rxstr,...
-        'HorizontalAlignment','right','fontsize',10,'fontangle','italic','VerticalAlignment','top')
+   text(patchTime(1),max(patchVal),' baseval',...
+       'HorizontalAlignment','left','fontsize',13,'fontangle','italic','VerticalAlignment','top')
+
 
 end
         
