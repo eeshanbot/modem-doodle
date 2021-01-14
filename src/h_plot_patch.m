@@ -2,8 +2,11 @@ function [] = h_plot_patch(eof_bool, eof_time)
 %h_plot_patch plots light gray patch on plots according to boolean status
 %and time
 
-% get ybounds
+axis tight
+
+% get bounds from tight
 ybounds = ylim();
+xbounds = xlim();
 
 % figure out how many patches we neek
 kindex = find(diff(eof_bool)~=0);
@@ -22,14 +25,18 @@ end
 % loop through patches -- eeof ON
 for k = 1:numel(kindex)/2
     
+    xbuffer = .025*range(xbounds);
+    xlim([xbounds(1)-xbuffer xbounds(2)+xbuffer]);
+    
     patchTime = [eof_time(kindex(2*k-1)) eof_time(kindex(2*k))];
-    
-    buffer = 4;
-    
     patchTime = [patchTime(1) patchTime patchTime(end)];
-    patchVal = ybounds(2).*ones(size(patchTime));
-    patchVal(1) = ybounds(1)-1;
-    patchVal(end) = ybounds(1)-1;
+    
+    ybuffer = .025*range(ybounds);
+
+    patchVal = ybounds(2).*ones(size(patchTime)) + ybuffer;    
+    patchVal(1) = ybounds(1)-ybuffer;
+    patchVal(end) = patchVal(1);
+    
     p = patch(patchTime,patchVal,'w','handlevisibility','off');
     p.FaceColor = [0.7 0.7 0.7];
     p.EdgeColor = 'none';
