@@ -1,8 +1,6 @@
-function [] = h_plot_patch(eof_bool, eof_time)
+function [] = h_plot_patch(eof_bool, eof_time,buff_val)
 %h_plot_patch plots light gray patch on plots according to boolean status
 %and time
-
-axis tight
 
 % get bounds from tight
 ybounds = ylim();
@@ -31,7 +29,7 @@ for k = 1:numel(kindex)/2
     patchTime = [eof_time(kindex(2*k-1)) eof_time(kindex(2*k))];
     patchTime = [patchTime(1) patchTime patchTime(end)];
     
-    ybuffer = .025*range(ybounds);
+    ybuffer = buff_val*range(ybounds);
 
     patchVal = ybounds(2).*ones(size(patchTime)) + ybuffer;    
     patchVal(1) = ybounds(1)-ybuffer;
@@ -42,7 +40,7 @@ for k = 1:numel(kindex)/2
     p.EdgeColor = 'none';
     p.FaceAlpha = .137;
     
-    text(patchTime(1),max(patchVal),' eeof',...
+    text(patchTime(1),ybounds(2)+ybuffer,' eeof',...
         'HorizontalAlignment','left','fontsize',13,'fontangle','italic','VerticalAlignment','top')
 end
 
@@ -50,7 +48,7 @@ end
 for k = 1:numel(kindex)/2 - 1
     patchTime = [eof_time(kindex(2*k):kindex(2*k+1))];
     
-    text(patchTime(1),max(patchVal),' baseval',...
+    text(patchTime(1),ybounds(2)+ybuffer,' baseval',...
         'HorizontalAlignment','left','fontsize',13,'fontangle','italic','VerticalAlignment','top')
 end
 
