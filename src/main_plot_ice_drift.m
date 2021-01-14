@@ -49,15 +49,15 @@ for node = modem_labels
     %% figure: ice drift
     figure(1);
     hold on
-    ixlgd1 = ixlgd1 + 1;
-    Lgd1(ixlgd1) = scatter(NaN,NaN,markerSize,markerModemMap(node),'o','filled');
-    LgdStr1{ixlgd1} = node;
+    ixlgd = ixlgd + 1;
+    Lgd(ixlgd) = scatter(NaN,NaN,markerSize,markerModemMap(node),'o','filled');
+    LgdStr{ixlgd} = node;
     scatter(tval, rval,markerSize,markerModemMap(node),'o','filled','MarkerFaceAlpha',.6);
     grid on
     datetick('x');
     ylabel('drift [m]');
     xlabel('time [hr:mm]');
-    legend(Lgd1,LgdStr1,'location','bestoutside');
+    legend(Lgd,LgdStr,'location','bestoutside');
     
 end
 
