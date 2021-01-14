@@ -5,20 +5,12 @@
 
 clear; clc;
 
-lg_font_size = 14;
+% easily distinguishable colors to link modems
+load p_modemMarkerDetails
 markerSize = 50;
-alpha_grey      = [0.6 0.6 0.6];
-alpha_color     = .035;
-
-% tetradic colors to link modem colors
-modem_colors = {[230 25 75]./256,[245 130 48]./256,[0 130 200]./256,[60 180 75]./256,[145 30 180]./256};
-modem_labels = {'North','South','East','West','Camp'};
-markerModemMap = containers.Map(modem_labels,modem_colors);
 
 % legend information
-ixlgd1 = 0;
-Lgd1 = [];
-LgdStr1 = {};
+load p_legendDetails
 
 %% load toby test data recap all
 load '../data/tobytest-recap-clean.mat'
@@ -70,17 +62,8 @@ for node = modem_labels
 end
 
 %% plot baseval/eeof patch
-
-axis tight
-
 eof_bool = RECAP.eof_bool;
 eof_time = RECAP.data_time;
 h_plot_patch(eof_bool,eof_time)
 title('Ice Floe Drift from Modem Buoy GPS');
 hold off
-
-
-
-
-
-
