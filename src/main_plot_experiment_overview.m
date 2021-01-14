@@ -88,7 +88,7 @@ for k = 1:2
     datetick('x');
     axis tight
     ylim([-35 -7])
-    h_plot_patch(eof_bool,eof_time,.015);
+    h_plot_patch(eof_bool,eof_time,[.025 .015]);
     ylabel('depth [m]');
     yticks(plotval);
     yticklabels({'90','30','20'});

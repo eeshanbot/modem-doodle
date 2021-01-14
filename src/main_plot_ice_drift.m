@@ -65,6 +65,6 @@ end
 eof_bool = RECAP.eof_bool;
 eof_time = RECAP.data_time;
 axis tight
-h_plot_patch(eof_bool,eof_time,.025)
+h_plot_patch(eof_bool,eof_time,[.025 .025])
 title('Ice Floe Drift from Modem Buoy GPS');
 hold off

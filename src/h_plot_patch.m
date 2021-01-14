@@ -23,13 +23,13 @@ end
 % loop through patches -- eeof ON
 for k = 1:numel(kindex)/2
     
-    xbuffer = .025*range(xbounds);
+    xbuffer = buff_val(1)*range(xbounds);
     xlim([xbounds(1)-xbuffer xbounds(2)+xbuffer]);
     
     patchTime = [eof_time(kindex(2*k-1)) eof_time(kindex(2*k))];
     patchTime = [patchTime(1) patchTime patchTime(end)];
     
-    ybuffer = buff_val*range(ybounds);
+    ybuffer = buff_val(2)*range(ybounds);
 
     patchVal = ybounds(2).*ones(size(patchTime)) + ybuffer;    
     patchVal(1) = ybounds(1)-ybuffer;
