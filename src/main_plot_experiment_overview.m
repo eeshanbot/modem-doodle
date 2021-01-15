@@ -2,15 +2,14 @@
 % plots ice drift from ../data/tobytest-recap-clean.mat
 
 %% prep workspace
-
-clear; clc;
+clear; clc; close all;
 
 lg_font_size = 14;
 alpha_color  = .035;
 
 % easily distinguishable colors to link modems
 load p_modemMarkerDetails
-markerSize = 150;
+markerSize = 145;
 
 % legend information
 load p_legendDetails
@@ -24,29 +23,35 @@ eof_time = RECAP.data_time;
 
 %% figure 1 : rx/tx timeline chart
 
-figure(1); clf;
+figure('Renderer', 'painters', 'Position', [10 10 1700 1100]); clf;
 
 % mapping for depth
-plotval = -[30 20 10];
+plotval = -[27 18 9];
 plotZMap = containers.Map([90 30 20],plotval);
 
 for rmd = modem_rx_depth
     
+    % rx nodes
     index = find(RECAP.rx_z == rmd);
-    nodes = RECAP.tag_rx(index);
-    
-    uniqueNodes = unique(nodes);
-    numUniqueNodes = numel(uniqueNodes);
-    
-    plotSpread = linspace(-2,2,numUniqueNodes);
+    rxnodes = RECAP.tag_rx(index);
+    uniqueRxNodes = intersect(modem_labels,unique(rxnodes),'stable');
+    plotSpread = linspace(0,numel(uniqueRxNodes),numel(uniqueRxNodes));
     plotSpread = plotSpread - mean(plotSpread);
-    offsetMap = containers.Map(uniqueNodes,plotSpread);
+    RX_offsetMap = containers.Map(uniqueRxNodes,plotSpread);
+    
+    % tx nodes
+    index = find(RECAP.tx_z == rmd);
+    txnodes = RECAP.tag_tx(index);
+    uniqueTxNodes = intersect(modem_labels,unique(txnodes),'stable');
+    plotSpread = linspace(0,numel(uniqueTxNodes),numel(uniqueTxNodes));
+    plotSpread = plotSpread - mean(plotSpread);
+    TX_offsetMap = containers.Map(uniqueTxNodes,plotSpread);
     
     for node = modem_labels
         node = node{1}; % cell array to character
         
-        if any(strcmp(uniqueNodes,node))
-            % rx depths
+        % RX DEPTHS
+        if any(strcmp(uniqueRxNodes,node))
             rx_index = find(strcmp(RECAP.tag_rx,node));
             rx_t = RECAP.data_time(rx_index);
             rx_z = RECAP.rx_z(rx_index);
@@ -56,13 +61,20 @@ for rmd = modem_rx_depth
             hold on
             
             clear yrx;
-            for k = 1:numel(rx_z)
-                yrx(k) = plotZMap(rx_z(k)) + offsetMap(node);
+            for tNode = 1:numel(rx_z)
+                yrx(tNode) = plotZMap(rx_z(tNode)) - RX_offsetMap(node);
             end
             
-            scatter(rx_t,yrx,markerSize,markerModemMap(node),'s','filled','MarkerFaceAlpha',0.5);
+            unique_rx_z = unique(rx_z);
             
-            % tx depths
+            for rDepth = unique_rx_z
+                index = find(rx_z == rDepth);
+                scatter(rx_t(index),yrx(index),markerSize,markerModemMap(node),markerShape(rDepth),'filled','MarkerFaceAlpha',0.2);
+            end
+        end
+        
+        % TX DEPTHS
+        if any(strcmp(uniqueTxNodes,node))
             tx_index = find(strcmp(RECAP.tag_tx,node));
             tx_z = RECAP.tx_z(tx_index);
             tx_t = RECAP.data_time(tx_index);
@@ -72,22 +84,29 @@ for rmd = modem_rx_depth
             hold on
             
             clear trx;
-            for k = 1:numel(tx_z)
-                trx(k) = plotZMap(tx_z(k)) + offsetMap(node);
+            for tNode = 1:numel(tx_z)
+                trx(tNode) = plotZMap(tx_z(tNode)) - TX_offsetMap(node);
             end
             
-            scatter(tx_t,trx,markerSize,markerModemMap(node),'s','filled','MarkerFaceAlpha',0.5);
+            unique_tx_z = unique(tx_z);
+            
+            for utz = unique_tx_z
+                index = find(tx_z == utz);
+                scatter(tx_t(index),trx(index),markerSize,markerModemMap(node),markerShape(utz),'filled','MarkerFaceAlpha',0.2);
+            end
         end
+        
+        
     end
 end
 
 % common subplot fix
-for k = 1:2
-    subplot(2,1,k);
+for tNode = 1:2
+    subplot(2,1,tNode);
     grid on
     datetick('x');
     axis tight
-    ylim([-35 -7])
+    ylim([-32 -5])
     h_plot_patch(eof_bool,eof_time,[.025 .015]);
     ylabel('depth [m]');
     yticks(plotval);
@@ -101,78 +120,132 @@ subplot(2,1,1);
 hold on
 for node = modem_labels
     ixlgd = ixlgd + 1;
-    Lgd(ixlgd) = scatter(NaN,NaN,markerSize,markerModemMap(node{1}),'s','filled');
+    Lgd(ixlgd) = plot(NaN,NaN,'color',markerModemMap(node{1}),'LineWidth',4);
     LgdStr{ixlgd} = node{1};
 end
-legend(Lgd,LgdStr,'location','BestOutside');
+%legend(Lgd,LgdStr,'location','BestOutside');
+legend(Lgd,LgdStr,'Position',[0.9135 0.7945 0.0632 0.1292]);
 
+%% figure 2 : tx rx chart
 
-%     %% figure 3 --- tx rx chart
-%
-%     figure(3); hold on
-%
-%     % txrx chart maps
-%     plotval = [10 20 30 40 50];
-%     txrxZMap = containers.Map(modem_labels, plotval);
-%     % mapping for offset
-%     N = 3;
-%     plotspread = linspace(0,N,3) - N/2;
-%     txrxOffsetMap = containers.Map([20 30 90],plotspread);
-%
-%     % tx values
-%     unique_tx_z = unique(tx_z);
-%     for utz = unique_tx_z
-%         scatter(0, txrxZMap(node),...
-%             markerSize,markerModemMap(node),markerShape(utz),'filled');
-%     end
-%
-%     %rx connections
-%     rx_node = RECAP.tag_rx(tx_index);
-%     rx_z    = RECAP.rx_z(tx_index);
-%
-%     for r = 1:numel(rx_node)
-%         scatter(1+offsetMap(rx_node{r})/10,txrxZMap(node)+txrxOffsetMap(rx_z(r)),...
-%             markerSize,markerModemMap(rx_node{r}),markerShape(rx_z(r)),'filled');
-%     end
-%
-%
-%     yticks(plotval);
-%     yticklabels([]);
-%     ylim([plotval(1)-10 plotval(end)+10]);
-%     xticks([0 1]);
-%     xticklabels({'tx','rx'})
-%     xlim([-0.1 1.5]);
-%
-% end
+markerSize = 220;
 
-%% plot baseval/eeof patch
+figure('Renderer', 'painters', 'Position', [10 10 950 650]); clf;
+plot(NaN,NaN,'w');
 
+% txrx chart maps
+plotval = [10 20 30];
+ZMap = containers.Map([90 30 20],plotval);
 
-% tx_z = RECAP.tx_z;
-% rx_z = RECAP.rx_z;
-%
-% % figure 1
-% figure(1);
-% h_plot_patch(eof_bool,eof_time)
-% title('Ice Floe Drift from Modem Buoy GPS');
-% hold off
-%
-% % figure 2
-% figure(2);
-%
-% subplot(2,1,1);
-% title('TX depth throughout experiment');
-% h_plot_patch(eof_bool,eof_time);
-% hold off
-%
-% subplot(2,1,2)
-% title('RX depth throughout experiment');
-% h_plot_patch(eof_bool,eof_time);
-% hold off
-%
-% % figure 3
-% figure(3)
-% title('modem connections')
+% xset up
+xTX = 15;
+xRX = 19;
+xlim([xTX-1 xRX+3])
+xticks([xTX xRX])
+xticklabels({'tx','rx'})
+% y set up
 
+y1 = min(plotval) - 5;
+y2 = max(plotval) + 5;
+ylim([y1 y2]);
+yticks(plotval)
+yticklabels([]);
+hold on
+grid on
 
+patchxval = [xTX-1 xTX+1];
+patchyval = ylim();
 
+patchxval = [patchxval(1) patchxval patchxval(end)];
+patchyval = [patchyval fliplr(patchyval)];
+
+p = patch(patchxval,patchyval,'k','handlevisibility','off');
+p.EdgeColor = 'none';
+
+% add depth label
+for txDepth = modem_rx_depth
+    text(xTX-1,ZMap(txDepth)-.2,['   z_s = ' num2str(txDepth) ' m'],...
+        'color','w','HorizontalAlignment','left','VerticalAlignment','middle','fontsize',12,'fontweight','bold')
+end
+
+% mapping for offset
+N = 4;
+plotspread = linspace(0,N,5) - N/2;
+xOffsetMap = containers.Map(modem_labels,plotspread);
+x2OffsetMap = containers.Map([20 30 90],[0 0 .3]);
+z2OffsetMap = containers.Map([20 30 90],[-.1 -.1  .2]);
+textOffsetMap = containers.Map(modem_labels,1.1.*[-1 1 -1 1 -1]);
+
+for txDepth = modem_rx_depth
+    
+    % tx
+    tx_index = find(RECAP.tx_z == txDepth);
+    tx_nodes = RECAP.tag_tx(tx_index);
+    unique_tx_nodes = intersect(modem_labels,tx_nodes,'stable');
+    
+    plotspread = linspace(0,numel(unique_tx_nodes),numel(unique_tx_nodes));
+    plotspread = plotspread - mean(plotspread);
+    zOffsetMap = containers.Map(unique_tx_nodes,plotspread);
+    
+    for tNode = unique_tx_nodes
+        
+        scatter(xTX+0.5,ZMap(txDepth) + zOffsetMap(tNode{1}) + z2OffsetMap(txDepth),...
+            markerSize,markerModemMap(tNode{1}),markerShape(txDepth),'filled')
+        
+        tx_node_index = find(strcmp(RECAP.tag_tx,tNode{1}));
+        
+        rx_nodes = RECAP.tag_rx(tx_node_index);
+        rx_z     = RECAP.rx_z(tx_node_index);
+        
+        unique_rx_nodes = intersect(modem_labels,rx_nodes,'stable');
+        unique_rx_z = unique(rx_z);
+        
+        index1 = strcmp(RECAP.tag_tx,tNode{1});
+        index2 = RECAP.tx_z == txDepth;
+        
+        for rDepth = unique_rx_z
+            
+            index3 = RECAP.rx_z == rDepth;
+            
+            for rNode = unique_rx_nodes
+                index4 = strcmp(RECAP.tag_rx,rNode{1});
+                
+                index = index1.*index2.*index3.*index4;
+                
+                if sum(index)>=1
+                    
+                    xval = xRX+xOffsetMap(rNode{1})+x2OffsetMap(rDepth);
+                    yval = ZMap(txDepth) + zOffsetMap(tNode{1}) + z2OffsetMap(rDepth);
+
+                    scatter(xval,yval,...
+                        markerSize,markerModemMap(rNode{1}),markerShape(rDepth),'filled');
+                    
+                    % add text for amount
+                    text(xval,yval - z2OffsetMap(rDepth) + textOffsetMap(tNode{1}),num2str(sum(index)),... 
+                        'VerticalAlignment','middle','HorizontalAlignment','center','color',markerModemMap(rNode{1}));
+                    
+                end
+            end
+        end
+    end
+end
+% title
+title('Successful modem connections');
+
+% make legend
+load p_legendDetails.mat
+
+for ml = modem_labels
+    index = strcmp(RECAP.tag_rx,ml{1});
+    
+    depths = RECAP.rx_z(index);
+    depths = sort(unique(depths));
+
+    for d = depths
+        ixlgd = ixlgd + 1;
+        Lgd(ixlgd) = scatter(NaN,NaN,markerSize,markerModemMap(ml{1}),markerShape(d),'filled');
+        LgdStr{ixlgd} = [num2str(d) ' m | ' ml{1}];
+    end
+end
+    
+legend(Lgd,LgdStr,'location','WestOutside','fontsize',14);
