@@ -50,8 +50,7 @@ for cfg = 1:2
 end
 
 %% figure 1 : bird's eye view
-
-figure('Renderer', 'painters', 'Position', [10 10 950 650]); clf;
+figure('Name','birdsEye','Renderer', 'painters', 'Position', [10 10 950 650]); clf
 load p_legendDetails.mat
 
 % bathymetry
@@ -66,14 +65,15 @@ shading flat
 clabel(C,h,'LabelSpacing',1200,'color','w','fontweight','bold','BackgroundColor','k');
 hold on
 
-% transparent connections
+% line connections
 for cfg = 1:2
     for nx = 1:CONFIG{cfg}.num_events
         txNode = CONFIG{cfg}.tag_tx{nx};
+        
         %plot([CONFIG{cfg}.rx_x(nx) CONFIG{cfg}.tx_x(nx)],[CONFIG{cfg}.rx_y(nx) CONFIG{cfg}.tx_y(nx)],...
-            %'color',[1 1 1 .03],'linewidth',10,'HandleVisibility','off');
+        %'color',[1 1 1 .03],'linewidth',10,'HandleVisibility','off');
         plot([CONFIG{cfg}.rx_x(nx) CONFIG{cfg}.tx_x(nx)],[CONFIG{cfg}.rx_y(nx) CONFIG{cfg}.tx_y(nx)],...
-            '-','color',markerModemMap(txNode),'linewidth',1.5,'HandleVisibility','off');
+            '--','color',markerModemMap(txNode),'linewidth',1);
     end
 end
 
@@ -90,9 +90,9 @@ for node = modem_labels
             ixlgd = ixlgd + 1;
             rx_x = [CONFIG{1}.rx_x(index1) CONFIG{2}.rx_x(index2)];
             rx_y = [CONFIG{1}.rx_y(index1) CONFIG{2}.rx_y(index2)];
-            Lgd(ixlgd) = scatter(rx_x,rx_y,markerSize,markerModemMap(node),markerShape(imd),'filled');
+            Lgd(ixlgd) = scatter(rx_x,rx_y,1.5.*markerSize,markerModemMap(node),markerShape(imd),'filled');
             LgdStr{ixlgd} = [num2str(imd) 'm | ' node];
-
+            
         else % check to see if TX was valid
             index1 = find(strcmp(CONFIG{1}.tag_tx,node) & CONFIG{1}.tx_z == imd);
             index2 = find(strcmp(CONFIG{2}.tag_tx,node) & CONFIG{2}.tx_z == imd);
@@ -102,16 +102,12 @@ for node = modem_labels
                 ixlgd = ixlgd + 1;
                 tx_x = [CONFIG{1}.tx_x(index1) CONFIG{2}.tx_x(index2)];
                 tx_y = [CONFIG{1}.tx_y(index1) CONFIG{2}.tx_y(index2)];
-                Lgd(ixlgd) = scatter(tx_x,tx_y,markerSize,markerModemMap(node),markerShape(imd),'filled');
+                Lgd(ixlgd) = scatter(tx_x,tx_y,1.5.*markerSize,markerModemMap(node),markerShape(imd),'filled');
                 LgdStr{ixlgd} = [num2str(imd) 'm | ' node];
             end
         end
     end
 end
-
-% plot TX in black circle
-Lgd(ixlgd+1) = scatter(CONFIG{cfg}.tx_x,CONFIG{cfg}.tx_y,2.*markerSize,'k','o','LineWidth',2);
-LgdStr{ixlgd+1} = [num2str(zs) 'm | tx'];
 
 hold off
 xlabel('x [m]')
@@ -123,8 +119,7 @@ title(['Bird''s Eye View of Camp Seadragon, zs = ' num2str(zs) 'm'],'fontsize',2
 
 %% figure 2 : ray trace differences
 
-figure('Renderer', 'painters', 'Position', [10 10 1200 800]); clf;
-[ixlgd,Lgd,LgdStr] = lgd_init();
+figure('Name','ray trace','Renderer', 'painters', 'Position', [10 10 1700 900]); clf;
 
 plotDepth = 400;
 
@@ -146,7 +141,7 @@ for cfg = 1:2
         plot(CONFIG{cfg}.raytraceR{nrz},CONFIG{cfg}.raytraceZ{nrz},'color',[charcoalGray 0.2],'handlevisibility','off');
     end
     hold off
-    title(['ray trace, z_0=' num2str(zs) ' m'])
+    title(['ray trace, z_0=' num2str(zs) ' m, t_0=' num2str(max(CONFIG{cfg}.data_owtt))])
     yticklabels([])
     axis tight
     ylim([0 plotDepth])
@@ -155,18 +150,15 @@ for cfg = 1:2
     set(gca,'ydir','reverse')
     
     hold on
-    ixlgd = ixlgd+1;
-    Lgd(ixlgd) = scatter(0,zs,markerSize,'r','o','linewidth',2);
-    LgdStr{ixlgd} = [num2str(zs) 'm | tx'];
+    scatter(0,zs,markerSize,'k','s','linewidth',2);
+    
     for node = CONFIG{cfg}.unique_rx
         node = node{1}; % change from cell to char
         for imd = modem_rx_depth
             index = find(strcmp(CONFIG{cfg}.tag_rx,node) & CONFIG{cfg}.rx_z == imd);
             if sum(index) > 0
-                ixlgd = ixlgd + 1;
-                Lgd(ixlgd) = scatter(CONFIG{cfg}.data_range(index),CONFIG{cfg}.rx_z(index),...
+                scatter(CONFIG{cfg}.data_range(index),CONFIG{cfg}.rx_z(index),...
                     markerSize,markerModemMap(node),markerShape(imd),'filled');
-                LgdStr{ixlgd} = [num2str(imd) 'm | ' node];
                 
                 total = sum(CONFIG{cfg}.rx_z(index) == imd);
                 text(mean(CONFIG{cfg}.data_range(index)),imd+14,num2str(total),...
@@ -175,15 +167,41 @@ for cfg = 1:2
         end
     end
     hold off
-    
 end
 
-legend(Lgd,LgdStr,'location','SouthEast','fontsize',lg_font_size);
+% make legend
+load p_legendDetails.mat
+subplot(2,4,[cfg*4-2 cfg*4]);
+hold on
+for node = modem_labels
+    node = node{1};
+    
+    index1 = find(strcmp(CONFIG{1}.tag_rx,node));
+    index2 = find(strcmp(CONFIG{2}.tag_rx,node));
+    index = union(index1,index2);
+    
+    if ~isempty(index)
+        
+        % get tx depths
+        zvals = [CONFIG{1}.rx_z(index1) CONFIG{2}.rx_z(index2)];
+        unq_zvals = unique(zvals);
+        
+        for uz = unq_zvals
+            ixlgd = ixlgd + 1;
+            Lgd(ixlgd) = scatter(NaN,NaN,markerSize,markerModemMap(node),markerShape(uz),'filled');
+            LgdStr{ixlgd} = [num2str(uz) ' m | ' node];
+        end
+    end
+end
+
+lg = legend(Lgd,LgdStr,'location','SouthWest','fontsize',12);
+title(lg,'rx nodes');
+
 
 %% figure 3 : timeline
 
-figure('Renderer', 'painters', 'Position', [10 10 1700 1100]); clf;
-[ixlgd,Lgd,LgdStr] = lgd_init();
+figure('Name','timeline','Renderer', 'painters', 'Position', [10 10 1700 1100]); clf;
+load p_legendDetails.mat
 
 for cfg = 1:2
     for node = CONFIG{cfg}.unique_rx
@@ -212,10 +230,7 @@ for cfg = 1:2
             end
         end
     end
-    
-    
 end
-
 
 eof_bool = [CONFIG{1}.eof_bool CONFIG{2}.eof_bool];
 eof_time = [CONFIG{1}.data_time CONFIG{2}.data_time];
@@ -247,14 +262,5 @@ h_set_xy_bounds(eof_time,eof_time,CONFIG{1}.sim_owtt,CONFIG{2}.sim_owtt);
 datetick('x');
 title('one way travel time | in situ prediction');
 ylabel('time [s]')
-h_plot_patch(eof_bool,eof_time,[0.01 .025]);
+h_plot_patch(eof_bool,eof_time,[0 .025]);
 grid on
-
-%% helper function : lgd_init();
-function [ixlgd,Lgd,LgdStr] = lgd_init()
-ixlgd = 0;
-Lgd = [];
-LgdStr = {};
-end
-
-

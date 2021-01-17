@@ -21,9 +21,9 @@ RECAP = h_unpack_experiment(event);
 eof_bool = RECAP.eof_bool;
 eof_time = RECAP.data_time;
 
-%% figure 1 : rx/tx timeline chart
+%% figure 1 : txrx timeline chart
 
-figure('Renderer', 'painters', 'Position', [10 10 1700 1100]); clf;
+figure('Name','txrx-timeline','Renderer', 'painters', 'Position', [10 10 1700 1100]); clf;
 
 % mapping for depth
 plotval = -[27 18 9];
@@ -130,7 +130,7 @@ legend(Lgd,LgdStr,'Position',[0.9135 0.7945 0.0632 0.1292]);
 
 markerSize = 220;
 
-figure('Renderer', 'painters', 'Position', [10 10 950 650]); clf;
+figure('Name','txrx-chart','Renderer', 'painters', 'Position', [10 10 950 650]); clf;
 plot(NaN,NaN,'w');
 
 % txrx chart maps

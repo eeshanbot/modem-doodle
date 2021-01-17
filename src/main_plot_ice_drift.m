@@ -18,7 +18,7 @@ RECAP = h_unpack_experiment(event);
 
 %% loop
 
-figure('Renderer', 'painters', 'Position', [10 10 1200 500]); clf;
+figure('Name','icedrift','Renderer', 'painters', 'Position', [10 10 1200 500]); clf;
 hold on
 
 for node = modem_labels
