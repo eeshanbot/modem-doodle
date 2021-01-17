@@ -8,15 +8,15 @@ temp = stuff(1).(lvl2);
 % for doubles
 if isa(temp,'double')
     array = [stuff.(lvl2)];
-    if exist('filter','var')
-        array = array(filter);
-    end
+
 % for character arrays
 elseif isa(temp,'char')
     array = {stuff.(lvl2)};
-    if exist('filter','var')
-        array = array{filter};
-    end
+end
+
+% if filter
+if exist('filter','var')
+    array = array(filter);
 end
 
 end
