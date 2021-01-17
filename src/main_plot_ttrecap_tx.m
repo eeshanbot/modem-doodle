@@ -10,7 +10,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 30;
+zs = 90;
 
 % load modem marker information
 load p_modemMarkerDetails
@@ -38,12 +38,15 @@ EEOF.title = 'eeof';
 CONFIG = {BASE EEOF};
 clear BASE EEOF;
 
+maxOwtt = max([CONFIG{1}.data_owtt CONFIG{2}.data_owtt]);
+maxRange = max([CONFIG{1}.data_range CONFIG{2}.data_range])+100;
+
 % loop through for modifications
 for cfg = 1:2
     
     % regrid sound speed for ray tracing
     Cq = interp1(CONFIG{cfg}.ssp_depth,CONFIG{cfg}.ssp_estimate,0:1:plotBathy.mean);
-    [CONFIG{cfg}.raytraceR,CONFIG{cfg}.raytraceZ] = run_rt(Cq,0:1:plotBathy.mean,zs,max(CONFIG{cfg}.data_owtt));
+    [CONFIG{cfg}.raytraceR,CONFIG{cfg}.raytraceZ] = run_rt(Cq,0:1:plotBathy.mean,zs,maxOwtt);
     
     [CONFIG{cfg}.rx_x,CONFIG{cfg}.rx_y] = eb_ll2xy(CONFIG{cfg}.rx_lat,CONFIG{cfg}.rx_lon,plotBathy.olat,plotBathy.olon);
     [CONFIG{cfg}.tx_x,CONFIG{cfg}.tx_y] = eb_ll2xy(CONFIG{cfg}.tx_lat,CONFIG{cfg}.tx_lon,plotBathy.olat,plotBathy.olon);
@@ -109,6 +112,15 @@ for node = modem_labels
     end
 end
 
+% tx connections in legend
+tx_node = [CONFIG{1}.tag_tx CONFIG{2}.tag_tx];
+tx_node = unique(tx_node);
+for utn = tx_node
+    ixlgd = ixlgd + 1;
+    Lgd(ixlgd) = plot(NaN,NaN,'--','color',markerModemMap(utn{1}));
+    LgdStr{ixlgd} = [' tx from ' utn{1}];
+end
+
 hold off
 xlabel('x [m]')
 ylabel('y [m]')
@@ -126,13 +138,15 @@ plotDepth = 400;
 for cfg = 1:2
     
     subplot(2,4,cfg*4-3)
-    plot(CONFIG{cfg}.ssp_estimate,CONFIG{cfg}.ssp_depth,'.-','markersize',20)
+    plot(CONFIG{cfg}.ssp_estimate,CONFIG{cfg}.ssp_depth,'k.-','markersize',15)
     set(gca,'ydir','reverse')
     grid on
     ylim([0 plotDepth]);
-    xlabel('c [m/s]');
     ylabel('z [m/s]');
     title([CONFIG{cfg}.title ' ssp']);
+    if cfg == 2
+        xlabel('c [m/s]');
+    end
     
     subplot(2,4,[cfg*4-2 cfg*4]);
     hold on
@@ -141,13 +155,16 @@ for cfg = 1:2
         plot(CONFIG{cfg}.raytraceR{nrz},CONFIG{cfg}.raytraceZ{nrz},'color',[charcoalGray 0.2],'handlevisibility','off');
     end
     hold off
-    title(['ray trace, z_0=' num2str(zs) ' m, t_0=' num2str(max(CONFIG{cfg}.data_owtt))])
+    title(['ray trace, zs=' num2str(zs) ' m, tmax=' num2str(maxOwtt) ' s'])
     yticklabels([])
     axis tight
+    xlim([0 maxRange]);
     ylim([0 plotDepth])
-    xlim([0 1800])
-    xlabel('range [m]');
     set(gca,'ydir','reverse')
+    
+    if cfg == 2
+        xlabel('range [m]');
+    end
     
     hold on
     scatter(0,zs,markerSize,'k','s','linewidth',2);
@@ -156,13 +173,21 @@ for cfg = 1:2
         node = node{1}; % change from cell to char
         for imd = modem_rx_depth
             index = find(strcmp(CONFIG{cfg}.tag_rx,node) & CONFIG{cfg}.rx_z == imd);
-            if sum(index) > 0
+            if ~isempty(index)
                 scatter(CONFIG{cfg}.data_range(index),CONFIG{cfg}.rx_z(index),...
                     markerSize,markerModemMap(node),markerShape(imd),'filled');
                 
-                total = sum(CONFIG{cfg}.rx_z(index) == imd);
-                text(mean(CONFIG{cfg}.data_range(index)),imd+14,num2str(total),...
-                    'HorizontalAlignment','center','VerticalAlignment','top','fontsize',12)
+                % check by TX node
+                
+                tx_nodes = CONFIG{cfg}.tag_tx(index);
+                unq_tx_nodes = unique(tx_nodes);
+                
+                for utn = unq_tx_nodes
+                
+                    subindex = find((CONFIG{cfg}.rx_z == imd) & (strcmp(CONFIG{cfg}.tag_tx,utn{1})) & (strcmp(CONFIG{cfg}.tag_rx,node)));
+                    text(mean(CONFIG{cfg}.data_range(subindex)),imd+14,num2str(numel(subindex)),...
+                        'HorizontalAlignment','center','VerticalAlignment','top','fontsize',12,'color',markerModemMap(node))
+                end
             end
         end
     end
@@ -207,25 +232,25 @@ for cfg = 1:2
     for node = CONFIG{cfg}.unique_rx
         node = node{1};
         for imd = modem_rx_depth
-            index = find(strcmp(CONFIG{cfg}.tag_rx,node) & CONFIG{cfg}.rx_z == imd);
+            index1 = find(strcmp(CONFIG{cfg}.tag_rx,node) & CONFIG{cfg}.rx_z == imd);
             
-            if sum(index) > 0
+            if sum(index1) > 0
                 % group velocity estimates (simulation)
                 subplot(3,1,3);
                 hold on
-                scatter(CONFIG{cfg}.sim_time(index),CONFIG{cfg}.sim_gvel(index),...
+                scatter(CONFIG{cfg}.sim_time(index1),CONFIG{cfg}.sim_gvel(index1),...
                     markerSize,markerModemMap(node),markerShape(imd),'filled','MarkerFaceAlpha',0.3)
                 
                 % data owtt
                 subplot(3,1,1);
                 hold on
-                scatter(CONFIG{cfg}.data_time(index),CONFIG{cfg}.data_owtt(index),...
+                scatter(CONFIG{cfg}.data_time(index1),CONFIG{cfg}.data_owtt(index1),...
                     markerSize,markerModemMap(node),markerShape(imd),'filled','MarkerFaceAlpha',0.3);
                 
                 % sim owtt
                 subplot(3,1,2);
                 hold on
-                scatter(CONFIG{cfg}.sim_time(index),CONFIG{cfg}.sim_owtt(index),...
+                scatter(CONFIG{cfg}.sim_time(index1),CONFIG{cfg}.sim_owtt(index1),...
                     markerSize,markerModemMap(node),markerShape(imd),'filled','MarkerFaceAlpha',0.3);
             end
         end
