@@ -2,26 +2,18 @@
 % eeshan bhatt
 
 %% prep workspace
-clear; clc;
+clear; clc; close all
 
 lg_font_size = 14;
-markerSize = 200;
-alpha_grey      = [0.6 0.6 0.6];
-alpha_color     = .035;
+
+charcoalGray = [0.6 0.6 0.6];
+alphaColor   = .035;
 
 % depth_switch = [20 30 90];
 zs = 30;
 
-% tetradic colors to link modem colors
-modem_colors = {[177 0 204]./256,[7 201 0]./256,[0 114 201]./256,[255 123 0]./256,[80 80 80]./256};
-modem_labels = {'North','South','East','West','Camp'};
-markerModemMap = containers.Map(modem_labels,modem_colors);
-
-% modem depths
-rx_depth = [20 30 90];
-markerShape(20) = 's';
-markerShape(30) = '^';
-markerShape(90) = 'v';
+% load modem marker information
+load p_modemMarkerDetails
 
 %% load bathymetry data
 bathyfile = '~/missions-lamss/cruise/icex20/data/environment/noaa_bathy_file.nc';
@@ -59,57 +51,79 @@ end
 
 %% figure 1 : bird's eye view
 
-figure(1); clf;
+figure('Renderer', 'painters', 'Position', [10 10 950 650]); clf;
+load p_legendDetails.mat
 
 % bathymetry
 minZ = round(min(plotBathy.zz(:)),1);
 maxZ = round(max(plotBathy.zz(:)),1);
 levels = minZ:20:maxZ;
 [C,h] = contourf(plotBathy.xx,plotBathy.yy,plotBathy.zz,[minZ:20:maxZ]);
-cmocean('-gray',numel(levels));
+cmap = cmocean('-gray',numel(levels));
+cmap = brighten(cmap,.2);
+colormap(cmap);
 shading flat
 clabel(C,h,'LabelSpacing',1200,'color','w','fontweight','bold','BackgroundColor','k');
 hold on
 
+% transparent connections
 for cfg = 1:2
-    
-    [ixlgd,Lgd,LgdStr] = lgd_init();
-    
-    % transparent connections
     for nx = 1:CONFIG{cfg}.num_events
+        txNode = CONFIG{cfg}.tag_tx{nx};
+        %plot([CONFIG{cfg}.rx_x(nx) CONFIG{cfg}.tx_x(nx)],[CONFIG{cfg}.rx_y(nx) CONFIG{cfg}.tx_y(nx)],...
+            %'color',[1 1 1 .03],'linewidth',10,'HandleVisibility','off');
         plot([CONFIG{cfg}.rx_x(nx) CONFIG{cfg}.tx_x(nx)],[CONFIG{cfg}.rx_y(nx) CONFIG{cfg}.tx_y(nx)],...
-            'color',[1 1 1 alpha_color],'linewidth',10,'HandleVisibility','off');
+            '-','color',markerModemMap(txNode),'linewidth',1.5,'HandleVisibility','off');
     end
-    
-    % plot rx nodes
-    for node = CONFIG{cfg}.unique_rx
-        node = node{1}; % change from cell to char
-        for imd = rx_depth
+end
+
+% plot rx nodes
+for node = modem_labels
+    node = node{1}; % change from cell to char
+    for imd = modem_rx_depth
+        
+        index1 = find(strcmp(CONFIG{1}.tag_rx,node) & CONFIG{1}.rx_z == imd);
+        index2 = find(strcmp(CONFIG{2}.tag_rx,node) & CONFIG{2}.rx_z == imd);
+        index = union(index1,index2);
+        
+        if ~isempty(index)
+            ixlgd = ixlgd + 1;
+            rx_x = [CONFIG{1}.rx_x(index1) CONFIG{2}.rx_x(index2)];
+            rx_y = [CONFIG{1}.rx_y(index1) CONFIG{2}.rx_y(index2)];
+            Lgd(ixlgd) = scatter(rx_x,rx_y,markerSize,markerModemMap(node),markerShape(imd),'filled');
+            LgdStr{ixlgd} = [num2str(imd) 'm | ' node];
+
+        else % check to see if TX was valid
+            index1 = find(strcmp(CONFIG{1}.tag_tx,node) & CONFIG{1}.tx_z == imd);
+            index2 = find(strcmp(CONFIG{2}.tag_tx,node) & CONFIG{2}.tx_z == imd);
+            index = union(index1,index2);
             
-            index = find(strcmp(CONFIG{cfg}.tag_rx,node) & CONFIG{cfg}.rx_z == imd);
-            
-            if sum(index) > 0
+            if ~isempty(index)
                 ixlgd = ixlgd + 1;
-                Lgd(ixlgd) = scatter(CONFIG{cfg}.rx_x(index),CONFIG{cfg}.rx_y(index),markerSize,markerModemMap(node),markerShape(imd),'filled');
+                tx_x = [CONFIG{1}.tx_x(index1) CONFIG{2}.tx_x(index2)];
+                tx_y = [CONFIG{1}.tx_y(index1) CONFIG{2}.tx_y(index2)];
+                Lgd(ixlgd) = scatter(tx_x,tx_y,markerSize,markerModemMap(node),markerShape(imd),'filled');
                 LgdStr{ixlgd} = [num2str(imd) 'm | ' node];
             end
         end
     end
-    
-    % plot TX in red circle
-    Lgd(ixlgd) = scatter(CONFIG{cfg}.tx_x,CONFIG{cfg}.tx_y,2.*markerSize,'r','o');
-    LgdStr{ixlgd} = [num2str(zs) 'm | tx'];
 end
+
+% plot TX in black circle
+Lgd(ixlgd+1) = scatter(CONFIG{cfg}.tx_x,CONFIG{cfg}.tx_y,2.*markerSize,'k','o','LineWidth',2);
+LgdStr{ixlgd+1} = [num2str(zs) 'm | tx'];
+
 hold off
 xlabel('x [m]')
 ylabel('y [m]')
 axis equal
-legend(Lgd,LgdStr,'location','bestoutside')
+lb = legend(Lgd,LgdStr,'location','bestoutside');
+title(lb,'Nodes');
 title(['Bird''s Eye View of Camp Seadragon, zs = ' num2str(zs) 'm'],'fontsize',20);
 
 %% figure 2 : ray trace differences
 
-figure(2); clf;
+figure('Renderer', 'painters', 'Position', [10 10 1200 800]); clf;
 [ixlgd,Lgd,LgdStr] = lgd_init();
 
 plotDepth = 400;
@@ -129,7 +143,7 @@ for cfg = 1:2
     hold on
     num_rays = numel(CONFIG{cfg}.raytraceR);
     for nrz = 1:num_rays
-        plot(CONFIG{cfg}.raytraceR{nrz},CONFIG{cfg}.raytraceZ{nrz},'color',[alpha_grey 0.2],'handlevisibility','off');
+        plot(CONFIG{cfg}.raytraceR{nrz},CONFIG{cfg}.raytraceZ{nrz},'color',[charcoalGray 0.2],'handlevisibility','off');
     end
     hold off
     title(['ray trace, z_0=' num2str(zs) ' m'])
@@ -146,7 +160,7 @@ for cfg = 1:2
     LgdStr{ixlgd} = [num2str(zs) 'm | tx'];
     for node = CONFIG{cfg}.unique_rx
         node = node{1}; % change from cell to char
-        for imd = rx_depth
+        for imd = modem_rx_depth
             index = find(strcmp(CONFIG{cfg}.tag_rx,node) & CONFIG{cfg}.rx_z == imd);
             if sum(index) > 0
                 ixlgd = ixlgd + 1;
@@ -168,13 +182,13 @@ legend(Lgd,LgdStr,'location','SouthEast','fontsize',lg_font_size);
 
 %% figure 3 : timeline
 
-figure(3); clf;
+figure('Renderer', 'painters', 'Position', [10 10 1700 1100]); clf;
 [ixlgd,Lgd,LgdStr] = lgd_init();
 
-for cfg = 1:2  
+for cfg = 1:2
     for node = CONFIG{cfg}.unique_rx
         node = node{1};
-        for imd = rx_depth
+        for imd = modem_rx_depth
             index = find(strcmp(CONFIG{cfg}.tag_rx,node) & CONFIG{cfg}.rx_z == imd);
             
             if sum(index) > 0
@@ -215,7 +229,7 @@ datetick('x');
 title('group velocity | in situ prediction');
 ylabel('c [m/s]');
 xlabel('time [hr:mm]')
-h_plot_patch(eof_bool,eof_time);
+h_plot_patch(eof_bool,eof_time,[0 .025]);
 grid on
 
 subplot(3,1,1);
@@ -224,7 +238,7 @@ h_set_xy_bounds(eof_time,eof_time,CONFIG{1}.data_owtt,CONFIG{2}.data_owtt);
 datetick('x');
 title('one way travel time | data');
 ylabel('time [s]')
-h_plot_patch(eof_bool,eof_time);
+h_plot_patch(eof_bool,eof_time,[0 .025]);
 grid on
 
 subplot(3,1,2);
@@ -233,10 +247,8 @@ h_set_xy_bounds(eof_time,eof_time,CONFIG{1}.sim_owtt,CONFIG{2}.sim_owtt);
 datetick('x');
 title('one way travel time | in situ prediction');
 ylabel('time [s]')
-h_plot_patch(eof_bool,eof_time);
+h_plot_patch(eof_bool,eof_time,[0.01 .025]);
 grid on
-
-
 
 %% helper function : lgd_init();
 function [ixlgd,Lgd,LgdStr] = lgd_init()
