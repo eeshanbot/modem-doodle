@@ -3,7 +3,7 @@
 
 %% prep workspace
 
-clear; clc;
+clear; clc; close all;
 
 % easily distinguishable colors to link modems
 load p_modemMarkerDetails
@@ -18,7 +18,8 @@ RECAP = h_unpack_experiment(event);
 
 %% loop
 
-figure(1); clf;
+figure('Renderer', 'painters', 'Position', [10 10 1200 500]); clf;
+hold on
 
 for node = modem_labels
     node = node{1}; % cell array to character
@@ -47,8 +48,6 @@ for node = modem_labels
     rval = sqrt(xval.^2 + yval.^2);    
     
     %% figure: ice drift
-    figure(1);
-    hold on
     ixlgd = ixlgd + 1;
     Lgd(ixlgd) = scatter(NaN,NaN,markerSize,markerModemMap(node),'o','filled');
     LgdStr{ixlgd} = node;
@@ -65,6 +64,6 @@ end
 eof_bool = RECAP.eof_bool;
 eof_time = RECAP.data_time;
 axis tight
-h_plot_patch(eof_bool,eof_time,[.025 .025])
+h_plot_patch(eof_bool,eof_time,[.025 0.025])
 title('Ice Floe Drift from Modem Buoy GPS');
 hold off
