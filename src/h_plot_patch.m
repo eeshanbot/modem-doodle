@@ -40,7 +40,7 @@ for k = 1:numel(kindex)/2
     p.EdgeColor = 'none';
     p.FaceAlpha = .137;
     
-    text(patchTime(1),ybounds(2)+ybuffer,' eeof',...
+    text(patchTime(1),max(patchVal),' eeof',...
         'HorizontalAlignment','left','fontsize',13,'fontangle','italic','VerticalAlignment','top')
 end
 
@@ -48,7 +48,7 @@ end
 for k = 1:numel(kindex)/2 - 1
     patchTime = [eof_time(kindex(2*k):kindex(2*k+1))];
     
-    text(patchTime(1),ybounds(2)+ybuffer,' baseval',...
+    text(patchTime(1),max(patchVal),' baseval',...
         'HorizontalAlignment','left','fontsize',13,'fontangle','italic','VerticalAlignment','top')
 end
 
