@@ -10,7 +10,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 90;
+zs = 20;
 
 % load modem marker information
 load p_modemMarkerDetails
@@ -60,7 +60,7 @@ load p_legendDetails.mat
 minZ = round(min(plotBathy.zz(:)),1);
 maxZ = round(max(plotBathy.zz(:)),1);
 levels = minZ:20:maxZ;
-[C,h] = contourf(plotBathy.xx,plotBathy.yy,plotBathy.zz,[minZ:20:maxZ]);
+[C,h] = contourf(plotBathy.xx,plotBathy.yy,plotBathy.zz,minZ:20:maxZ);
 cmap = cmocean('-gray',numel(levels));
 cmap = brighten(cmap,.2);
 colormap(cmap);
@@ -183,7 +183,7 @@ for cfg = 1:2
                 unq_tx_nodes = unique(tx_nodes);
                 
                 for utn = unq_tx_nodes
-                
+                    
                     subindex = find((CONFIG{cfg}.rx_z == imd) & (strcmp(CONFIG{cfg}.tag_tx,utn{1})) & (strcmp(CONFIG{cfg}.tag_rx,node)));
                     text(mean(CONFIG{cfg}.data_range(subindex)),imd+14,num2str(numel(subindex)),...
                         'HorizontalAlignment','center','VerticalAlignment','top','fontsize',12,'color',markerModemMap(node))
@@ -313,6 +313,7 @@ data_gvel.owtt = data_owtt;
 data_gvel.rxnode   = [CONFIG{1}.tag_rx CONFIG{2}.tag_rx];
 data_gvel.rxz      = [CONFIG{1}.rx_z CONFIG{2}.rx_z];
 data_gvel.title     = 'data';
+data_gvel.num       = sum(val_index);
 
 % group velocity from CONFIG 1 = BASE simulation
 %                from CONFIG 2 = EEOF simulation
@@ -328,6 +329,7 @@ for cfg = 1:2
     sim_gvel(cfg).rxnode = CONFIG{cfg}.tag_rx(val_index);
     sim_gvel(cfg).rxz   = CONFIG{cfg}.rx_z(val_index);
     sim_gvel(cfg).title = CONFIG{cfg}.title;
+    sim_gvel(cfg).num   = sum(val_index);
 end
 
 G = [data_gvel sim_gvel];
@@ -337,31 +339,36 @@ for gg = 1:numel(G)
     subplot(1,3,gg)
     hold on
     
+    Y1 = G(gg).mean - G(1).mean;
+    Y2 = G(gg).std;
+    
     % plot gvel +/- stds w/ a patch
     pXval = [0 5 5 0];
-    pYval = [pXval(1:2).*G(gg).std -pXval(3:4).*G(gg).std];
+    pYval = [pXval(1:2).*(Y1 + Y2) pXval(3:4).*(Y1 - Y2)];
     p = patch(pXval,pYval,'w','handlevisibility','off');
     p.FaceColor = charcoalGray;
     p.EdgeColor = 'none';
     p.FaceAlpha = .137;
     
+    % plot middle offset
+    plot(pXval(1:2),Y1.*pXval(1:2),'-','color',charcoalGray,'linewidth',1);
+   
     % add error
-    gvel_err = G(gg).std + mean(G(gg).err,'omitnan')/2;
+    Y3 = mean(G(gg).err,'omitnan')/2;
     
-    plot(pXval(1:2),pXval(1:2).*gvel_err,'--','color',charcoalGray,'linewidth',1);
-    plot(pXval(1:2),pXval(1:2).*-gvel_err,'--','color',charcoalGray,'linewidth',1);
-    
+    plot(pXval(1:2),pXval(1:2).*(Y1 + Y2 + Y3),':','color',charcoalGray,'linewidth',1);
+    plot(pXval(1:2),pXval(1:2).*(Y1 - Y2 - Y3),':','color',charcoalGray,'linewidth',1);
     
     for k = 1:numel(G(1).owtt)
         yval = G(1).range - G(gg).mean.*G(1).owtt;
         scatter(G(1).owtt(k), yval(k),...
-                markerSize,markerModemMap(G(1).rxnode{k}),markerShape(G(1).rxz(k)),...
-                'filled','MarkerFaceAlpha',0.1)
+            markerSize,markerModemMap(G(1).rxnode{k}),markerShape(G(1).rxz(k)),...
+            'filled','MarkerFaceAlpha',0.1)
     end
     
     ymax(gg) = max(yval);
     ymin(gg) = min(yval);
-
+    
 end
 
 % make plot pretty
@@ -372,9 +379,9 @@ for gg = 1:numel(G)
     ylim([min(ymin) max(ymax)]);
     grid on
     if gg == 2
-        title({['Range anomalies for zs=' num2str(zs) 'm'],['\nu_g | ' G(gg).title]},'fontsize',15)
+        title({['Range anomalies for zs=' num2str(zs) 'm'],['\nu_g | ' num2str(G(gg).num) ' from ' G(gg).title]},'fontsize',15)
     else
-        title({'    ',['\nu_g | ' G(gg).title]},'fontsize',16);
+        title({'    ',['\nu_g | ' num2str(G(gg).num) ' from ' G(gg).title]},'fontsize',15);
     end
 end
 
@@ -382,4 +389,140 @@ subplot(1,3,1)
 ylabel('range anomaly [m]');
 
 subplot(1,3,2);
+xlabel('owtt [s]');
+
+%% figure 5 : range anomaly plot
+
+figure('Name','rangeAnomaly','Renderer', 'painters', 'Position', [10 10 1400 800]); clf;
+hold on
+load p_legendDetails.mat
+
+% group velocity from ALL DATA
+data_owtt   = [CONFIG{1}.data_owtt CONFIG{2}.data_owtt];
+data_range  = [CONFIG{1}.data_range CONFIG{2}.data_range];
+data_rxz    = [CONFIG{1}.rx_z CONFIG{2}.rx_z];
+data_rxnode = [CONFIG{1}.tag_rx CONFIG{2}.tag_rx];
+gvelNanIndex = ~isnan([CONFIG{1}.sim_gvel CONFIG{2}.sim_gvel]);
+
+count = 0;
+for k = 1:2
+    % data from 20 & 30 m OR 90 m rx
+    if k == 1
+        index1 = data_rxz <= 30;
+    else
+        index1 = data_rxz > 30;
+    end
+    val_index = boolean(index1 .* gvelNanIndex);
+    data_gvel(k).gvel = data_range(val_index) ./ data_owtt(val_index);
+    data_gvel(k).mean = mean(data_gvel(k).gvel);
+    data_gvel(k).med  = median(data_gvel(k).gvel);
+    data_gvel(k).std  = std(data_gvel(k).gvel);
+    data_gvel(k).err  = zeros(size(data_gvel(k).gvel));
+    data_gvel(k).range = data_range(index1);
+    data_gvel(k).owtt = data_owtt(index1);
+    data_gvel(k).rxnode   = data_rxnode(index1);
+    data_gvel(k).rxz      = data_rxz(index1);
+    data_gvel(k).title     = 'data';
+    data_gvel(k).num      = sum(val_index);
+    
+    % group velocity from CONFIG 1 = BASE simulation
+    %                from CONFIG 2 = EEOF simulation
+    for cfg = 1:2
+        if k == 1
+            index1 = CONFIG{cfg}.rx_z <= 30;
+        else
+            index1 = CONFIG{cfg}.rx_z > 30;
+        end
+        index2 = ~isnan(CONFIG{cfg}.sim_gvel);
+        val_index = boolean(index1 .* index2);
+        count = count + 1;
+        sim_gvel(count).gvel  = CONFIG{cfg}.sim_gvel(val_index);
+        sim_gvel(count).mean  = CONFIG{cfg}.gvel_mean;
+        sim_gvel(count).med   = CONFIG{cfg}.gvel_med;
+        sim_gvel(count).std   = std(CONFIG{cfg}.sim_gvel(val_index));
+        sim_gvel(count).err   = CONFIG{cfg}.sim_gvel_std(val_index);
+        sim_gvel(count).range = CONFIG{cfg}.sim_range(val_index);
+        sim_gvel(count).owtt  = CONFIG{cfg}.sim_owtt(val_index);
+        sim_gvel(count).rxnode = CONFIG{cfg}.tag_rx(val_index);
+        sim_gvel(count).rxz   = CONFIG{cfg}.rx_z(val_index);
+        sim_gvel(count).title = CONFIG{cfg}.title;
+        sim_gvel(count).num   = sum(val_index);
+    end
+end
+
+G = [data_gvel(1) sim_gvel(1:2) data_gvel(2) sim_gvel(3:4)];
+
+for gg = 1:numel(G)
+    
+    subplot(2,3,gg)
+    hold on
+    
+    if gg <=3
+        dataRef = 1;
+    else
+        dataRef = 4;
+    end
+    
+    Y1 = G(gg).mean - G(dataRef).mean;
+    Y2 = G(gg).std;
+    
+    % plot gvel +/- stds w/ a patch
+    minT = min(G(dataRef).owtt) - .1*range(G(dataRef).owtt);
+    maxT = max(G(dataRef).owtt) + .1*range(G(dataRef).owtt);
+    pXval = [minT maxT maxT minT];
+    pYval = [pXval(1:2).*(Y1 + Y2) pXval(3:4).*(Y1 - Y2)];
+    p = patch(pXval,pYval,'w','handlevisibility','off');
+    p.FaceColor = charcoalGray;
+    p.EdgeColor = 'none';
+    p.FaceAlpha = .137;
+    
+    % plot middle offset
+    plot(pXval(1:2),Y1.*pXval(1:2),'-','color',charcoalGray,'linewidth',1);
+    
+    % add error
+    Y3 = mean(G(gg).err,'omitnan')/2;
+    
+    plot(pXval(1:2),pXval(1:2).*(Y1 + Y2 + Y3),':','color',charcoalGray,'linewidth',1);
+    plot(pXval(1:2),pXval(1:2).*(Y1 - Y2 - Y3),':','color',charcoalGray,'linewidth',1);
+    
+    for k = 1:numel(G(dataRef).owtt)
+        yval = G(dataRef).range - G(dataRef).mean.*G(dataRef).owtt;
+        scatter(G(dataRef).owtt(k), yval(k),...
+            markerSize,markerModemMap(G(dataRef).rxnode{k}),markerShape(G(dataRef).rxz(k)),...
+            'filled','MarkerFaceAlpha',0.2)
+    end
+    
+    ymax(gg) = max([yval pYval]);
+    ymin(gg) = min([yval pYval]);
+    
+end
+
+% make plot pretty
+for gg = 1:numel(G)
+    subplot(2,3,gg);
+    
+    if gg <=3
+        dataRef = 1;
+    else
+        dataRef = 4;
+    end
+    
+    xbuff = .09.*range(G(1).owtt);
+    xlim([min(G(1).owtt)-xbuff max(G(1).owtt)+xbuff])
+    ylim([min(ymin) max(ymax)]);
+    grid on
+    if gg == 2
+        title({['Range anomalies for zs=' num2str(zs) 'm'],['\nu_g | ' num2str(G(gg).num) ' from ' G(gg).title]},'fontsize',15)
+    else
+        title({'    ',['\nu_g | ' num2str(G(gg).num) ' from ' G(gg).title]},'fontsize',15);
+    end
+end
+
+subplot(2,3,1)
+ylabel({'zr = 20,30m','range anomaly [m]'},'fontsize',lg_font_size);
+
+subplot(2,3,4);
+ylabel({'zr = 90m','range anomaly [m]'},'fontsize',lg_font_size);
+
+subplot(2,3,5);
 xlabel('owtt [s]');
