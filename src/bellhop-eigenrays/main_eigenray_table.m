@@ -4,6 +4,8 @@
 clear; clc; close all;
 
 %% load toby test data recap all
+addpath('../');
+
 load '../../data/tobytest-recap-clean.mat'
 RECAP = h_unpack_experiment(event);
 
