@@ -32,7 +32,7 @@ plotZMap = containers.Map([90 30 20],plotval);
 for rmd = modem_rx_depth
     
     % rx nodes
-    index = find(RECAP.rx_z == rmd);
+    index = RECAP.rx_z == rmd;
     rxnodes = RECAP.tag_rx(index);
     uniqueRxNodes = intersect(modem_labels,unique(rxnodes),'stable');
     plotSpread = linspace(0,numel(uniqueRxNodes),numel(uniqueRxNodes));
@@ -40,7 +40,7 @@ for rmd = modem_rx_depth
     RX_offsetMap = containers.Map(uniqueRxNodes,plotSpread);
     
     % tx nodes
-    index = find(RECAP.tx_z == rmd);
+    index = RECAP.tx_z == rmd;
     txnodes = RECAP.tag_tx(index);
     uniqueTxNodes = intersect(modem_labels,unique(txnodes),'stable');
     plotSpread = linspace(0,numel(uniqueTxNodes),numel(uniqueTxNodes));
