@@ -93,4 +93,4 @@ for fEOF = filter_eof
 end
 
 clearvars -except eigentable
-%save('eigentable.mat');
+save('eigentable.mat');
