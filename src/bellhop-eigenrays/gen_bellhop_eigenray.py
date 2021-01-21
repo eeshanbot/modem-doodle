@@ -13,6 +13,11 @@
 #     name: python3
 # ---
 
+# %% [markdown]
+# # Generate BELLHOP files 
+#
+# For eigenray, arrival data related to the `modem-doodle` paper
+
 # %%
 import numpy as np
 import glob
@@ -41,8 +46,9 @@ for key in envs:
                     ii+=1
                     
         envs[key]['ssp'] = ssp_mat
-        envs[key]['bathy'] = 2675
-        
+        envs[key]['bathy'] = 2685
+#         envs[key]['bathy'] = 2675
+
 
 # %%
 eof_status = {0:'baseval',
@@ -68,11 +74,8 @@ for case in eigentable:
             
     case['env'] = eof_status[case['eof_status']]
 
-# %%
-envs.keys()
-
-# %%
-# [x['eof_status'] for x in eigentable]
+# %% [markdown]
+# ## Write ENV files
 
 # %%
 print('Begin cases')
@@ -108,16 +111,114 @@ for case in eigentable:
                +'%f /'%(case['rx_z'])+'\n'
                +'1'+'\n'
                +'%f /'%(rx_r/1000)+'\n'
-
-               +'\'EB\''+'\n'
-               +'3201'+'\n'
-               +'-80 80 /'+'\n'
-               +'0 2750 10'+'\n'
               )
+
+#         ss += ('\'{{run_mode}}\''+'\n'
+#                +'3201'+'\n'
+#                +'-80 80 /'+'\n'
+#                +'0 2750 100'+'\n'
+#               )
+        ss += ('\'{{run_mode}}\''+'\n'
+               +'7121'+'\n'
+               +'-89 89 /'+'\n'
+               +'0 2750 100'+'\n'
+              )        
                 
         
-        with open('eig_runs/case_%s.env'%(f'{ii:02}'),'w') as ff:
-            ff.write(ss)
+        with open('eig_runs/eig_case_%s.env'%(f'{ii:02}'),'w') as ff:
+            ff.write(ss.replace('{{run_mode}}','EB'))
+            
+        with open('eig_runs/arr_case_%s.env'%(f'{ii:02}'),'w') as ff:
+            ff.write(ss.replace('{{run_mode}}','AB'))
+            
+        print('Wrote case %s'%(f'{ii:02}'),end='\r')
         ii+=1
+        
+num_cases = ii-1
+print('ENV files generated')
+
+# %%
+len(np.arange(-89,89.01,0.025))
+
+# %% [markdown]
+# # Read RAY, ARR files
+
+# %%
+from lib_pybellhop.read_arrivals import read_arrivals_asc 
+from lib_pybellhop.read_ray import read_ray 
+
+
+# %%
+all_arrs = []
+
+for arr in sorted(glob.glob('./eig_runs/*.arr')):
+    all_arrs.append(read_arrivals_asc(arr))
+    
+print('ARR files loaded')
+
+# %%
+all_rays = []
+
+for ray in sorted(glob.glob('./eig_runs/*.ray')):
+    all_rays.append(read_ray(ray))
+    
+print('RAY files loaded')
+
+# %%
+# get times by case:
+times_by_case = []
+linear_cases = []
+for yy,case in enumerate(eigentable):
+    for tt in case['owtt_mean']:
+        times_by_case.append(tt)
+        linear_cases.append(case)
+        linear_cases[-1]['tt'] = tt
+        linear_cases[-1]['eb_idx'] = yy        
+
+# %%
+len(times_by_case)==num_cases
+
+# %%
+bad_cases = []
+for case in range(num_cases):
+#     print('Running',case)
+
+    arr = np.squeeze(all_arrs[case][0]).item()
+    
+    ix = np.argmin(np.abs( np.abs(arr['delay']) -times_by_case[case]))
+    ixt = np.min(np.abs( np.abs(arr['delay']) -times_by_case[case]))
+    
+    if ixt>.1:
+        print('Running',case)
+        print('Need new run for',case)
+        print('From', linear_cases[case]['tx_node'],'to',linear_cases[case]['rx_node'])
+        print('want : %.4f   have: %.4f'%(times_by_case[case],np.abs(arr['delay'])[ix]))
+        print('Time difference',ixt)
+        print()
+        bad_cases.append(case)
+        linear_cases[case]['arrival'] = 'None'
+        linear_cases[case]['ray'] = 'None'
+        
+    else:
+        alpha = arr['SrcDeclAngle'][ix]
+
+        rays = all_rays[case]
+        iy = np.argmin(np.abs( np.array([x['alpha0'] for x in rays]) -alpha))
+
+        ray = rays[iy]
+        arr = {key:arr[key][ix] if not key in ['A','delay'] else np.abs(arr[key][ix]) for key in arr if not key=='Narr'}
+        
+        linear_cases[case]['arrival'] = arr
+        linear_cases[case]['ray'] = ray
+
+
+# %%
+from scipy.io import savemat
+
+# %%
+savemat('./eigentable_flat.mat',{'eigentable':linear_cases})
+
+# %%
+arr
 
 # %%

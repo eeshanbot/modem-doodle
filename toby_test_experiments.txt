@@ -34,6 +34,10 @@ Exp 3:
     for details:
     $ cat lamss_icex_tracker_20200310T183218.txt | grep "\$C.TM" | grep "::2"
 
+  * 2 SRC depths at 30 are probably 20m
+  * Clock drift affects RX timing, but H1 has no RX entries
+  * TX is clock+PPS, with PPS from GPS/CSAC
+
 
 Exp 4:
   1. 12:45 > 13:45
