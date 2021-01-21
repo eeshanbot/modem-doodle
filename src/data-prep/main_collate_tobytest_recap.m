@@ -90,7 +90,16 @@ for k = 1:num_events
     % clock error that can't be corrected by CAIRE messages
     % CAMP RX, owtt = 2.0577 (should be 1.0577ish)
     if strcmp(node,'Camp') && owtt > 2.05
-        warn_str = sprintf('1: removed k = %d, node = %s, owtt = %2.4f',k,node,owtt);
+        warn_str = sprintf('1: removed k = %d, rx node = %s, owtt = %2.4f',k,node,owtt);
+        warning(warn_str);
+        
+        bad_events(end+1) = k;
+    end
+    
+    % event that is 0.7601 seconds, Bellhop cannot find arrival, must be
+    % clock error
+    if strcmp(node,'West') && owtt < 0.8
+        warn_str = sprintf('2: removed k = %d, rx node = %s, owtt = %2.4f',k,node,owtt);
         warning(warn_str);
         
         bad_events(end+1) = k;
