@@ -1,4 +1,4 @@
-%% main_plot_ttrecap_tx.m
+%% main_plot_gvel_anomaly.m
 % eeshan bhatt
 
 %% prep workspace
@@ -10,7 +10,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 20;
+zs = 90;
 
 % load modem marker information
 load p_modemMarkerDetails
@@ -52,9 +52,9 @@ for cfg = 1:2
     [CONFIG{cfg}.tx_x,CONFIG{cfg}.tx_y] = eb_ll2xy(CONFIG{cfg}.tx_lat,CONFIG{cfg}.tx_lon,plotBathy.olat,plotBathy.olon);
 end
 
-%% figure 4 : range anomaly plot
+%% figure : range anomaly plot
 
-figure('Name','rangeAnomaly','Renderer', 'painters', 'Position', [10 10 1400 800]); clf;
+figure('Name','rangeAnomaly','Renderer', 'painters', 'Position', [0 0 1280 720]); clf;
 hold on
 load p_legendDetails.mat
 
@@ -119,7 +119,9 @@ for gg = 1:numel(G)
     Y2 = G(gg).std;
     
     % plot gvel +/- stds w/ a patch
-    pXval = [0 5 5 0];
+    minT = min(data_owtt)-.09*range(data_owtt);
+    maxT = max(data_owtt)+.09*range(data_owtt);
+    pXval = [minT maxT maxT minT];
     pYval = [pXval(1:2).*(Y1 + Y2) pXval(3:4).*(Y1 - Y2)];
     p = patch(pXval,pYval,'w','handlevisibility','off');
     p.FaceColor = charcoalGray;
@@ -150,7 +152,7 @@ for gg = 1:numel(G)
     ymin(gg) = min(yval);
     
     lgdstr = ['$\hat{v}_g = $ ' num2str(G(gg).mean,'%2.1f')];
-    lg = legend(Lgd,lgdstr,'location','north','interpreter','latex','fontsize',lg_font_size);
+    lg = legend(Lgd,lgdstr,'location','south','interpreter','latex','fontsize',lg_font_size);
 end
 
 % make plot pretty (and useful)
@@ -175,9 +177,9 @@ ylabel('range anomaly [m]');
 subplot(1,3,2);
 xlabel('owtt [s]');
 
-%% figure 5 : range anomaly plot
+%% figure : range anomaly plot by receiver depth
 
-figure('Name','rangeAnomaly','Renderer', 'painters', 'Position', [10 10 1400 800]); clf;
+figure('Name','rangeAnomaly','Renderer', 'painters', 'Position', [0 0 1280 720]); clf;
 hold on
 load p_legendDetails.mat
 
@@ -259,8 +261,8 @@ for gg = 1:numel(G)
     Y2 = G(gg).std;
     
     % plot gvel +/- stds w/ a patch
-    minT = min(H(dataRef).owtt) - .1*range(H(dataRef).owtt);
-    maxT = max(H(dataRef).owtt) + .1*range(H(dataRef).owtt);
+    minT = min(data_owtt)-.09*range(data_owtt);
+    maxT = max(data_owtt)+.09*range(data_owtt);
     pXval = [minT maxT maxT minT];
     pYval = [pXval(1:2).*(Y1 + Y2) pXval(3:4).*(Y1 - Y2)];
     p = patch(pXval,pYval,'w','handlevisibility','off');
@@ -291,7 +293,7 @@ for gg = 1:numel(G)
     ymin(gg) = min([yval pYval]);
     
     lgdstr = ['$\hat{v}_g = $ ' num2str(G(gg).mean,'%2.1f')];
-    lg = legend(Lgd,lgdstr,'location','north','interpreter','latex','fontsize',lg_font_size);
+    lg = legend(Lgd,lgdstr,'location','south','interpreter','latex','fontsize',lg_font_size);
     
 end
 
@@ -310,7 +312,7 @@ for gg = 1:numel(G)
     ylim([min(ymin) max(ymax)]);
     grid on
     if gg == 2
-        title({['Range anomalies for zs = ' num2str(zs) 'm, N = ' num2str(numel(data_gvel.range))],...
+        title({['Range anomalies for zs = ' num2str(zs) 'm, N = ' num2str(sum(gvelNanIndex))],...
             ['n = ' num2str(G(gg).num) ' from ' G(gg).title]},'fontsize',15)
     else
         title({'    ',...

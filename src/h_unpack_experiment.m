@@ -1,12 +1,12 @@
 function [OBJ] = h_unpack_experiment(experiment)
-%h_load_ttrecap
+% h_unpack_experiment
 %   loads toby test recap in a format to easily play with
 
 % one way travel time data
 OBJ.data_owtt = h_get_nested_val_filter(experiment,'tag','owtt');
 OBJ.sim_owtt = h_get_nested_val_filter(experiment,'gvel','delay');
 
-data_filter = OBJ.data_owtt >= 0.8;
+data_filter = OBJ.data_owtt >= 0.8 & OBJ.data_owtt <= 3; % hack to isolate direct path -- need to specify non-direct vs direct path
 sim_filter = OBJ.sim_owtt ~= 0;
 t_filter = boolean(data_filter .* sim_filter);
 
@@ -59,13 +59,16 @@ OBJ.num_events      = numel(OBJ.tag_tx);
 
 % sound speed estimate
 toby_test_eof_bool = h_get_nested_val_filter(experiment,'tag','eeof',t_filter);
+OBJ.eof_bool = boolean(toby_test_eof_bool);
 if mode(toby_test_eof_bool) == mean(toby_test_eof_bool)
-    OBJ.eof_bool = boolean(toby_test_eof_bool);
     eof_bool = toby_test_eof_bool(1);
     OBJ_EOF = eb_read_eeof('eeof_itp_Mar2013.nc',true);
     weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].'; % manually written down weights from Toby's notes
     OBJ.ssp_estimate = OBJ_EOF.baseval + (OBJ_EOF.eofs * weights).*eof_bool;
     OBJ.ssp_depth    = OBJ_EOF.depth;
 end
+
 end
+
+
 

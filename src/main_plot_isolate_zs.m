@@ -10,7 +10,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 30;
+zs = 90;
 
 % load modem marker information
 load p_modemMarkerDetails
@@ -120,7 +120,7 @@ h_plot_patch(eof_bool,eof_time,[0 .025]);
 grid on
 
 %% figure : bird's eye view
-figure('Name','birdsEye','Renderer', 'painters', 'Position', [10 10 950 650]); clf
+figure('Name','birdsEye','Renderer', 'painters', 'Position', [0 0 1200 1000]); clf
 load p_legendDetails.mat
 
 % bathymetry
@@ -132,7 +132,8 @@ cmap = cmocean('-gray',numel(levels));
 cmap = brighten(cmap,.2);
 colormap(cmap);
 shading flat
-clabel(C,h,'LabelSpacing',1200,'color','w','fontweight','bold','BackgroundColor','k');
+%t1 = clabel(C,h,'manual');
+clabel(C,h,'LabelSpacing',1000,'color','w','fontweight','bold','BackgroundColor','k');
 hold on
 
 % line connections
@@ -219,7 +220,7 @@ for cfg = 1:2
     hold on
     num_rays = numel(CONFIG{cfg}.raytraceR);
     for nrz = 1:num_rays
-        plot(CONFIG{cfg}.raytraceR{nrz},CONFIG{cfg}.raytraceZ{nrz},'color',[charcoalGray 0.2],'handlevisibility','off');
+        plot(CONFIG{cfg}.raytraceR{nrz},CONFIG{cfg}.raytraceZ{nrz},'color',[charcoalGray 0.15],'handlevisibility','off');
     end
     hold off
     title(['ray trace, zs=' num2str(zs) ' m, tmax=' num2str(maxOwtt) ' s'])
