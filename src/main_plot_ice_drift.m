@@ -18,7 +18,7 @@ RECAP = h_unpack_experiment(event);
 
 %% loop
 
-figure('Name','icedrift','Renderer', 'painters', 'Position', [10 10 1200 500]); clf;
+figure('Name','icedrift','Renderer', 'painters', 'Position', [0 0 1280 720]); clf;
 hold on
 
 for node = modem_labels
@@ -51,7 +51,7 @@ for node = modem_labels
     ixlgd = ixlgd + 1;
     Lgd(ixlgd) = scatter(NaN,NaN,markerSize,markerModemMap(node),'o','filled');
     LgdStr{ixlgd} = node;
-    scatter(tval, rval,markerSize,markerModemMap(node),'o','filled','MarkerFaceAlpha',.6);
+    scatter(tval, rval,markerSize,markerModemMap(node),'o','filled','MarkerFaceAlpha',.25);
     grid on
     datetick('x');
     ylabel('drift [m]');
