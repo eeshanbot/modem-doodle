@@ -81,6 +81,24 @@ for k = 1:num_events
    end
 end
 
+%% some manual cleaning of dataset
+bad_events = [];
+for k = 1:num_events
+    node = event(k).tag.rec;
+    owtt = event(k).tag.owtt;
+    
+    % clock error that can't be corrected by CAIRE messages
+    % CAMP RX, owtt = 2.0577 (should be 1.0577ish)
+    if strcmp(node,'Camp') && owtt > 2.05
+        warn_str = sprintf('1: removed k = %d, node = %s, owtt = %2.4f',k,node,owtt);
+        warning(warn_str);
+        
+        bad_events(end+1) = k;
+    end
+end
+
+event(bad_events) = [];
+
 %% save file
 save('tobytest-recap-clean','event');
 
