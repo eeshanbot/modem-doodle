@@ -70,7 +70,6 @@ for fEOF = filter_eof
                             range_mean(n) = mean(RANGE(idx_clust));
                             range_std(n)  = std(RANGE(idx_clust));
                             packet_num(n)  = sum(idx_clust);
-
                         end
                         
                         % output eigentable message
