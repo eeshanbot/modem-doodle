@@ -6,7 +6,7 @@ function [OBJ] = h_unpack_experiment(experiment)
 OBJ.data_owtt = h_get_nested_val_filter(experiment,'tag','owtt');
 OBJ.sim_owtt = h_get_nested_val_filter(experiment,'gvel','delay');
 
-data_filter = OBJ.data_owtt >= 0.8 & OBJ.data_owtt <= 3; % hack to isolate direct path -- need to specify non-direct vs direct path
+data_filter = OBJ.data_owtt > 0;
 sim_filter = OBJ.sim_owtt ~= 0;
 t_filter = boolean(data_filter .* sim_filter);
 
