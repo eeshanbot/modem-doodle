@@ -10,7 +10,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 90;
+zs = 30;
 
 % load modem marker information
 load p_modemMarkerDetails
@@ -43,10 +43,6 @@ maxRange = max([CONFIG{1}.data_range CONFIG{2}.data_range])+100;
 
 % loop through for modifications
 for cfg = 1:2
-    
-    % regrid sound speed for ray tracing
-    Cq = interp1(CONFIG{cfg}.ssp_depth,CONFIG{cfg}.ssp_estimate,0:1:plotBathy.mean);
-    [CONFIG{cfg}.raytraceR,CONFIG{cfg}.raytraceZ] = run_rt(Cq,0:1:plotBathy.mean,zs,maxOwtt);
     
     [CONFIG{cfg}.rx_x,CONFIG{cfg}.rx_y] = eb_ll2xy(CONFIG{cfg}.rx_lat,CONFIG{cfg}.rx_lon,plotBathy.olat,plotBathy.olon);
     [CONFIG{cfg}.tx_x,CONFIG{cfg}.tx_y] = eb_ll2xy(CONFIG{cfg}.tx_lat,CONFIG{cfg}.tx_lon,plotBathy.olat,plotBathy.olon);
@@ -196,96 +192,3 @@ axis equal
 lb = legend(Lgd,LgdStr,'location','bestoutside');
 title(lb,'Nodes');
 title(['Bird''s Eye View of Camp Seadragon, zs = ' num2str(zs) 'm'],'fontsize',20);
-
-%% figure : ray trace differences
-
-figure('Name','ray trace','Renderer', 'painters', 'Position', [10 10 1700 900]); clf;
-
-plotDepth = 400;
-
-for cfg = 1:2
-    
-    subplot(2,4,cfg*4-3)
-    plot(CONFIG{cfg}.ssp_estimate,CONFIG{cfg}.ssp_depth,'k.-','markersize',15)
-    set(gca,'ydir','reverse')
-    grid on
-    ylim([0 plotDepth]);
-    ylabel('z [m/s]');
-    title([CONFIG{cfg}.title ' ssp']);
-    if cfg == 2
-        xlabel('c [m/s]');
-    end
-    
-    subplot(2,4,[cfg*4-2 cfg*4]);
-    hold on
-    num_rays = numel(CONFIG{cfg}.raytraceR);
-    for nrz = 1:num_rays
-        plot(CONFIG{cfg}.raytraceR{nrz},CONFIG{cfg}.raytraceZ{nrz},'color',[charcoalGray 0.15],'handlevisibility','off');
-    end
-    hold off
-    title(['ray trace, zs=' num2str(zs) ' m, tmax=' num2str(maxOwtt) ' s'])
-    yticklabels([])
-    axis tight
-    xlim([0 maxRange]);
-    ylim([0 plotDepth])
-    set(gca,'ydir','reverse')
-    
-    if cfg == 2
-        xlabel('range [m]');
-    end
-    
-    hold on
-    scatter(0,zs,markerSize,'k','s','linewidth',2);
-    
-    for node = CONFIG{cfg}.unique_rx
-        node = node{1}; % change from cell to char
-        for imd = modem_rx_depth
-            index = find(strcmp(CONFIG{cfg}.tag_rx,node) & CONFIG{cfg}.rx_z == imd);
-            if ~isempty(index)
-                scatter(CONFIG{cfg}.data_range(index),CONFIG{cfg}.rx_z(index),...
-                    markerSize,markerModemMap(node),markerShape(imd),'filled');
-                
-                % check by TX node
-                
-                tx_nodes = CONFIG{cfg}.tag_tx(index);
-                unq_tx_nodes = unique(tx_nodes);
-                
-                for utn = unq_tx_nodes
-                    
-                    subindex = find((CONFIG{cfg}.rx_z == imd) & (strcmp(CONFIG{cfg}.tag_tx,utn{1})) & (strcmp(CONFIG{cfg}.tag_rx,node)));
-                    text(mean(CONFIG{cfg}.data_range(subindex)),imd+14,num2str(numel(subindex)),...
-                        'HorizontalAlignment','center','VerticalAlignment','top','fontsize',12,'color',markerModemMap(node))
-                end
-            end
-        end
-    end
-    hold off
-end
-
-% make legend
-load p_legendDetails.mat
-subplot(2,4,[cfg*4-2 cfg*4]);
-hold on
-for node = modem_labels
-    node = node{1};
-    
-    index1 = find(strcmp(CONFIG{1}.tag_rx,node));
-    index2 = find(strcmp(CONFIG{2}.tag_rx,node));
-    index = union(index1,index2);
-    
-    if ~isempty(index)
-        
-        % get tx depths
-        zvals = [CONFIG{1}.rx_z(index1) CONFIG{2}.rx_z(index2)];
-        unq_zvals = unique(zvals);
-        
-        for uz = unq_zvals
-            ixlgd = ixlgd + 1;
-            Lgd(ixlgd) = scatter(NaN,NaN,markerSize,markerModemMap(node),markerShape(uz),'filled');
-            LgdStr{ixlgd} = [num2str(uz) ' m | ' node];
-        end
-    end
-end
-
-lg = legend(Lgd,LgdStr,'location','SouthWest','fontsize',12);
-title(lg,'rx nodes');
