@@ -56,7 +56,7 @@ for fEOF = filter_eof
                         RANGE = RECAP.data_range(index);
                         
                         rnd_owtt = round(OWTT,2);
-                        unq_owtt = unique(rnd_owtt);
+                        unq_owtt = unique(rnd_owtt)
                         numUO = numel(unq_owtt);
                         
                         % get cluster statistics
@@ -92,4 +92,4 @@ for fEOF = filter_eof
 end
 
 clearvars -except eigentable
-save('eigentable.mat');
+%save('eigentable.mat');
