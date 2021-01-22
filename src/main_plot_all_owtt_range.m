@@ -27,7 +27,7 @@ filter_node = {'North','South','East','West','Camp'};
 for fRNX = filter_node
     index_rxn = strcmp(RECAP.tag_rx,fRNX{1});
         
-        for fRXZ = filter_txz
+        for fRXZ = filter_rxz
             index_rxz = RECAP.rx_z == fRXZ;
             
             index = boolean(index_rxn .* index_rxz);
