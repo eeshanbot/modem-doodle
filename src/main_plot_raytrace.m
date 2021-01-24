@@ -11,7 +11,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 90
+zs = 90;
 
 %% load important things
 
@@ -19,7 +19,7 @@ zs = 90
 load p_modemMarkerDetails
 
 % eigenray table (precomputed)
-load bellhop-eigenrays/eigentable_flat
+load ~/.dropboxmit/icex_2020_mat/eigentable_flat
 
 %% load toby test data by source depth
 location = ['../data/tobytest-txz' num2str(zs) '*.mat'];
@@ -95,8 +95,11 @@ for cfg = 1:2
         
         if (eof_status == cfg & tx_z == zs)
             
-            plot(eigentable{ne}.ray.r,eigentable{ne}.ray.z,...
-                'color',markerModemMap(eigentable{ne}.rx_node),'linewidth',1,'handlevisibility','off')
+            if ~strcmp(eigentable{ne}.ray,'None')
+            
+                plot(eigentable{ne}.ray.r,eigentable{ne}.ray.z,...
+                    'color',markerModemMap(eigentable{ne}.rx_node),'linewidth',1,'handlevisibility','off')
+            end
         end
     end
     
