@@ -3,7 +3,7 @@
 % eeshan bhatt
 
 %% prep workspace
-clear; clc; close all
+clear; clc;
 
 lg_font_size = 14;
 
@@ -11,7 +11,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 90;
+zs = 20;
 
 %% load important things
 
@@ -51,9 +51,10 @@ bottomDepth = 2680;
 % positions
 for cfg = 1:2
     % regrid sound speed for ray tracing
+    
     Cq = interp1(CONFIG{cfg}.ssp_depth,CONFIG{cfg}.ssp_estimate,0:1:bottomDepth);
     [CONFIG{cfg}.raytraceR,CONFIG{cfg}.raytraceZ] = run_rt(Cq,0:1:bottomDepth,zs,sampleOWTT);
-    
+        
     [CONFIG{cfg}.rx_x,CONFIG{cfg}.rx_y] = eb_ll2xy(CONFIG{cfg}.rx_lat,CONFIG{cfg}.rx_lon,plotBathy.olat,plotBathy.olon);
     [CONFIG{cfg}.tx_x,CONFIG{cfg}.tx_y] = eb_ll2xy(CONFIG{cfg}.tx_lat,CONFIG{cfg}.tx_lon,plotBathy.olat,plotBathy.olon);
 end
@@ -63,7 +64,7 @@ end
 figure('Name','ray trace','Renderer', 'painters', 'Position', [10 10 1700 900]); clf;
 
 % max plot depth
-plotDepth = 400;
+plotDepth = 200;
 
 for cfg = 1:2
     
@@ -93,12 +94,12 @@ for cfg = 1:2
         eof_status = double(eigentable{ne}.eof_status+1);
         tx_z = double(eigentable{ne}.tx_z);
         
-        if (eof_status == cfg & tx_z == zs)
+        if (eof_status == cfg && tx_z == zs)
             
             if ~strcmp(eigentable{ne}.ray,'None')
             
                 plot(eigentable{ne}.ray.r,eigentable{ne}.ray.z,...
-                    'color',markerModemMap(eigentable{ne}.rx_node),'linewidth',1,'handlevisibility','off')
+                    'color',[markerModemMap(eigentable{ne}.rx_node) 0.5],'linewidth',2,'handlevisibility','off')
             end
         end
     end
