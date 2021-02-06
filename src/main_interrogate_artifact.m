@@ -7,7 +7,7 @@ clear; clc; close all;
 
 % source depths
 % zs = [20 30 90];
-zs = 20;
+zs = 90;
 
 %% prep workspace
 weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].';
@@ -15,9 +15,7 @@ OBJ_EOF = eb_read_eeof('../data/eeof_itp_Mar2013.nc',true);
 
 % traceGray
 myGray = [0.6 0.6 0.6 0.3];
-myBlue   = [70 240 240]./256;
-myRed    = [240 50 230]./256;
-myPurple = myBlue/2 + myRed/2;
+myPurple = [150 0 150]./256;
 
 % water column depth
 zMax = 2680;
@@ -46,17 +44,16 @@ sstep = 11;
 [fixed.R,fixed.Z,fixed.T]           = eb_raytrace(zs,theta0,numstep,sstep,Zq,fixed.Cq,0,zMax);
 
 %% figure --- plot both rays
-
 figure('Name','rays','renderer','painters','position',[200 200 1200 700])
 
 subplot(2,10,[1:2])
-plot(artifact.Cq,Zq);
+plot(artifact.Cq,Zq,'linewidth',3,'color',myPurple);
 h1_beautify();
 title('SSP with the artifact');
 ylabel('depth [m]');
 
 subplot(2,10,[11:12])
-plot(fixed.Cq,Zq);
+plot(fixed.Cq,Zq,'linewidth',3,'color',myPurple);
 h1_beautify();
 title('Corrected SSP');
 ylabel('depth [m]');
@@ -87,96 +84,68 @@ yticklabels([]);
 xlabel('range [m]');
 
 % save
-%h_printThesisPNG(sprintf('zs%u-artifact-raytrace.png',zs));
+h_printThesisPNG(sprintf('zs%u-artifact-raytrace.png',zs));
 
 %% figure --- plot ray shift by theta
 
 figure('Name','comparison-theta','renderer','painters','position',[200 200 1200 700])
 
-ttSpace = linspace(.5,7);
+% axes handle
+h1 = tight_subplot(2,1,.03,.1,.1);
 
-axisZ = 0;
-axisR = 0;
+% time space to interpolate to (linear, usefully dense);
+ttSpace = 0.5:.05:6;
+
+% sort data
 for dTH = 1:numel(theta0)
     
     F = h_interp_owtt(dTH,fixed,ttSpace);
     A = h_interp_owtt(dTH,artifact,ttSpace);
     
-    deltaR = A.R - F.R;
-    deltaZ = A.Z - F.Z;
-    
-    clear alphaVal;
-    for d = 1:numel(deltaR)
-        indR = abs(deltaR - deltaR(d)) <= 1.5*std(deltaR);
-        indZ = abs(deltaZ - deltaZ(d)) <= 1.5*std(deltaZ);
-        sizeValR(d) = sum(indR);
-        sizeValZ(d) = sum(indZ);
-    end
-    
-    sizeValZ = sizeValZ.^2./numel(theta0);
-    sizeValZ(sizeValZ<40) = 40;
-    
-    sizeValR = sizeValR.^2./numel(theta0);
-    sizeValR(sizeValR<40) = 40;
-    
-    % reorder by size
-    [sizeValR,indR] = sort(sizeValR,'descend');
-    [sizeValZ,indZ] = sort(sizeValZ,'descend');
-    deltaR = deltaR(indR);
-    deltaZ = deltaZ(indZ);
-    
-    here = theta0(dTH) .* ones(size(deltaR));
-    
-    xbar = [here(1)-1 here(1)+1];
-       
-    subplot(2,1,1);
-    hold on
-    scatter(here,deltaR,sizeValR,'o','filled','MarkerFaceColor','k','MarkerFaceAlpha',0.05)
-    plot(xbar,[max(deltaR) max(deltaR)],'color',myRed);
-    plot(xbar,[min(deltaR) min(deltaR)],'color',myBlue);
-    plot(xbar,[mean(deltaR) mean(deltaR)],'color',myPurple);
-    hold off
-    
-    if axisR < max(abs(deltaR))
-        axisR = max(abs(deltaR)); 
-    end
-    
-    subplot(2,1,2);
-    hold on
-    scatter(here,deltaZ,sizeValZ,'o','filled','MarkerFaceColor','k','MarkerFaceAlpha',0.05);
-    plot(xbar,[max(deltaZ) max(deltaZ)],'color',myRed);
-    plot(xbar,[min(deltaZ) min(deltaZ)],'color',myBlue);
-    plot(xbar,[mean(deltaZ) mean(deltaZ)],'color',myPurple);
-    hold off
-    
-    if axisZ < max(abs(deltaZ))
-        axisZ = max(abs(deltaZ)); 
-    end
+    delta_owtt_R(dTH,:) = (A.R - F.R) ./ F.R  * 100;
+    delta_owtt_Z(dTH,:) = (A.Z - F.Z) ./ zMax * 100;
 end
-    
-subplot(2,1,1);
-grid on
-ylabel('\delta r [m]');
-title(sprintf('Absolute error caused by the artifact, visualized by ray launch angle [zs=%u m]',zs));
-axis auto
-xlim([min(theta0)-2 max(theta0)+2]);
-buffR = 0.1.*axisR;
-ylim([-axisR-buffR axisR+buffR]);
 
-subplot(2,1,2);
+% violin plot for range
+axes(h1(1));
+violinplot(delta_owtt_R.',theta0,...
+    'ViolinColor',myPurple,'ViolinAlpha',.1,'EdgeColor',[0.6 0.6 0.6],'BoxColor',[0.3 0.3 0.3],'MedianColor',[0 0 0],'Width',0.25);
+grid on
+ylabel('% of total range traveled');
+set(gca,'fontsize',14)
+xlim([0.5 numel(theta0)+0.5]);
+xticklabels([]);
+yticklabels auto
+
+% add info about ttSpace, zs
+yMax = ylim();
+yMax = yMax(2);
+str = sprintf('zs=%u m, owtt = 0.5:0.05:6 s',zs);
+text(numel(theta0)+0.5,yMax,str,'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',13);
+
+% violin plot for depth
+axes(h1(2));
+violinplot(delta_owtt_Z.',theta0,...
+    'ViolinColor',myPurple,'ViolinAlpha',.2,'EdgeColor',[0.6 0.6 0.6],'BoxColor',[0.3 0.3 0.3],'MedianColor',[0 0 0],'Width',0.25);
+grid on
+set(gca,'fontsize',14)
+xlim([0.5 numel(theta0)+0.5]);
 grid on
 xlabel('\theta = launch angle from horizontal');
-ylabel('\delta z [m]');
-xlim([min(theta0)-2 max(theta0)+2]);
-buffZ = 0.1.*axisZ;
-ylim([-axisZ-buffZ axisZ+buffZ]);
+ylabel('% of max water depth');
+yticklabels auto
+
+sgtitle('Relative error caused by the artifact, visualized by ray launch angle','fontsize',18,'fontweight','bold');
 
 % save
-% h_printThesisPNG(sprintf('zs%u-artifact-error.png',zs));
+h_printThesisPNG(sprintf('zs%u-artifact-error-by-theta.png',zs));
 
 %% figure : comparison by owtt
 
 figure('Name','comparison-owtt','renderer','painters','position',[200 200 1200 700])
+
+% axes handle
+h2 = tight_subplot(1,2,.03,.1,.1);
 
 ttSpace = [0.6 1.3 2.0 4.0 5.0 6.0];
 
@@ -186,20 +155,20 @@ for tt = 1:numel(ttSpace)
     
     for dTH = 1:numel(theta0)
         
-        tempRo(dTH) = interp1(artifact.T(dTH,:),artifact.R(dTH,:),ttSpace(tt));
-        tempZo(dTH) = interp1(artifact.T(dTH,:),artifact.Z(dTH,:),ttSpace(tt));
+        artRo(dTH) = interp1(artifact.T(dTH,:),artifact.R(dTH,:),ttSpace(tt));
+        artZo(dTH) = interp1(artifact.T(dTH,:),artifact.Z(dTH,:),ttSpace(tt));
         
-        tempRi(dTH) = interp1(fixed.T(dTH,:),fixed.R(dTH,:),ttSpace(tt));
-        tempZi(dTH) = interp1(fixed.T(dTH,:),fixed.Z(dTH,:),ttSpace(tt));
+        fixedRi(dTH) = interp1(fixed.T(dTH,:),fixed.R(dTH,:),ttSpace(tt));
+        fixedZi(dTH) = interp1(fixed.T(dTH,:),fixed.Z(dTH,:),ttSpace(tt));
 
     end
     
-    delta_th_R(tt,:) = (tempRo - tempRi)./tempRi * 100;
-    delta_th_Z(tt,:) = (tempZo - tempZi)./zMax * 100;
+    delta_th_R(tt,:) = (artRo - fixedRi)./fixedRi * 100;
+    delta_th_Z(tt,:) = (artZo - fixedZi)./zMax * 100;
     
 end
 
-subplot(1,2,1);
+axes(h2(1));
 violinplot(delta_th_R.',ttSpace,...
     'ViolinColor',myPurple,'ViolinAlpha',.2,'EdgeColor',[0.6 0.6 0.6],'BoxColor',[0.3 0.3 0.3],'MedianColor',[0 0 0],'Width',0.4);
 grid on
@@ -207,17 +176,29 @@ view([90 90])
 ylabel('% of total range traveled');
 xlabel('travel time [s]');
 xlim([0.5 6.5])
+yticklabels auto
 
 
-subplot(1,2,2);
+axes(h2(2));
 violinplot(delta_th_Z.',ttSpace,...
             'ViolinColor',myPurple,'ViolinAlpha',.2,'EdgeColor',[0.6 0.6 0.6],'BoxColor',[0.3 0.3 0.3],'MedianColor',[0 0 0],'Width',0.4);
 grid on
 view([90 90])
-ylabel('% compared to max water depth');
+ylabel('% of max water depth');
 xlim([0.5 6.5])
+xticklabels([]);
+yticklabels auto
 
-sgtitle(sprintf('Relative error caused by the artifact, visualized by travel time [zs=%u m]',zs),'fontsize',18,'fontweight','bold');
+% add info about ttSpace, zs
+yMax = ylim();
+yMax = yMax(2);
+str = sprintf('zs=%u m, theta = -50:4:50',zs);
+text(0.5,yMax,str,'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',13);
+
+sgtitle('Relative error caused by the artifact, visualized by travel time','fontsize',18,'fontweight','bold');
+
+% save
+h_printThesisPNG(sprintf('zs%u-artifact-error-by-owtt.png',zs));
 
 %% h1_beautify
 function [] = h1_beautify()
