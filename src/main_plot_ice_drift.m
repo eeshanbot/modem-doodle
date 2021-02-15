@@ -18,7 +18,7 @@ RECAP = h_unpack_experiment(event);
 
 %% loop
 
-figure('Name','icedrift','Renderer', 'painters', 'Position', [0 0 1280 720]); clf;
+figure('Name','icedrift','Renderer', 'painters', 'Position', [0 0 1100 600]); clf;
 hold on
 
 for node = modem_labels
@@ -67,3 +67,5 @@ axis tight
 h_plot_patch(eof_bool,eof_time,[.025 0.025])
 title('Ice Floe Drift from Modem Buoy GPS');
 hold off
+
+h_printThesisPNG('ice-floe-drift.png');
