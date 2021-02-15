@@ -10,7 +10,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 30;
+zs = 20;
 
 % load modem marker information
 load p_modemMarkerDetails
@@ -116,7 +116,7 @@ h_plot_patch(eof_bool,eof_time,[0 .025]);
 grid on
 
 %% figure : bird's eye view
-figure('Name','birdsEye','Renderer', 'painters', 'Position', [0 0 1200 1000]); clf
+figure('Name','birdsEye','Renderer', 'painters', 'Position', [0 0 900 800]); clf
 load p_legendDetails.mat
 
 % bathymetry
@@ -191,4 +191,6 @@ ylabel('y [m]')
 axis equal
 lb = legend(Lgd,LgdStr,'location','bestoutside');
 title(lb,'Nodes');
-title(['Bird''s Eye View of Camp Seadragon, zs = ' num2str(zs) 'm'],'fontsize',20);
+title(['Bird''s Eye View of Camp Seadragon, zs = ' num2str(zs) 'm'],'fontsize',18);
+
+h_printThesisPNG(sprintf('zs%u-birdseye.png',zs));
