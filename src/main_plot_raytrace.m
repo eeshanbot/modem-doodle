@@ -3,7 +3,7 @@
 % eeshan bhatt
 
 %% prep workspace
-clear; clc;
+clear; clc; close all;
 
 lg_font_size = 14;
 
@@ -35,8 +35,8 @@ A = load([listing(2).folder '/' listing(2).name]);
 EEOF = h_unpack_experiment(A.experiment);
 
 % create cell array of structure
-BASE.title = 'baseval';
-EEOF.title = 'eof';
+BASE.title = '{\it Baseval}';
+EEOF.title = '{\it EOF}';
 CONFIG = {BASE EEOF};
 clear BASE EEOF;
 
@@ -53,7 +53,7 @@ for cfg = 1:2
     % regrid sound speed for ray tracing
     
     Cq = interp1(CONFIG{cfg}.ssp_depth,CONFIG{cfg}.ssp_estimate,0:1:bottomDepth);
-    [CONFIG{cfg}.raytraceR,CONFIG{cfg}.raytraceZ] = run_rt(Cq,0:1:bottomDepth,zs,sampleOWTT);
+    [CONFIG{cfg}.raytraceR,CONFIG{cfg}.raytraceZ] = run_rt(Cq,0:1:bottomDepth,zs,sampleOWTT+1);
         
     [CONFIG{cfg}.rx_x,CONFIG{cfg}.rx_y] = eb_ll2xy(CONFIG{cfg}.rx_lat,CONFIG{cfg}.rx_lon,plotBathy.olat,plotBathy.olon);
     [CONFIG{cfg}.tx_x,CONFIG{cfg}.tx_y] = eb_ll2xy(CONFIG{cfg}.tx_lat,CONFIG{cfg}.tx_lon,plotBathy.olat,plotBathy.olon);
@@ -64,24 +64,25 @@ end
 figure('Name','ray trace','Renderer', 'painters', 'Position', [10 10 1700 900]); clf;
 
 % max plot depth
-plotDepth = 200;
+plotDepth = 300;
 
 for cfg = 1:2
     
     % sound speed plot
-    subplot(2,4,cfg*4-3)
+    subplot(2,10,[cfg*10-9 cfg*10-8])
     plot(CONFIG{cfg}.ssp_estimate,CONFIG{cfg}.ssp_depth,'k.-','markersize',15)
     set(gca,'ydir','reverse')
     grid on
     ylim([0 plotDepth]);
-    ylabel('z [m/s]');
+    ylabel('z [m]');
     title([CONFIG{cfg}.title ' ssp']);
     if cfg == 2
         xlabel('c [m/s]');
     end
+    xlim([1432 1448])
     
     % plot rays
-    subplot(2,4,[cfg*4-2 cfg*4]);
+    subplot(2,10,[cfg*10-7 cfg*10]);
     hold on
     num_rays = numel(CONFIG{cfg}.raytraceR);
     for nrz = 1:num_rays
@@ -106,12 +107,14 @@ for cfg = 1:2
     
     % decorate plot
     hold off
-    title(['ray trace, zs=' num2str(zs) ' m']);
-    yticklabels([])
+    title(sprintf('%s rays and eigenrays, zs=%u m',CONFIG{cfg}.title,zs));
+    yticks(0:50:300);
+    yticklabels([]);
     axis tight
     xlim([0 maxRange]);
     ylim([0 plotDepth])
     set(gca,'ydir','reverse')
+    box on
     
     % xlabel if bottom
     if cfg == 2
@@ -151,7 +154,7 @@ end
 
 %% make legend - manual is easier
 load p_legendDetails.mat
-subplot(2,4,[cfg*4-2 cfg*4]);
+subplot(2,10,[cfg*10-7 cfg*10]);
 hold on
 for node = modem_labels
     node = node{1};
@@ -175,3 +178,6 @@ end
 
 lg = legend(Lgd,LgdStr,'location','SouthWest','fontsize',12);
 title(lg,'rx nodes');
+
+%% export
+h_printThesisPNG(sprintf('zs%u-raytrace.png',zs))
