@@ -249,3 +249,5 @@ for ml = modem_labels
 end
     
 legend(Lgd,LgdStr,'location','WestOutside','fontsize',14);
+
+%% figure 3

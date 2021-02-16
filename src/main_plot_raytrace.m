@@ -11,7 +11,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 20;
+zs = 90;
 
 %% load important things
 
@@ -61,7 +61,7 @@ end
 
 %% figure : ray trace
 
-figure('Name','ray trace','Renderer', 'painters', 'Position', [10 10 1700 900]); clf;
+figure('Name','ray trace','Renderer', 'painters', 'Position', [10 10 1700 1000]); clf;
 
 % max plot depth
 plotDepth = 300;

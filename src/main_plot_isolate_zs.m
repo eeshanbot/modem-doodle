@@ -193,4 +193,4 @@ lb = legend(Lgd,LgdStr,'location','bestoutside');
 title(lb,'Nodes');
 title(['Bird''s Eye View of Camp Seadragon, zs = ' num2str(zs) 'm'],'fontsize',18);
 
-h_printThesisPNG(sprintf('zs%u-birdseye.png',zs));
+%h_printThesisPNG(sprintf('zs%u-birdseye.png',zs));
