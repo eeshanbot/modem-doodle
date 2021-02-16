@@ -140,7 +140,7 @@ for cfg = 1:2
         %plot([CONFIG{cfg}.rx_x(nx) CONFIG{cfg}.tx_x(nx)],[CONFIG{cfg}.rx_y(nx) CONFIG{cfg}.tx_y(nx)],...
         %'color',[1 1 1 .03],'linewidth',10,'HandleVisibility','off');
         plot([CONFIG{cfg}.rx_x(nx) CONFIG{cfg}.tx_x(nx)],[CONFIG{cfg}.rx_y(nx) CONFIG{cfg}.tx_y(nx)],...
-            '--','color',markerModemMap(txNode),'linewidth',1);
+            '--','color',markerModemMap(txNode),'linewidth',3);
     end
 end
 
