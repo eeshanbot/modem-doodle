@@ -10,10 +10,12 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 90;
+zs = 30;
 
 % load modem marker information
 load p_modemMarkerDetails
+
+figPos = [0 0 1500 720];
 
 %% load bathymetry data
 bathyfile = '~/missions-lamss/cruise/icex20/data/environment/noaa_bathy_file.nc';
@@ -33,8 +35,8 @@ A = load([listing(2).folder '/' listing(2).name]);
 EEOF = h_unpack_experiment(A.experiment);
 
 % create cell array of structure
-BASE.title = 'baseval';
-EEOF.title = 'eof';
+BASE.title = '{\itBaseval}';
+EEOF.title = '{\itEOF}';
 CONFIG = {BASE EEOF};
 clear BASE EEOF;
 
@@ -54,7 +56,7 @@ end
 
 %% figure : range anomaly plot
 
-figure('Name','rangeAnomaly','Renderer', 'painters', 'Position', [0 0 1280 720]); clf;
+figure('Name','rangeAnomaly','Renderer', 'painters', 'Position', figPos); clf;
 hold on
 load p_legendDetails.mat
 
@@ -148,11 +150,12 @@ for gg = 1:numel(G)
     % plot black dots for ones that seed gvel calculation
     plot(G(gg).owtt,G(gg).range - mean_gvel .* G(gg).owtt,'.','color',[.4 .4 .4],'markersize',8)
     
-    ymax(gg) = max(yval)+2;
-    ymin(gg) = min(yval);
+    ymax(gg) = max( [yval G(gg).range - mean_gvel .* G(gg).owtt] );
+    ymin(gg) = min( [yval G(gg).range - mean_gvel .* G(gg).owtt] );
+
     
-    lgdstr = ['$\hat{v}_g = $ ' num2str(G(gg).mean,'%2.1f')];
-    lg = legend(Lgd,lgdstr,'location','south','interpreter','latex','fontsize',lg_font_size);
+    lgdstr = ['u=' num2str(G(gg).mean,'%2.1f') ' m/s'];
+    lg = legend(Lgd,lgdstr,'location','northwest','fontsize',lg_font_size-2);
 end
 
 % make plot pretty (and useful)
@@ -177,9 +180,11 @@ ylabel('range anomaly [m]');
 subplot(1,3,2);
 xlabel('owtt [s]');
 
+h_printThesisPNG(sprintf('zs%u-rangeAnomaly.png',zs));
+
 %% figure : range anomaly plot by receiver depth
 
-figure('Name','rangeAnomaly','Renderer', 'painters', 'Position', [0 0 1280 720]); clf;
+figure('Name','rangeAnomaly','Renderer', 'painters', 'Position', figPos); clf;
 hold on
 load p_legendDetails.mat
 
@@ -292,8 +297,8 @@ for gg = 1:numel(G)
     ymax(gg) = max([yval pYval])+3;
     ymin(gg) = min([yval pYval]);
     
-    lgdstr = ['$\hat{v}_g = $ ' num2str(G(gg).mean,'%2.1f')];
-    lg = legend(Lgd,lgdstr,'location','south','interpreter','latex','fontsize',lg_font_size);
+    lgdstr = ['u=' num2str(G(gg).mean,'%2.1f') ' m/s'];
+    lg = legend(Lgd,lgdstr,'location','northwest','fontsize',lg_font_size-3);
     
 end
 
@@ -303,13 +308,14 @@ for gg = 1:numel(G)
     
     if gg <=3
         dataRef = 1;
+        ylim([min(ymin(1:3)) max(ymax(1:3))]);
     else
         dataRef = 2;
+        ylim([min(ymin(4:6)) max(ymax(4:6))]);
     end
     
     xbuff = .09.*range(data_owtt);
     xlim([min(data_owtt)-xbuff max(data_owtt)+xbuff])
-    ylim([min(ymin) max(ymax)]);
     grid on
     if gg == 2
         title({['Range anomalies for zs = ' num2str(zs) 'm, N = ' num2str(sum(gvelNanIndex))],...
@@ -328,3 +334,5 @@ ylabel({'zr = 90m','range anomaly [m]'},'fontsize',lg_font_size);
 
 subplot(2,3,5);
 xlabel('owtt [s]');
+
+h_printThesisPNG(sprintf('zs%u-rangeAnomaly-depthBin.png',zs));
