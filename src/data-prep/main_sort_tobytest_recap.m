@@ -4,12 +4,14 @@
 clear; clc;
 
 %% load all event data
-load('./tobytest-recap-clean.mat');
+load('../../data/tobytest-recap-clean.mat');
 
 %% filters
 
 tx_depth = h_unpack_val(event,'tx','depth');
 eeof_bool = h_unpack_val(event,'tag','eeof');
+owtt = h_unpack_val(event,'tag','owtt');
+index_owtt = owtt <= 4;
 
 % unique tx, eeof_bool
 unique_tx_depth = sort(unique(tx_depth));
@@ -22,7 +24,8 @@ for utd = unique_tx_depth
         
         index_depth = tx_depth == utd;
         index_eeof  = eeof_bool == ute;
-        index = and(index_depth,index_eeof);
+        
+        index = boolean(index_depth .* index_eeof .* index_owtt);
         
         str = sprintf('tobytest-txz%d-eeof%d',utd,ute);
         
