@@ -15,6 +15,7 @@
 
 # %%
 do_bellhop = False
+save_files = False
 
 # %% [markdown]
 # # Generate BELLHOP files
@@ -191,25 +192,15 @@ def get_dt(ARR):
 
     bncSum = ARR['NumTopBnc']+ARR['NumBotBnc']
 
-    must_bnc = False
-    n_bnc = 0
-
-    if len(bncSum[bncSum==0]>0):
-        A = ARR['A'][bncSum==0]
-        delay = ARR['delay'][bncSum==0]
-
-    else:
-
-        must_bnc = True
-
-        # find lowest number of bounces that produces non-empty array
-        for ii in reversed(range(np.max(bncSum)+1)):
-            if len(bncSum[bncSum<=ii])>0:
-                A = ARR['A'][bncSum<=ii]
-                delay = ARR['delay'][bncSum<=ii]
-                n_bnc = ii
-
-    return must_bnc, n_bnc, np.sum(np.abs(delay)*np.abs(A)**2)/np.sum(np.abs(A)**2)
+    response = {key:np.nan  for key in range(5)}
+    for ii in response:
+        if len(bncSum[bncSum==ii])>0:
+            A = ARR['A'][bncSum==ii]
+            delay = ARR['delay'][bncSum==ii]
+            n_bnc = ii
+            response[ii] = np.sum(np.abs(delay)*np.abs(A)**2)/np.sum(np.abs(A)**2)
+            
+    return response
 
 
 # %%
@@ -224,38 +215,31 @@ for arrfil in sorted(glob.glob('./gvel_runs/*.arr'),key=lambda s: (int(s[-8:-4])
     key = arrfil.split('arr_case_')[1][:-9]
 
     arr,pos,freq = read_arrivals_asc(arrfil)
-    
+
     arr0 = arr[int((arr.shape[0]-1)/2),int((arr.shape[1]-1)/2),0]
-    
+
     arr_concat = {key:[] for key in arr[0,0,0] if not key=='Narr'}
     for ii in range(arr.shape[0]):
         for jj in range(arr.shape[1]):
             for key2 in arr_concat:
                 arr_concat[key2].extend(arr[ii,jj,0][key2])
-                
+
     arr_concat = {key:np.array(arr_concat[key]) for key in arr_concat}
-    
-    must_bnc, n_bnc, dt = get_dt(arr_concat)
-    must_bnc0, n_bnc0, dt0 = get_dt(arr0)
-    
+
+    dt = get_dt(arr_concat)
+    dt0 = get_dt(arr0)
+
     all_arrs[key].append({'index':int(arrfil[-8:-4]),
                           'fname':arrfil,
-                          'arr':arr,
+                          #'arr':arr,
                           'pos':pos,
                           'freq':freq,
-                          'must_bnc0':must_bnc0,
-                          'n_bnc0':n_bnc0,
                           'owtt0':dt0,
-                          'must_bnc':must_bnc,
-                          'n_bnc':n_bnc,
                           'owtt':dt})
     print('%20s'%(key),int(arrfil[-8:-4]),' '*10,end='\r')
     
 print('')
 print('ARR files loaded')
-
-# %%
-print(all_arrs['hycom'][-1]['owtt'],all_arrs['hycom'][-1]['owtt0'])
 
 # %%
 from scipy.io import savemat
@@ -266,17 +250,28 @@ from scipy.io import savemat
 # %%
 # for key in all_arrs:
 #     savemat('./gveltable_models_'+key+'.mat',{key:all_arrs[key]})    
-savemat('./gveltable_models.mat',{'all_arrs': all_arrs})
+if save_files:
+    savemat('./gveltable_models.mat',{'all_arrs': all_arrs})
 
 # %%
+headers = ['index']+['owtt_%d_bounce'%(x) for x in range(5)]
+
 for key in all_arrs:
-    with open('./csv_arr/'+key+'.csv','w+') as ff:
-        headers = ['index','must_bnc','n_bnc','owtt','must_bnc0','n_bnc0','owtt0']
+    with open('./csv_arr/'+key+'-gridded.csv','w+') as ff:
         ff.write(','.join(headers)+'\n')
-        
-#         headers = ['index','must_bnc','n_bnc','arr:owtt','must_bnc0','n_bnc0','arr:owtt0']
         for it in all_arrs[key]:
-            ff.write(','.join([str(it[hdr]) for hdr in headers])+'\n')
+            ff.write('%d,'%(it['index']))
+            ff.write(','.join([str(x) for x in it['owtt0'].values()]))
+            ff.write('\n')
+#             ff.write(','.join([str(it[hdr]) for hdr in headers])+'\n')
+            
+    with open('./csv_arr/'+key+'-center.csv','w+') as ff:
+        ff.write(','.join(headers)+'\n')
+        for it in all_arrs[key]:
+            ff.write('%d,'%(it['index']))
+            ff.write(','.join([str(x) for x in it['owtt0'].values()]))
+            ff.write('\n')
+#             ff.write(','.join([str(it[hdr]) for hdr in headers])+'\n')
 
 
 # %% [markdown]
@@ -334,7 +329,7 @@ def make_plot(tx_z=20.,rx_z=30.,mode='gvel'):
     for ii,key in enumerate(all_arrs):
         
         rr = np.array([x['pos']['r']['range'][0] for jj,x in enumerate(all_arrs[key]) if mask[jj]])
-        tt = np.array([x['owtt'] for jj,x in enumerate(all_arrs[key]) if mask[jj]])
+        tt = np.array([np.nanmin(list(x['owtt'].values())) for jj,x in enumerate(all_arrs[key]) if mask[jj]])
 
         if mode=='gvel':
             yy = rr/tt
@@ -368,3 +363,5 @@ interact(make_plot,
          mode=['owtt','gvel'],
          continuous_update=False)
 print()
+
+# %%
