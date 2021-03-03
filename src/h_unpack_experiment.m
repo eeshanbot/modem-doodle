@@ -62,8 +62,15 @@ toby_test_eof_bool = h_get_nested_val_filter(experiment,'tag','eeof',t_filter);
 OBJ.eof_bool = boolean(toby_test_eof_bool);
 if mode(toby_test_eof_bool) == mean(toby_test_eof_bool)
     eof_bool = toby_test_eof_bool(1);
-    OBJ_EOF = eb_read_eeof('../data/eeof_itp_Mar2013.nc',true);
-    weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].'; % manually written down weights from Toby's notes
+    
+    % w/ artifact (icex20)
+    %OBJ_EOF = eb_read_eeof('../data/eeof_itp_Mar2013.nc',true);
+    %weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].'; % manually written down weights from Toby's notes
+    
+    % fixed for rehaul
+    OBJ_EOF = eb_read_eeof('../data/eeof-itp-fix-2013.nc',true);
+    weights = [-6.112 15.368 -1.441 2.219 0.138 -0.322 -1.994].'; % chosen by Bradli for CTD at 2020 Mar 09 1202
+    
     OBJ.ssp_estimate = OBJ_EOF.baseval + (OBJ_EOF.eofs * weights).*eof_bool;
     OBJ.ssp_depth    = OBJ_EOF.depth;
 end
