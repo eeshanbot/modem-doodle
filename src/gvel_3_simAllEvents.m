@@ -1,4 +1,4 @@
-%% main_plot_bellhop_gvel
+%% gvel_3_simAllEvents
 
 %% prep workspace
 clear; clc; close all;
@@ -47,12 +47,13 @@ end
 % load modem marker information
 load p_modemMarkerDetails
 
+colorSet = {[0 0 0],[0 0 0],[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./256};
+
+
 %% plot all data group velocity
 
 figure('name','gvel-by-owtt','renderer','painters','position',[108 108 1200 1000]);
-t = tiledlayout(3,2,'TileSpacing','none','Padding','compact');
-
-colorSet = {[0 0 0],[0 0 0],[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./256};
+tiledlayout(3,2,'TileSpacing','none','Padding','compact');
 
 count = 0;
 for zs = [20 30 90]
@@ -69,7 +70,7 @@ for zs = [20 30 90]
         if sum(index)>=1
             % plot
             hold on
-            for s = [3 4 5]
+            for s = [5 3 4]
                 xval = A.owtt(index);
                 yval = T{s}.gvel(index);
                 
@@ -119,7 +120,7 @@ hold on
 for s = [3 4 5]
     plot(NaN,NaN,'-','color',colorSet{s});
 end
-lg = legend('Mean','Chosen Weights','HYCOM','location','southeast');
+lg = legend('HYCOM','Mean of EOF set','Chosen Weights','location','southeast');
 title(lg,'Sound Speed Inputs');
 
 % title
@@ -132,8 +133,6 @@ sgtitle('Group velocity estimates by source (20,30,90 m) and receiver (30,90 m) 
 
 figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1200 1000]);
 t = tiledlayout(3,2,'TileSpacing','none','Padding','compact');
-
-colorSet = {[0 0 0],[0 0 0],[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./256};
 
 count = 0;
 for zs = [20 30 90]
@@ -170,9 +169,6 @@ for zs = [20 30 90]
                 p.FaceAlpha = .5;
                 p.EdgeColor = colorSet{s};
                 p.LineWidth = 3;
-               
-                %plot(xval,yval(shuffle),'o','color',[colorSet{s} 0.8],'linewidth',3);
-                %scatter(xval,yval(shuffle),'filled','MarkerFaceColor',colorSet{s},'MarkerFaceAlpha',0.4);
                 
             end
             hold off
@@ -218,4 +214,38 @@ title(lg,'Sound Speed Inputs');
 
 % title
 sgtitle('Range anomaly by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-h_printThesisPNG('range-anomaly-owtt-newalgorithm.png')
+% h_printThesisPNG('range-anomaly-owtt-newalgorithm.png')
+
+%% histogram of all events
+
+figure('name','rangeanomaly-histogram','renderer','painters','position',[108 108 1200 500]);
+clear h;
+hold on
+
+edges = [-14:2:20];
+count = 0;
+for s = [5 3 4]
+    count = count + 1;
+    T{s}.rangeAnomaly = T{s}.gvel .* A.owtt - A.recRange;
+    
+    h(count,:) = histcounts(T{s}.rangeAnomaly,edges,'normalization','probability');
+end
+hold off
+
+B = bar(edges(1:end-1),h,0.9,'FaceColor','flat','EdgeColor','none');
+count = 0;
+for s = [5 3 4]
+    count = count + 1;
+   B(count).CData = colorSet{s};
+   B(count).FaceAlpha = 0.8;
+end
+grid on
+xticks(edges+1);
+set(gca,'fontsize',14);
+title('Histogram of range anomaly in 2 meter bins');
+xlabel('range anomaly [m]');
+ylabel('probability');
+
+legend('HYCOM','Mean of EOF set','Chosen Weights');
+
+h_printThesisPNG('rangeAnomaly-hist.png');
