@@ -11,7 +11,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 20;
+zs = 30;
 
 %% load important things
 
@@ -219,6 +219,8 @@ for cfg = 2
         if (eof_status == cfg && tx_z == zs)
             
             if ~strcmp(eigentable{ne}.ray,'None')
+                
+                eigentable{ne}
             
                 plot(eigentable{ne}.ray.r,eigentable{ne}.ray.z,...
                     'color',[markerModemMap(eigentable{ne}.rx_node) 0.5],'linewidth',2,'handlevisibility','off')
