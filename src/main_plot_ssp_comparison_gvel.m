@@ -9,9 +9,9 @@ file{3} = 'ssp-hycom.csv';
 file{2} = 'ssp-fixed-eeof.csv';
 file{1} = 'ssp-fixed-baseval.csv';
 
-lineStyleSet = {'-',':','-'};
+lineStyleSet = {'-','-','-'};
 lineWidthSet = [4 3 4];
-colorSet = {[51, 152, 152]./256,[51, 152, 152]./256,[152 134 117]./256};
+colorSet = {[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./256};
 
 figure('name','ssp-for-gvel','renderer','painters','position',[108 108 400 800]);
 
