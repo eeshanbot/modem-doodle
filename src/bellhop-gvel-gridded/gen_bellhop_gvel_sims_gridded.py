@@ -261,7 +261,7 @@ for key in all_arrs:
         ff.write(','.join(headers)+'\n')
         for it in all_arrs[key]:
             ff.write('%d,'%(it['index']))
-            ff.write(','.join([str(x) for x in it['owtt0'].values()]))
+            ff.write(','.join([str(x) for x in it['owtt'].values()]))
             ff.write('\n')
 #             ff.write(','.join([str(it[hdr]) for hdr in headers])+'\n')
             
@@ -363,5 +363,25 @@ interact(make_plot,
          mode=['owtt','gvel'],
          continuous_update=False)
 print()
+
+# %%
+all_arrs['fixed-eeof'][0]
+
+# %%
+
+# pattern :
+# index :
+
+idx_ref = [808,809,810,811,812,
+           814,817,818,819,821,
+           969,971,972,976,984,
+           985,986,997,998,999,
+           1118,1119,1120,1123,
+           1124,1126]
+
+for ii in idx_ref:
+    print(all_arrs['fixed-eeof'][ii]['owtt'])
+    print(all_arrs['fixed-eeof'][ii]['owtt0'])
+    print()
 
 # %%
