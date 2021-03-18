@@ -104,6 +104,14 @@ for k = 1:num_events
         
         bad_events(end+1) = k;
     end
+    
+    % event that is nominally 1.58* seconds
+    if strcmp(node,'East') && owtt > 1.55
+        warn_str = sprintf('3: removed k = %d, rx node = %s, owtt = %2.4f',k,node,owtt);
+        warning(warn_str);
+        
+        bad_events(end+1) = k;
+    end
 end
 
 event(bad_events) = [];

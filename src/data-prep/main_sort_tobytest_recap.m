@@ -4,7 +4,7 @@
 clear; clc;
 
 %% load all event data
-load('../../data/tobytest-recap-clean.mat');
+load('../../data/tobytest-recap-clean-v2.mat');
 
 %% filters
 
