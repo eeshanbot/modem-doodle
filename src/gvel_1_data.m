@@ -10,7 +10,7 @@ A = readtable('./bellhop-gvel-gridded/gveltable.csv');
 % load modem marker information
 load p_modemMarkerDetails
 
-plotbool = [0 0 0 0 1];
+plotbool = [0 0 0 0 0 1];
 
 %% figure --- owtt vs range
 if plotbool(1) == 1
@@ -35,7 +35,7 @@ if plotbool(1) == 1
     ylabel('travel time [s]');
     title(sprintf('All valid events, n=%u',numel(A.simGvel)));
     
-
+    
     % only simGvel
     indValid = ~isnan(A.simGvel);
     subplot(2,1,2);
@@ -56,7 +56,7 @@ if plotbool(1) == 1
     xlabel('range [m]');
     ylabel('travel time [s]');
     title(sprintf('Events with in situ group velocity estimate, n=%u',sum(indValid)));
-
+    
 end
 
 
@@ -205,35 +205,97 @@ if plotbool(4) == 1
     xlim([0.8 2.3]);
 end
 
-%% gvel anomaly vs owtt, separate by source depths
-% 
-% if plotbool(5) == 1
-%     figure('name','gvel-by-zs','renderer','painters','position',[108 108 1250 1000]);
-%     
-%     nodes = unique([A.txNode]);
-%     
-%     % get index for gvel data
-%     indValid = ~isnan(A.simGvel);
-%     
-%     for zs = [20 30 90]
-%         indSrcDepth = A.sourceDepth == zs;
-%         
-%         for zr = [20 30 90]
-%             indRecDepth = A.recDepth == zs;
-%             
-%             for n = nodes
-%                 indNode = A.rxNode == n{1};
-%             
-%                 indPlot = boolean(indValid .* indSrcDepth .* indRecDepth .* indNode);
-%                 
-%                 xval = A.owtt(indPlot);
-%                 yval = A.owtt(indPlot);
-%                 scatter(xval,yval,...
-%                 150,markerModemMap(A.rxNode{k}),markerShape(A.recDepth(k)),...
-%                 'filled','MarkerFaceAlpha',0.4,'handlevisibility','off');
-%                 
-%                 
-%             end
-%         end
-%     end
-% end
+%% range anomaly figure for valid in situ estimates
+
+figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1200 1000]);
+t = tiledlayout(3,2,'TileSpacing','none','Padding','compact');
+
+% remove crazy 11 second event
+indBad = find(A.owtt > 4);
+load outlierIndex.mat
+
+% 1.587 events, had clock errors + Bellhop can't resolve these
+indBad = [indBad; outlier];
+A.simGvel(indBad) = NaN;
+
+
+index3 = ~isnan(A.simGvel);
+count = 0;
+for zs = [20 30 90]
+    index1 = A.sourceDepth == zs;
+    
+    for zr = [30 90]
+        index2 = A.recDepth == zr;
+        
+        count = count + 1;
+        nexttile;
+        
+        index = boolean(index1.*index2.*index3);
+        
+        if sum(index)>=1
+            % plot
+            hold on
+            plot([0 4],[0 0],'--','linewidth',3,'color',[0 0 0 0.6],'handlevisibility','off');
+            
+            xval = A.owtt(index);
+            yval = A.simGvel(index) .* A.owtt(index) - A.recRange(index);
+            
+            % remove nans
+            xval = xval(~isnan(yval));
+            yval = yval(~isnan(yval));
+            
+            % sort
+            [xval,shuffle] = sort(xval);
+            yval = yval(shuffle);
+            
+            % make boundary
+            b = boundary(xval,yval);
+            p = patch(xval(b),yval(b),'k');
+            p.FaceAlpha = .1;
+            p.EdgeColor = 'w';
+            p.LineWidth = 2;
+            
+            for k = 1:numel(index)
+                if index(k) == 1
+                    scatter(A.owtt(index),A.simGvel(index) .* A.owtt(index) - A.recRange(index),...
+                        150,markerModemMap(A.rxNode{k}),markerShape(A.recDepth(k)),...
+                        'filled','MarkerFaceAlpha',0.1,'handlevisibility','off');
+                end
+            end
+            
+            
+            hold off
+        end
+        set(gca,'fontsize',13)
+        
+        % for all grids
+        title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','normal');
+        text(2.2,20,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
+        
+        if sum(index)>1
+            text(2.2,20,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+        else
+            text(2.2,20,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+        end
+        grid on
+        
+        xlim([0.9 2.26])
+        ylim([-16 26]);
+        
+        if mod(count,2)~=1
+            yticklabels([])
+        else
+            ylabel('range anomaly [m]');
+        end
+        
+        if count >=5
+            xlabel('one way travel time [s]');
+        else
+            xticklabels([]);
+        end
+    end
+end
+
+% title
+sgtitle('Range anomaly by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
+% h_printThesisPNG('range-anomaly-owtt-newalgorithm.png')
