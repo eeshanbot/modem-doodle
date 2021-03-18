@@ -12,6 +12,7 @@ A.gvel = A.recRange ./ A.owtt;
 indBad = find(A.owtt > 4);
 load outlierIndex.mat
 
+% 1.587 events, had clock errors + Bellhop can't resolve these
 indBad = [indBad; outlier];
 A.gvel(indBad) = NaN;
 
@@ -31,6 +32,7 @@ for k = 1:numel(listing)
         [~,here] = min(abs(tableDelay - delay));
         T0.gvel(j) = A.recRange(j)./tableDelay(here);
         T0.owtt(j) = tableDelay(here);
+        T0.numBounces(j) = here-1;
         if sum(j == indBad) == 1
             T0.gvel(j) = NaN;
         end
@@ -49,11 +51,12 @@ load p_modemMarkerDetails
 
 colorSet = {[0 0 0],[0 0 0],[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./256};
 
-
 %% plot all data group velocity
 
 figure('name','gvel-by-owtt','renderer','painters','position',[108 108 1200 1000]);
 tiledlayout(3,2,'TileSpacing','none','Padding','compact');
+
+shapeBounce = {'o','x','s','^','d'};
 
 count = 0;
 for zs = [20 30 90]
@@ -74,12 +77,18 @@ for zs = [20 30 90]
                 xval = A.owtt(index);
                 yval = T{s}.gvel(index);
                 
+                numBounces = T{s}.numBounces(index);
+                
                 % remove nans
+                numBounces = numBounces(~isnan(yval));
                 xval = xval(~isnan(yval));
                 yval = yval(~isnan(yval));
                 
-                [xval,shuffle] = sort(xval);
-                plot(xval,yval(shuffle),'-o','color',[colorSet{s} 0.8],'linewidth',3);
+                for nb = 0:4
+                    indBounce = find(numBounces == nb);
+                    scatter(xval(indBounce),yval(indBounce),150,shapeBounce{nb+1},'MarkerEdgeColor',[colorSet{s}],'linewidth',2,'handlevisibility','off');
+                end
+                
             end
             hold off
         end
@@ -87,12 +96,12 @@ for zs = [20 30 90]
         
         % for all grids
         title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','normal');
-        text(0.95,1445,sprintf('rx depth = %u m',zr),'HorizontalAlignment','left','VerticalAlignment','top','fontsize',12);
+        text(0.95,1445,sprintf('rx depth = %u m',zr),'HorizontalAlignment','left','VerticalAlignment','bottom','fontsize',12);
         
         if sum(index)>1
-            text(0.95,1445,sprintf('n = %u events',sum(index)),'HorizontalAlignment','left','VerticalAlignment','bottom','fontsize',12);
+            text(0.95,1445,sprintf('n = %u events',sum(index)),'HorizontalAlignment','left','VerticalAlignment','top','fontsize',12);
         else
-            text(0.95,1445,sprintf('n = %u event',sum(index)),'HorizontalAlignment','left','VerticalAlignment','bottom','fontsize',12);
+            text(0.95,1445,sprintf('n = %u event',sum(index)),'HorizontalAlignment','left','VerticalAlignment','top','fontsize',12);
         end
         grid on
         
@@ -114,14 +123,25 @@ for zs = [20 30 90]
     end
 end
 
-% add legend
+% add legend 1 -- color
 nexttile(1);
 hold on
 for s = [3 4 5]
-    plot(NaN,NaN,'-','color',colorSet{s});
+    plot(NaN,NaN,'color',colorSet{s},'linewidth',5);
 end
-lg = legend('HYCOM','Mean of EOF set','Chosen Weights','location','southeast');
-title(lg,'Sound Speed Inputs');
+lg1 = legend('HYCOM','Mean of EOF set','Chosen Weights','location','northeast');
+title(lg1,'Sound Speed Inputs');
+hold off
+
+% add legend 2 -- shape
+nexttile(2);
+hold on
+for nb = 0:4
+    sk(nb+1) = scatter(NaN,NaN,shapeBounce{nb+1},'MarkerEdgeColor','k');
+end
+lg2 = legend(sk,'direct path','1 bounce','2 bounces','3 bounces','4 bounces','location','northeast');
+title(lg2,'Multipath Structure');
+hold off
 
 % title
 sgtitle('Group velocity estimates by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
@@ -166,9 +186,10 @@ for zs = [20 30 90]
                 % make boundary
                 b = boundary(xval,yval);
                 p = patch(xval(b),yval(b),colorSet{s});
-                p.FaceAlpha = .5;
+                p.FaceAlpha = .4;
                 p.EdgeColor = colorSet{s};
-                p.LineWidth = 3;
+                p.LineWidth = 2;
+                
                 
             end
             hold off
@@ -177,12 +198,12 @@ for zs = [20 30 90]
         
         % for all grids
         title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','normal');
-        text(2.2,20,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+        text(2.2,20,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
         
         if sum(index)>1
-            text(2.2,20,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
+            text(2.2,20,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
         else
-            text(2.2,20,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
+            text(2.2,20,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
         end
         grid on
         
@@ -248,4 +269,50 @@ ylabel('probability');
 
 legend('HYCOM','Mean of EOF set','Chosen Weights');
 
-h_printThesisPNG('rangeAnomaly-hist.png');
+% h_printThesisPNG('rangeAnomaly-hist.png');
+
+%% histogram of all events by num bounces
+
+figure('name','rangeanomaly-histogram-numbounces','renderer','painters','position',[108 108 800 1000]);
+clear h;
+hold on
+
+tiledlayout(5,1,'TileSpacing','compact');
+
+for nb = [0:4]
+
+nexttile;
+
+edges = [-14:2:20];
+count = 0;
+for s = [5 3 4]
+    count = count + 1;
+    ind = T{s}.numBounces == nb;
+    rangeAnomaly = T{s}.gvel(ind) .* A.owtt(ind) - A.recRange(ind);
+    
+    h(count,:) = histcounts(rangeAnomaly,edges,'normalization','count');
+end
+hold off
+
+B = bar(edges(1:end-1),h,0.9,'FaceColor','flat','EdgeColor','none');
+count = 0;
+for s = [5 3 4]
+    count = count + 1;
+   B(count).CData = colorSet{s};
+   B(count).FaceAlpha = 0.8;
+end
+grid on
+xticks(edges+1);
+set(gca,'fontsize',13);
+title(sprintf('number of bounces = %u',nb));
+
+if nb == 4
+    xlabel('range anomaly [m]');
+end
+
+end
+
+nexttile(1);
+legend('HYCOM','Mean of EOF set','Chosen Weights');
+sgtitle('Histogram of range anomalies by number of bounces','fontsize',17,'fontweight','bold');
+% h_printThesisPNG('rangeAnomaly-hist.png');
