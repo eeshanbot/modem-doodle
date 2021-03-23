@@ -7,6 +7,14 @@ clear; clc; close all;
 % load data
 A = readtable('./bellhop-gvel-gridded/gveltable.csv');
 
+% remove crazy 11 second event, event that is nominally 1.58* seconds
+indBad1 = find(A.owtt > 4);
+indBad2 = find(strcmp(A.rxNode,'East') & A.owtt > 1.55);
+indBad = [indBad1; indBad2];
+
+% 1.587 events, had clock errors + Bellhop can't resolve these
+A.simGvel(indBad) = NaN;
+
 % load modem marker information
 load p_modemMarkerDetails
 
@@ -210,15 +218,6 @@ end
 figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1200 1000]);
 t = tiledlayout(3,2,'TileSpacing','none','Padding','compact');
 
-% remove crazy 11 second event
-indBad = find(A.owtt > 4);
-load outlierIndex.mat
-
-% 1.587 events, had clock errors + Bellhop can't resolve these
-indBad = [indBad; outlier];
-A.simGvel(indBad) = NaN;
-
-
 index3 = ~isnan(A.simGvel);
 count = 0;
 for zs = [20 30 90]
@@ -255,12 +254,11 @@ for zs = [20 30 90]
             p.EdgeColor = 'w';
             p.LineWidth = 2;
             
-            for k = 1:numel(index)
-                if index(k) == 1
-                    scatter(A.owtt(index),A.simGvel(index) .* A.owtt(index) - A.recRange(index),...
+            plotIndex = find(index == 1);
+            for k = plotIndex.'
+                    scatter(A.owtt(k),A.simGvel(k) .* A.owtt(k) - A.recRange(k),...
                         150,markerModemMap(A.rxNode{k}),markerShape(A.recDepth(k)),...
                         'filled','MarkerFaceAlpha',0.1,'handlevisibility','off');
-                end
             end
             
             
@@ -270,12 +268,12 @@ for zs = [20 30 90]
         
         % for all grids
         title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','normal');
-        text(2.2,20,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
+        text(2.2,25,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
         
         if sum(index)>1
-            text(2.2,20,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+            text(2.2,25,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
         else
-            text(2.2,20,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+            text(2.2,25,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
         end
         grid on
         
