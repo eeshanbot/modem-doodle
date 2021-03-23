@@ -1,6 +1,6 @@
 %% gvel_2_checkSim
 % makes plots to compare ICEX 20 in situ estimates to post-processing
-% simulations
+% simulations *of the same algorithm*
 
 %% prep workspace
 clear; clc; close all;
