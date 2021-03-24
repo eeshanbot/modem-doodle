@@ -8,13 +8,13 @@ A = readtable('./bellhop-gvel-gridded/gveltable.csv');
 % only simGvel
 A.gvel = A.recRange ./ A.owtt;
 
-% remove crazy 11 second event
-indBad = find(A.owtt > 4);
-load outlierIndex.mat
+% remove crazy 11 second event, event that is nominally 1.58* seconds
+indBad1 = find(A.owtt > 4);
+indBad2 = find(strcmp(A.rxNode,'East') & A.owtt > 1.55);
+indBad = union(indBad1,indBad2);
 
 % 1.587 events, had clock errors + Bellhop can't resolve these
-indBad = [indBad; outlier];
-A.gvel(indBad) = NaN;
+A.simGvel(indBad) = NaN;
 
 % load simulation
 listing = dir('./bellhop-gvel-gridded/csv_arr/*gridded.csv');
@@ -95,7 +95,7 @@ for zs = [20 30 90]
         set(gca,'fontsize',13)
         
         % for all grids
-        title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','normal');
+        title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','bold');
         text(0.95,1445,sprintf('rx depth = %u m',zr),'HorizontalAlignment','left','VerticalAlignment','bottom','fontsize',12);
         
         if sum(index)>1
@@ -123,24 +123,25 @@ for zs = [20 30 90]
     end
 end
 
-% add legend 1 -- color
+% add legend
 nexttile(1);
+
+% add legend 1 -- color
 hold on
 for s = [3 4 5]
     plot(NaN,NaN,'color',colorSet{s},'linewidth',5);
 end
-lg1 = legend('HYCOM','Mean of EOF set','Chosen Weights','location','northeast');
-title(lg1,'Sound Speed Inputs');
-hold off
+plot(NaN,NaN,'w');
+plot(NaN,NaN,'w');
 
 % add legend 2 -- shape
-nexttile(2);
-hold on
 for nb = 0:4
-    sk(nb+1) = scatter(NaN,NaN,shapeBounce{nb+1},'MarkerEdgeColor','k');
+    scatter(NaN,NaN,shapeBounce{nb+1},'MarkerEdgeColor','k');
 end
-lg2 = legend(sk,'direct path','1 bounce','2 bounces','3 bounces','4 bounces','location','northeast');
-title(lg2,'Multipath Structure');
+
+lgdstr = {'HYCOM','Mean of EOF set','Chosen Weights','','','direct path','1 bounce','2 bounces','3 bounces','4 bounces'};
+lgd = legend(lgdstr,'numcolumns',2,'fontsize',11);
+title(lgd,'SSP Source & Multipath Structure');
 hold off
 
 % title
@@ -197,13 +198,13 @@ for zs = [20 30 90]
         set(gca,'fontsize',13)
         
         % for all grids
-        title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','normal');
-        text(2.2,20,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
+        title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','bold');
+        text(2.25,20,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
         
         if sum(index)>1
-            text(2.2,20,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+            text(2.25,20,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
         else
-            text(2.2,20,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+            text(2.25,20,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
         end
         grid on
         
