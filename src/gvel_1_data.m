@@ -10,7 +10,7 @@ A = readtable('./bellhop-gvel-gridded/gveltable.csv');
 % remove crazy 11 second event, event that is nominally 1.58* seconds
 indBad1 = find(A.owtt > 4);
 indBad2 = find(strcmp(A.rxNode,'East') & A.owtt > 1.55);
-indBad = [indBad1; indBad2];
+indBad = union(indBad1,indBad2);
 
 % 1.587 events, had clock errors + Bellhop can't resolve these
 A.simGvel(indBad) = NaN;
