@@ -4,11 +4,7 @@
 
 clear; clc; close all;
 
-% load modem marker information
-load p_modemMarkerDetails
-
 %% load in situ data
-global DATA RECAP;
 DATA = readtable('./bellhop-gvel-gridded/gveltable.csv');
 A = load('./data-prep/tobytest-recap-full.mat'); % loads "event"
 RECAP = h_unpack_experiment(A.event);
@@ -28,7 +24,6 @@ indValid = ~isnan(DATA.simGvel);
 DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - DATA.recRange;
 
 %% load post-processing, new algorithm
-global SIM;
 listing = dir('./bellhop-gvel-gridded/csv_arr/*gridded.csv');
 
 for f = 1:numel(listing)
@@ -59,24 +54,78 @@ end
 % 5 = hycom
 
 %% figure --- baseval
-figure('name','compare-method','renderer','painters','position',[108 108 800 700]);
+figure('name','compare-method-baseval','renderer','painters','position',[108 108 800 700]);
+
+% eof status = BASEVAL
 eof_status = RECAP.eof_bool == 0;
-eof_status = eof_status.';
-index = boolean(eof_status .* indValid);
-h_cross_plot(index);
-title('Improvement of range estimation error [m]','fontsize',18);
+index = boolean(eof_status.' .* indValid);
+
+% plot
+baseval.xVal = DATA.rangeAnomaly(index);
+baseval.yVal = SIM{3}.rangeAnomaly(index);
+baseval.zs = DATA.sourceDepth(index);
+baseval.numBounces = SIM{3}.numBounces(index);
+baseval.F = h_cross_plot(baseval.xVal,baseval.yVal,baseval.zs,baseval.numBounces);
+
+% title
+bigTitle = '\fontsize{18} Improvement of range estimation error';
+smallTitle = sprintf('\\fontsize{14}\\rm SSP = mean of EOF set, N = %u events',sum(index));
+title({bigTitle; smallTitle});
+
+h_printThesisPNG('compare-baseval.png');
+
+%% figure --- EOF
+figure('name','compare-method-eeof','renderer','painters','position',[108 108 800 700]);
+
+% eof status = EOF
+eof_status = RECAP.eof_bool == 1;
+index = boolean(eof_status.' .* indValid);
+
+% plot
+eeof.xVal = DATA.rangeAnomaly(index);
+eeof.yVal = SIM{4}.rangeAnomaly(index);
+eeof.zs = DATA.sourceDepth(index);
+eeof.numBounces = SIM{4}.numBounces(index);
+eeof.F = h_cross_plot(eeof.xVal,eeof.yVal,eeof.zs,eeof.numBounces);
+
+% title
+bigTitle = '\fontsize{18} Improvement of range estimation error';
+smallTitle = sprintf('\\fontsize{14}\\rm SSP = chosen weights, N = %u events',sum(index));
+title({bigTitle; smallTitle});
+
+h_printThesisPNG('compare-eof.png');
+
+%% figure --- HYCOM
+figure('name','compare-method-hycom','renderer','painters','position',[108 108 800 700]);
+
+% load "data" --- redone w/ HYCOM by original algorithm
+dataHYCOM = readtable('./bellhop-gvel/csv_arr/hycom.csv');
+dataHYCOM.rangeAnomaly = DATA.owtt .* (DATA.recRange./dataHYCOM.owtt) - DATA.recRange;
+
+% plot
+hycom.xVal = dataHYCOM.rangeAnomaly(indValid);
+hycom.yVal = SIM{5}.rangeAnomaly(indValid);
+hycom.zs   = DATA.sourceDepth(indValid);
+hycom.numBounces = SIM{5}.numBounces(indValid);
+hycom.F = h_cross_plot(hycom.xVal,hycom.yVal,hycom.zs,hycom.numBounces);
+
+% title
+bigTitle = '\fontsize{18} Improvement of range estimation error';
+smallTitle = sprintf('\\fontsize{14}\\rm SSP = HYCOM, N = %u events',sum(indValid));
+title({bigTitle; smallTitle});
+
+h_printThesisPNG('compare-hycom.png');
+
 
 %% figure helper function
-function [] = h_cross_plot(indValid)
-
-global DATA SIM;
+function [F] = h_cross_plot(xVal,yVal,zs,numBounces)
 
 % marker shape & color
 shapeBounce = {'o','x','s','^','d'};
 colorDepth = containers.Map([20 30 90],{[70 240 240]./256,[0 130 200]./256,[0 0 128]./256});
 
-maxVal(1) = max(DATA.rangeAnomaly(indValid));
-maxVal(2) = max(SIM{1}.rangeAnomaly(indValid));
+maxVal(1) = max(xVal);
+maxVal(2) = max(yVal);
 maxVal = max(maxVal(:));
 
 % add patch
@@ -85,38 +134,39 @@ p = patch([-maxVal 0 -maxVal maxVal 0 maxVal],[-maxVal 0 maxVal maxVal 0 -maxVal
 p.FaceColor = [0.7 0.7 0.7];
 p.FaceAlpha = .3;
 p.EdgeColor = 'none';
-
-yline(0,'--','color',[0.7 0.7 0.7 0.7],'linewidth',3,'handlevisibility','off');
-
 hold off
 
 % scatter points
 hold on
-indHere = find(indValid == 1).';
-for k = indHere
-    zs = DATA.sourceDepth(k);
-    numBounces = SIM{1}.numBounces(k) + 1;
-    scatter(DATA.rangeAnomaly(k),SIM{1}.rangeAnomaly(k),...
-        150,colorDepth(zs),shapeBounce{numBounces},'linewidth',2,'markeredgealpha',0.6,'handlevisibility','off');
+for k = 1:numel(zs)
+    scatter(xVal(k),yVal(k),...
+        150,colorDepth(zs(k)),shapeBounce{numBounces(k)+1},'linewidth',2,'markeredgealpha',0.6,'handlevisibility','off');
 end
 hold off
+
+% performance metrics
+F.data.mean = mean(abs(xVal));
+F.sim.mean = mean(abs(yVal));
+F.data.median = median(abs(xVal));
+F.sim.median = median(abs(yVal));
+F.eff = sum(abs(yVal) <= abs(xVal))./numel(xVal);
 
 % add grid
 grid on
 
 % add text to explain gray box
-buff = maxVal/15;
+buff = maxVal/8;
 text(-maxVal+buff,maxVal-buff,'more accurate','verticalalignment','top','rotation',-45,'fontsize',11);
 text(-maxVal+buff,maxVal-buff,'less accurate than in-situ algorithm','verticalalignment','bottom','rotation',-45,'fontsize',11);
 
 % make xticks and yticks equal
-yticks(xticks);
-
-% make plot look nice
 axis tight
 axis square
-xlabel({'in-situ algorithm','\it{minimal bounce criteria}'});
-ylabel({'updated algorithm','\it{optimal bounce criteria}'});
+xticks(yticks);
+
+% make plot look nice
+xlabel({'in-situ algorithm error [m]','\it{minimal bounce criteria}'});
+ylabel({'updated algorithm error [m]','\it{nearest bounce criteria}'});
 set(gca,'fontsize',14);
 
 % add legend
@@ -126,21 +176,14 @@ for s = [20 30 90]
 end
 
 plot(NaN,NaN,'w');
-plot(NaN,NaN,'w');
 
 for r = 1:5
     plot(NaN,NaN,shapeBounce{r},'color','k')
 end
 hold off
-lgdstr = {'20 m','30 m','90 m','','','direct path','1 bounces','2 bounces','3 bounces','4 bounces'};
+lgdstr = {'20 m','30 m','90 m','','direct path','1 bounce','2 bounces','3 bounces'};
 
 lg1 = legend(lgdstr,'location','south','NumColumns',2,'fontsize',11);
 title(lg1,'   source depth & multipath structure');
 
 end
-
-
-
-
-
-
