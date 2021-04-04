@@ -148,7 +148,7 @@ hold off
 sgtitle('Group velocity estimates by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
 
 % save plot
-% h_printThesisPNG('gvel-owtt-newalgorithm.png');
+h_printThesisPNG('gvel-owtt-newalgorithm.png');
 
 %% plot all data RANGE ANOMALY
 
@@ -214,7 +214,7 @@ for zs = [20 30 90]
         if mod(count,2)~=1
             yticklabels([])
         else
-            ylabel('range anomaly [m]');
+            ylabel('range error [m]');
         end
         
         if count >=5
@@ -235,8 +235,8 @@ lg = legend('HYCOM','Mean of EOF set','Chosen Weights','location','southeast');
 title(lg,'Sound Speed Inputs');
 
 % title
-sgtitle('Range anomaly by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-% h_printThesisPNG('range-anomaly-owtt-newalgorithm.png')
+sgtitle('Range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
+h_printThesisPNG('range-error-owtt-newalgorithm.png')
 
 %% histogram of all events
 
@@ -270,7 +270,7 @@ ylabel('probability');
 
 legend('HYCOM','Mean of EOF set','Chosen Weights');
 
-% h_printThesisPNG('rangeAnomaly-hist.png');
+h_printThesisPNG('rangeError-hist1.png');
 
 %% histogram of all events by num bounces
 
@@ -316,4 +316,4 @@ end
 nexttile(1);
 legend('HYCOM','Mean of EOF set','Chosen Weights');
 sgtitle('Histogram of range anomalies by number of bounces','fontsize',17,'fontweight','bold');
-% h_printThesisPNG('rangeAnomaly-hist.png');
+h_printThesisPNG('rangeError-hist2.png');
