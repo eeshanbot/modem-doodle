@@ -10,7 +10,7 @@ myGray = [0.6 0.6 0.6];
 alphaColor   = .2;
 
 % depth_switch = [20 30 90];
-zs = 20;
+zs = 90;
 
 %% load modem marker info
 load p_modemMarkerDetails
@@ -45,7 +45,7 @@ end
 %% make plot
 
 figure('name','raytrace-all','renderer','painters','position',[108 108 1300 1050]);
-t = tiledlayout(3,9,'TileSpacing','default');
+t = tiledlayout(3,9,'TileSpacing','compact');
 
 theta = [-49:2:-31 -30:1:30 31:2:49];
 numstep = 1100;
@@ -134,7 +134,7 @@ for k = 1:3
                     subindex = intersect(index,subindex);
                     
                     text(mean(A.data_range(subindex))./1000,imd+14,num2str(numel(subindex)),...
-                        'HorizontalAlignment','center','VerticalAlignment','top','fontsize',11,'color',markerModemMap(node));
+                        'HorizontalAlignment','center','VerticalAlignment','top','fontsize',9,'color',markerModemMap(node));
                 end
             end
         end
@@ -143,5 +143,7 @@ for k = 1:3
 
     hold off
 end
+
+h_printThesisPNG(sprintf('raytrace-3env-zs-%u.png',zs));
 
 
