@@ -126,6 +126,8 @@ end
 %legend(Lgd,LgdStr,'location','BestOutside');
 legend(Lgd,LgdStr,'Position',[0.9135 0.7945 0.0632 0.1292]);
 
+h_printThesisPNG('tx-rx-depth.png');
+
 %% figure 2 : tx rx chart
 
 markerSize = 220;
@@ -249,5 +251,7 @@ for ml = modem_labels
 end
     
 legend(Lgd,LgdStr,'location','WestOutside','fontsize',14);
+
+h_printThesisPNG('modem-chart.png');
 
 %% figure 3
