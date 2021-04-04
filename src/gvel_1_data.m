@@ -18,7 +18,7 @@ A.simGvel(indBad) = NaN;
 % load modem marker information
 load p_modemMarkerDetails
 
-plotbool = [0 0 0 0 0 1];
+plotbool = [1 1 1 1 1 1];
 
 %% figure --- owtt vs range
 if plotbool(1) == 1
@@ -119,7 +119,7 @@ end
 %% gvel (data) compared to gvel (sim)
 
 if plotbool(3) == 1
-    figure('name','data-sim-compare','renderer','painters','position',[108 108 1250 550]);
+    figure('name','data-sim-compare','renderer','painters','position',[108 108 900 800]);
     
     % get index for gvel data
     indValid = ~isnan(A.simGvel);
@@ -130,40 +130,26 @@ if plotbool(3) == 1
         % plot gvel
         if indValid(k)==1
             
-            subplot(1,2,1);
-            hold on
             xval = A.recRange(k) ./ A.owtt(k);
             yval = A.simGvel(k);
             scatter(xval,yval,...
                 150,markerModemMap(A.rxNode{k}),markerShape(A.recDepth(k)),...
                 'filled','MarkerFaceAlpha',0.4,'handlevisibility','off');
-            hold off
-            
-            subplot(1,2,2);
-            hold on
-            scatter(xval,yval,...
-                150,markerModemMap(A.rxNode{k}),markerShape(A.recDepth(k)),...
-                'filled','MarkerFaceAlpha',0.4,'handlevisibility','off');
-            hold off
         end
     end
     hold off
     
     % beautify plots
-    subplot(1,2,1);
-    grid on
-    xlabel('simulated group velocity [s]');
-    ylabel('naive group velocity [m/s]');
-    sgtitle('Comparing simulated group velocity with naive group velocity calculations','fontsize',18,'fontweight','bold');
-    
-    subplot(1,2,2);
     grid on
     xlabel('simulated group velocity [m/s]');
     xlim([1420 1452]);
     ylim([1420 1452]);
     xlabel('simulated group velocity [s]');
     ylabel('naive group velocity [m/s]');
+    title('Naive vs simulated group velocity estimate');
 end
+
+h_printThesisPNG('gvel-sim-naive-compare.png');
 
 
 %% range anomaly vs owtt (all depths?)
@@ -283,7 +269,7 @@ for zs = [20 30 90]
         if mod(count,2)~=1
             yticklabels([])
         else
-            ylabel('range anomaly [m]');
+            ylabel('range error [m]');
         end
         
         if count >=5
@@ -295,5 +281,5 @@ for zs = [20 30 90]
 end
 
 % title
-sgtitle('Range anomaly by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-% h_printThesisPNG('range-anomaly-owtt-newalgorithm.png')
+sgtitle('Range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
+h_printThesisPNG('range-error-owtt-newalgorithm.png')
