@@ -132,14 +132,13 @@ for s = [3 4 5]
     plot(NaN,NaN,'color',colorSet{s},'linewidth',5);
 end
 plot(NaN,NaN,'w');
-plot(NaN,NaN,'w');
 
 % add legend 2 -- shape
-for nb = 0:4
+for nb = 0:3
     scatter(NaN,NaN,shapeBounce{nb+1},'MarkerEdgeColor','k');
 end
 
-lgdstr = {'HYCOM','Mean of EOF set','Chosen Weights','','','direct path','1 bounce','2 bounces','3 bounces','4 bounces'};
+lgdstr = {'HYCOM','Mean of EOF set','Chosen Weights','','direct path','1 bounce','2 bounces','3 bounces'};
 lgd = legend(lgdstr,'numcolumns',2,'fontsize',11);
 title(lgd,'SSP Source & Multipath Structure');
 hold off
@@ -264,7 +263,7 @@ end
 grid on
 xticks(edges+1);
 set(gca,'fontsize',14);
-title('Histogram of range anomaly in 2 meter bins');
+title('Histogram of range error in 2 meter bins');
 xlabel('range anomaly [m]');
 ylabel('probability');
 
@@ -315,5 +314,5 @@ end
 
 nexttile(1);
 legend('HYCOM','Mean of EOF set','Chosen Weights');
-sgtitle('Histogram of range anomalies by number of bounces','fontsize',17,'fontweight','bold');
+sgtitle('Histogram of range error by number of bounces','fontsize',17,'fontweight','bold');
 h_printThesisPNG('rangeError-hist2.png');
