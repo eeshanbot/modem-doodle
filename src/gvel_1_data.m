@@ -282,4 +282,4 @@ end
 
 % title
 sgtitle('Range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-h_printThesisPNG('range-error-owtt-data.png')
+h_printThesisPNG('range-error-owtt-data')

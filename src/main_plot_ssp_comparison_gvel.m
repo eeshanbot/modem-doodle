@@ -33,4 +33,4 @@ xlabel('c [m/s]');
 
 legend('Mean of EOF set','Chosen EOF weights','HYCOM','location','southwest','fontsize',13);
 
-h_printThesisPNG('ssp-gvel.png');
+h_printThesisPNG('ssp-gvel');

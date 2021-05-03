@@ -84,7 +84,7 @@ yticklabels([]);
 xlabel('range [m]');
 
 % save
-h_printThesisPNG(sprintf('zs%u-artifact-raytrace.png',zs));
+h_printThesisPNG(sprintf('zs%u-artifact-raytrace',zs));
 
 %% figure --- plot ray shift by theta
 
@@ -138,7 +138,7 @@ yticklabels auto
 sgtitle('Relative error caused by the artifact, visualized by ray launch angle','fontsize',18,'fontweight','bold');
 
 % save
-h_printThesisPNG(sprintf('zs%u-artifact-error-by-theta.png',zs));
+h_printThesisPNG(sprintf('zs%u-artifact-error-by-theta',zs));
 
 %% figure : comparison by owtt
 
@@ -198,7 +198,7 @@ text(0.5,yMax,str,'HorizontalAlignment','right','VerticalAlignment','bottom','fo
 sgtitle('Relative error caused by the artifact, visualized by travel time','fontsize',18,'fontweight','bold');
 
 % save
-h_printThesisPNG(sprintf('zs%u-artifact-error-by-owtt.png',zs));
+h_printThesisPNG(sprintf('zs%u-artifact-error-by-owtt',zs));
 
 %% h1_beautify
 function [] = h1_beautify()

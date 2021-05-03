@@ -72,7 +72,7 @@ bigTitle = '\fontsize{18} Improvement of range estimation error';
 smallTitle = sprintf('\\fontsize{14}\\rm SSP = mean of EOF set, N = %u events',sum(index));
 title({bigTitle; smallTitle});
 
-h_printThesisPNG('compare-baseval.png');
+h_printThesisPNG('compare-baseval');
 
 %% figure --- EOF
 figure('name','compare-method-eeof','renderer','painters','position',[108 108 800 700]);
@@ -93,7 +93,7 @@ bigTitle = '\fontsize{18} Improvement of range estimation error';
 smallTitle = sprintf('\\fontsize{14}\\rm SSP = chosen weights, N = %u events',sum(index));
 title({bigTitle; smallTitle});
 
-h_printThesisPNG('compare-eof.png');
+h_printThesisPNG('compare-eof');
 
 %% figure --- HYCOM
 figure('name','compare-method-hycom','renderer','painters','position',[108 108 800 700]);
@@ -114,7 +114,7 @@ bigTitle = '\fontsize{18} Improvement of range estimation error';
 smallTitle = sprintf('\\fontsize{14}\\rm SSP = HYCOM, N = %u events',sum(indValid));
 title({bigTitle; smallTitle});
 
-h_printThesisPNG('compare-hycom.png');
+h_printThesisPNG('compare-hycom');
 
 
 %% figure helper function
@@ -145,10 +145,12 @@ end
 hold off
 
 % performance metrics
-F.data.mean = mean(abs(xVal));
-F.sim.mean = mean(abs(yVal));
-F.data.median = median(abs(xVal));
-F.sim.median = median(abs(yVal));
+F.dataMean = mean(abs(xVal));
+F.simMean = mean(abs(yVal));
+F.dataMedian = median(abs(xVal));
+F.simMedian = median(abs(yVal));
+F.dataStd = std(xVal);
+F.simStd = std(yVal);
 F.eff = sum(abs(yVal) <= abs(xVal))./numel(xVal);
 
 % add grid

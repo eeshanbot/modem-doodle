@@ -10,7 +10,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 90;
+zs = 20;
 
 % load modem marker information
 load p_modemMarkerDetails
@@ -180,7 +180,7 @@ ylabel('range error [m]');
 subplot(1,3,2);
 xlabel('owtt [s]');
 
-h_printThesisPNG(sprintf('zs%u-rangeError.png',zs));
+h_printThesisPNG(sprintf('zs%u-rangeError',zs));
 
 %% figure : range anomaly plot by receiver depth
 
@@ -335,4 +335,4 @@ ylabel({'receiver depth = 90m','range error [m]'},'fontsize',lg_font_size);
 subplot(2,3,5);
 xlabel('owtt [s]');
 
-h_printThesisPNG(sprintf('zs%u-rangeError-depthBin.png',zs));
+h_printThesisPNG(sprintf('zs%u-rangeError-depthBin',zs));

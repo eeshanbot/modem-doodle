@@ -10,7 +10,7 @@ myGray = [0.6 0.6 0.6];
 alphaColor   = .2;
 
 % depth_switch = [20 30 90];
-zs = 90;
+zs = 20;
 
 %% load modem marker info
 load p_modemMarkerDetails
@@ -144,6 +144,6 @@ for k = 1:3
     hold off
 end
 
-h_printThesisPNG(sprintf('raytrace-3env-zs-%u.png',zs));
+h_printThesisPNG(sprintf('raytrace-3env-zs-%u',zs));
 
 

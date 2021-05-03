@@ -126,7 +126,7 @@ end
 %legend(Lgd,LgdStr,'location','BestOutside');
 legend(Lgd,LgdStr,'Position',[0.9135 0.7945 0.0632 0.1292]);
 
-h_printThesisPNG('tx-rx-depth.png');
+h_printThesisPNG('tx-rx-depth');
 
 %% figure 2 : tx rx chart
 
@@ -252,6 +252,6 @@ end
     
 legend(Lgd,LgdStr,'location','WestOutside','fontsize',14);
 
-h_printThesisPNG('modem-chart.png');
+h_printThesisPNG('modem-chart');
 
 %% figure 3

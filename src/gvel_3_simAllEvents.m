@@ -147,7 +147,7 @@ hold off
 sgtitle('Group velocity estimates by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
 
 % save plot
-h_printThesisPNG('gvel-owtt-newalgorithm.png');
+h_printThesisPNG('gvel-owtt-newalgorithm');
 
 %% plot all data RANGE ANOMALY
 
@@ -235,7 +235,7 @@ title(lg,'Sound Speed Inputs');
 
 % title
 sgtitle('Range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-h_printThesisPNG('range-error-owtt-newalgorithm.png')
+h_printThesisPNG('range-error-owtt-newalgorithm')
 
 %% histogram of all events
 
@@ -269,7 +269,7 @@ ylabel('probability');
 
 legend('HYCOM','Mean of EOF set','Chosen Weights');
 
-h_printThesisPNG('rangeError-hist1.png');
+h_printThesisPNG('rangeError-hist1');
 
 %% histogram of all events by num bounces
 
@@ -315,4 +315,4 @@ end
 nexttile(1);
 legend('HYCOM','Mean of EOF set','Chosen Weights');
 sgtitle('Histogram of range error by number of bounces','fontsize',17,'fontweight','bold');
-h_printThesisPNG('rangeError-hist2.png');
+h_printThesisPNG('rangeError-hist2');
