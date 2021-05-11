@@ -18,7 +18,7 @@ A.simGvel(indBad) = NaN;
 % load modem marker information
 load p_modemMarkerDetails
 
-plotbool = [1 1 1 1 1 1];
+plotbool = [0 0 1 0 0 0];
 
 %% figure --- owtt vs range
 if plotbool(1) == 1
@@ -130,10 +130,10 @@ if plotbool(3) == 1
         % plot gvel
         if indValid(k)==1
             
-            xval = A.recRange(k) ./ A.owtt(k);
-            yval = A.simGvel(k);
+            yval = A.recRange(k) ./ A.owtt(k);
+            xval = A.simGvel(k);
             scatter(xval,yval,...
-                150,markerModemMap(A.rxNode{k}),markerShape(A.recDepth(k)),...
+                150,markerModemMap(A.txNode{k}),markerShape(A.sourceDepth(k)),...
                 'filled','MarkerFaceAlpha',0.4,'handlevisibility','off');
         end
     end
@@ -141,7 +141,6 @@ if plotbool(3) == 1
     
     % beautify plots
     grid on
-    xlabel('simulated group velocity [m/s]');
     xlim([1420 1452]);
     ylim([1420 1452]);
     xlabel('simulated group velocity [s]');
@@ -149,7 +148,7 @@ if plotbool(3) == 1
     title('Naive vs simulated group velocity estimate');
 end
 
-h_printThesisPNG('gvel-sim-naive-compare.png');
+h_printThesisPNG('gvel-sim-naive-compare');
 
 
 %% range anomaly vs owtt (all depths?)
