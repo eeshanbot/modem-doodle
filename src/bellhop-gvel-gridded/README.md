@@ -11,7 +11,7 @@ velocity estimate:
   least number of cumulative bounces available. Simulations showed some
   cases where the resulting one-way travel time disagreed significantly
   with the field measurement.
-  - These results are given by `<env-name>.csv`, with the following headers:
+  - These results are given by `<env-name>-old.csv`, with the following headers:
     > `index , must_bnc , n_bnc , owtt , must_bnc0 , n_bnc0 , owtt0`
   - `owtt` is the 11x11 grid overall solution to the group velocity equation
   - `owtt0` is the single-point solution, for the vehicle location at the
