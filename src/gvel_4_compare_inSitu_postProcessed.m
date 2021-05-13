@@ -54,7 +54,7 @@ end
 % 5 = hycom
 
 %% figure --- baseval
-figure('name','compare-method-baseval','renderer','painters','position',[108 108 800 700]);
+figure('name','compare-method-baseval','renderer','painters','position',[108 108 1000 900]);
 
 % eof status = BASEVAL
 eof_status = RECAP.eof_bool == 0;
@@ -75,7 +75,7 @@ title({bigTitle; smallTitle});
 h_printThesisPNG('compare-baseval');
 
 %% figure --- EOF
-figure('name','compare-method-eeof','renderer','painters','position',[108 108 800 700]);
+figure('name','compare-method-eeof','renderer','painters','position',[108 108 1000 900]);
 
 % eof status = EOF
 eof_status = RECAP.eof_bool == 1;
@@ -96,7 +96,7 @@ title({bigTitle; smallTitle});
 h_printThesisPNG('compare-eof');
 
 %% figure --- HYCOM
-figure('name','compare-method-hycom','renderer','painters','position',[108 108 800 700]);
+figure('name','compare-method-hycom','renderer','painters','position',[108 108 1000 900]);
 
 % load "data" --- redone w/ HYCOM by original algorithm
 dataHYCOM = readtable('./bellhop-gvel/csv_arr/hycom.csv');
@@ -159,7 +159,7 @@ grid on
 % add text to explain gray box
 buff = maxVal/8;
 text(-maxVal+buff,maxVal-buff,'more accurate','verticalalignment','top','rotation',-45,'fontsize',11);
-text(-maxVal+buff,maxVal-buff,'less accurate than in-situ algorithm','verticalalignment','bottom','rotation',-45,'fontsize',11);
+text(-maxVal+buff,maxVal-buff,'less accurate than in situ algorithm','verticalalignment','bottom','rotation',-45,'fontsize',11);
 
 % make xticks and yticks equal
 axis tight
@@ -167,7 +167,7 @@ axis square
 xticks(yticks);
 
 % make plot look nice
-xlabel({'in-situ algorithm error [m]','\it{minimal bounce criteria}'});
+xlabel({'in situ algorithm error [m]','\it{minimal bounce criteria}'});
 ylabel({'updated algorithm error [m]','\it{nearest bounce criteria}'});
 set(gca,'fontsize',14);
 
@@ -183,7 +183,7 @@ for r = 1:5
     plot(NaN,NaN,shapeBounce{r},'color','k')
 end
 hold off
-lgdstr = {'20 m','30 m','90 m','','direct path','1 bounce','2 bounces','3 bounces'};
+lgdstr = {' 20 m',' 30 m',' 90 m','','direct path','1 bounce','2 bounces','3 bounces'};
 
 lg1 = legend(lgdstr,'location','south','NumColumns',2,'fontsize',11);
 title(lg1,'   source depth & multipath structure');

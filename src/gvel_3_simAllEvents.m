@@ -273,7 +273,7 @@ h_printThesisPNG('rangeError-hist1');
 
 %% histogram of all events by num bounces
 
-figure('name','rangeanomaly-histogram-numbounces','renderer','painters','position',[108 108 800 1000]);
+figure('name','rangeanomaly-histogram-numbounces','renderer','painters','position',[108 108 1200 900]);
 clear h;
 hold on
 

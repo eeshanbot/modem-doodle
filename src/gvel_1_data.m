@@ -18,7 +18,8 @@ A.simGvel(indBad) = NaN;
 % load modem marker information
 load p_modemMarkerDetails
 
-plotbool = [0 0 1 0 0 0];
+% plotbool = [1 1 1 1 1 1];
+plotbool = [0 0 0 0 0 1];
 
 %% figure --- owtt vs range
 if plotbool(1) == 1
@@ -146,9 +147,10 @@ if plotbool(3) == 1
     xlabel('simulated group velocity [s]');
     ylabel('naive group velocity [m/s]');
     title('Naive vs simulated group velocity estimate');
+    
+    % h_printThesisPNG('gvel-sim-naive-compare');
 end
 
-h_printThesisPNG('gvel-sim-naive-compare');
 
 
 %% range anomaly vs owtt (all depths?)
@@ -213,6 +215,8 @@ for zs = [20 30 90]
         
         count = count + 1;
         nexttile;
+        
+        
         
         index = boolean(index1.*index2.*index3);
         
@@ -281,4 +285,4 @@ end
 
 % title
 sgtitle('Range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-h_printThesisPNG('range-error-owtt-data')
+% h_printThesisPNG('range-error-owtt-data')

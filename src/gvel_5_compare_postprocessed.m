@@ -10,9 +10,9 @@ A = load('./data-prep/tobytest-recap-full.mat'); % loads "event"
 RECAP = h_unpack_experiment(A.event);
 
 % remove crazy 11 second event, event that is nominally 1.58* seconds
-indBad1 = DATA.owtt > 3;
+indBad1 = DATA.owtt > 6;
 indBad2 = strcmp(DATA.rxNode,'East') & DATA.owtt > 1.55;
-indBad = boolean(indBad1 .* indBad2);
+indBad = indBad1 | indBad2;
 
 % 1.587 events, had clock errors + Bellhop can't resolve these
 DATA.simGvel(indBad) = -1000;
@@ -72,7 +72,7 @@ end
 % 5 = hycom
 
 %% figure --- baseval
-figure('name','compare-method-baseval','renderer','painters','position',[108 108 800 700]);
+figure('name','compare-method-baseval','renderer','painters','position',[108 108 1000 900]);
 
 index = indValid;
 
@@ -91,7 +91,7 @@ title({bigTitle; smallTitle});
 %h_printThesisPNG('compare-baseval-post');
 
 %% figure --- EOF
-figure('name','compare-method-eeof','renderer','painters','position',[108 108 800 700]);
+figure('name','compare-method-eeof','renderer','painters','position',[108 108 1000 900]);
 
 % only simGvel
 index = indValid;
@@ -111,7 +111,7 @@ title({bigTitle; smallTitle});
 % %h_printThesisPNG('compare-eof-post');
 
 %% figure --- HYCOM
-figure('name','compare-method-hycom','renderer','painters','position',[108 108 800 700])
+figure('name','compare-method-hycom','renderer','painters','position',[108 108 1000 900])
 
 % plot
 hycom.xVal = SIM_OLD{5}.rangeAnomaly(indValid);
