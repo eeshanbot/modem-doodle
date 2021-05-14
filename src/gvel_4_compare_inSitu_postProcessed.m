@@ -54,7 +54,7 @@ end
 % 5 = hycom
 
 %% figure --- baseval
-figure('name','compare-method-baseval','renderer','painters','position',[108 108 1000 900]);
+figure('name','compare-method-baseval','renderer','painters','position',[108 108 950 900]);
 
 % eof status = BASEVAL
 eof_status = RECAP.eof_bool == 0;
@@ -75,7 +75,7 @@ title({bigTitle; smallTitle});
 h_printThesisPNG('compare-baseval');
 
 %% figure --- EOF
-figure('name','compare-method-eeof','renderer','painters','position',[108 108 1000 900]);
+figure('name','compare-method-eeof','renderer','painters','position',[108 108 950 900]);
 
 % eof status = EOF
 eof_status = RECAP.eof_bool == 1;
@@ -96,7 +96,7 @@ title({bigTitle; smallTitle});
 h_printThesisPNG('compare-eof');
 
 %% figure --- HYCOM
-figure('name','compare-method-hycom','renderer','painters','position',[108 108 1000 900]);
+figure('name','compare-method-hycom','renderer','painters','position',[108 108 950 900]);
 
 % load "data" --- redone w/ HYCOM by original algorithm
 dataHYCOM = readtable('./bellhop-gvel/csv_arr/hycom.csv');
@@ -115,7 +115,6 @@ smallTitle = sprintf('\\fontsize{14}\\rm SSP = HYCOM, N = %u events',sum(indVali
 title({bigTitle; smallTitle});
 
 h_printThesisPNG('compare-hycom');
-
 
 %% figure helper function
 function [F] = h_cross_plot(xVal,yVal,zs,numBounces)
@@ -149,8 +148,8 @@ F.dataMean = mean(abs(xVal));
 F.simMean = mean(abs(yVal));
 F.dataMedian = median(abs(xVal));
 F.simMedian = median(abs(yVal));
-F.dataStd = std(xVal);
-F.simStd = std(yVal);
+F.dataStd = std(abs(xVal));
+F.simStd = std(abs(yVal));
 F.eff = sum(abs(yVal) <= abs(xVal))./numel(xVal);
 
 % add grid
