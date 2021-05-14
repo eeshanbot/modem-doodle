@@ -14,9 +14,12 @@ indBad = indBad1 | indBad2;
 % 1.587 events, had clock errors + Bellhop can't resolve these
 A.sim_gvel(indBad) = NaN;
 
+colorSet = {[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./256};
+
+
 %% figure 1 -- all events in 3x2 grid
 
-figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1200 1000]);
+figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1100 900]);
 t = tiledlayout(3,2,'TileSpacing','none','Padding','compact');
 
 index3 = ~isnan(A.sim_gvel);
@@ -62,16 +65,16 @@ for zs = [20 30 90]
                 p = patch(xval(b),yval(b),'k');
                 p.FaceAlpha = 0;
                 p.EdgeColor = colorSet{eof_status+1};
-                p.LineWidth = 2;
-                p.EdgeAlpha = 0.4;
+                p.LineWidth = 3;
+                p.EdgeAlpha = 0.7;
                 
                 plotIndex = find(index == 1);
                 for k = plotIndex
                     rxNode = A.tag_rx(k);
                     rxNode = rxNode{1};
                     scatter(A.data_owtt(k),A.sim_gvel(k) .* A.data_owtt(k) - A.data_range(k),...
-                        75,markerModemMap(rxNode),markerShape(A.rx_z(k)),...
-                        'filled','MarkerFaceAlpha',1,'handlevisibility','off');
+                        75,colorSet{eof_status+1},...
+                        'filled','MarkerFaceAlpha',0.4,'handlevisibility','off');
                 end
                 hold off
             end
@@ -107,5 +110,28 @@ for zs = [20 30 90]
 end
 
 % title
-sgtitle('Range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-h_printThesisPNG('range-error-owtt-data-v2');
+sgtitle('In situ range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
+%h_printThesisPNG('range-error-owtt-data-v2');
+
+%% find mean, median, etc for baseval vs eof
+
+A.rangeAnomaly = abs(A.sim_gvel.*A.data_owtt - A.data_range);
+figure(99);
+count = 0;
+for eof_status = [0 1]
+    indexStat = A.eof_bool == eof_status & ~isnan(A.sim_gvel);
+    
+    count = count + 1;
+    bStat(count).num = sum(indexStat);
+    bStat(count).mean = mean(A.rangeAnomaly(indexStat));
+    bStat(count).med = median(A.rangeAnomaly(indexStat));
+    bStat(count).std = std(A.rangeAnomaly(indexStat));
+    bStat(count).max = max(A.rangeAnomaly(indexStat));
+    
+    hold on
+    histogram(A.rangeAnomaly(indexStat));
+end
+    
+    
+    
+    
