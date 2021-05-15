@@ -286,7 +286,7 @@ for s = [5 3 4]
     plot(xQuant1,ones(2,1).*-kcount*kbuff,'handlevisibility','off','color',[colorSet{s} 0.4]);
     plot(xQuant1,-kcount*kbuff,'.','handlevisibility','off','color',colorSet{s},'MarkerSize',15);
     plot(xQuant2,-kcount*kbuff,'o','handlevisibility','off','color',colorSet{s});
-    plot(meanVal,-kcount*kbuff,'x','handlevisibility','off','color',colorSet{s},'MarkerSize',10);
+    plot(meanVal,-kcount*kbuff,'d','color',colorSet{s},'MarkerSize',8,'handlevisibility','off');
 end
     
 hold off
