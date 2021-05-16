@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.10.2
+#       jupytext_version: 1.11.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -39,11 +39,8 @@ pattern = 'ssp*.csv'
 envs = {x[2:-4]:{'fname':x} for x in glob.glob('./ssp*.csv')}
 
 for key in envs:
-    envs[key]['ssp'] = np.genfromtxt('./ssp-hycom.csv',delimiter=',')
+    envs[key]['ssp'] = np.genfromtxt(envs[key]['fname'],delimiter=',')
     envs[key]['bathy'] = 2680
-
-
-
 
 # %%
 eof_status = {0:'baseval',
@@ -160,7 +157,7 @@ try:
 except:
     print('Script mode')
     is_ipy = False
-    
+
 
 # %% code_folding=[]
 if is_ipy and do_bellhop:
