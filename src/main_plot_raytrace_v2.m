@@ -38,7 +38,7 @@ for k = 1:3
     ssp(k).ssp   = T.Var2;
     ssp(k).name = fileNames{k};
     ssp(k).color = colorSet{k};
-    temp = split(file{1},'.');
+    temp = split(file{k},'.');
     ssp(k).filestr = temp{1};
 end
 
@@ -93,7 +93,7 @@ for k = 1:3
     
     hold on
     
-        % add eigenrays
+    % add eigenrays
     num_eigentable = numel(eigentable);
     for ne = 1:num_eigentable
         
