@@ -5,26 +5,36 @@
 clear; clc; close all;
 
 %% load in situ data
-DATA = readtable('./bellhop-gvel-gridded/gveltable.csv');
-A = load('./data-prep/tobytest-recap-full.mat'); % loads "event"
-RECAP = h_unpack_experiment(A.event);
+% DATA = readtable('./bellhop-gvel-gridded-simRange/gveltable.csv');
 
-% remove crazy 11 second event, event that is nominally 1.58* seconds
+DATA = readtable('./bellhop-gvel-gridded-simRange/gveltable.csv');
+indValid1 = ~isnan(DATA.recRange) | ~isnan(DATA.simGvel);
+DATA = DATA(indValid1,:);
+
+A = load('../data/tobytest-recap-clean.mat'); % loads "event"
+RECAP = h_unpack_experiment(A.event);
+indValid2 = ~isnan(RECAP.sim_gvel) | ~isnan(RECAP.sim_range);
+
+EOF_BOOL = double(RECAP.eof_bool(indValid2)).';
+GPS_RANGE = RECAP.data_range(indValid2).';
+SIM_RANGE = RECAP.sim_range(indValid2).';
+
+%% remove weird event
 indBad1 = find(DATA.owtt > 4);
 indBad2 = find(strcmp(DATA.rxNode,'East') & DATA.owtt > 1.55);
 indBad = union(indBad1,indBad2);
 
 % 1.587 events, had clock errors + Bellhop can't resolve these
+DATA.recRange(indBad) = NaN;
 DATA.simGvel(indBad) = NaN;
 
-% only simGvel
-indValid = ~isnan(DATA.simGvel);
+EOF_BOOL(indBad) = NaN;
 
-% calculate RangeAnomaly
-DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - DATA.recRange;
+%% range error for "data" aka ICEX20 implementation
+DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - GPS_RANGE;
 
-%% load post-processing, new algorithm
-listing = dir('./bellhop-gvel-gridded/csv_arr/*gridded.csv');
+%% range error for "sim" aka post processing nearest bounce criterion
+listing = dir('./bellhop-gvel-gridded-simRange/csv_arr/*gridded.csv');
 
 for f = 1:numel(listing)
     T0 = readtable([listing(f).folder '/' listing(f).name]);
@@ -37,12 +47,12 @@ for f = 1:numel(listing)
         delay = DATA.owtt(k);
         tableDelay = table2array(T0(k,2:6));
         [~,here] = min(abs(tableDelay - delay));
-        T0.gvel(k) = DATA.recRange(k)./tableDelay(here);
+        T0.gvel(k) = SIM_RANGE(k)./tableDelay(here);
         T0.owtt(k) = tableDelay(here);
         T0.numBounces(k) = here-1;
     end
     
-    T0.rangeAnomaly = DATA.owtt .* T0.gvel - DATA.recRange;
+    T0.rangeAnomaly = DATA.owtt .* T0.gvel - GPS_RANGE;
     SIM{f} = T0;
 end
 
@@ -57,8 +67,7 @@ end
 figure('name','compare-method-baseval','renderer','painters','position',[108 108 950 900]);
 
 % eof status = BASEVAL
-eof_status = RECAP.eof_bool == 0;
-index = boolean(eof_status.' .* indValid);
+index = EOF_BOOL == 0;
 
 % plot
 baseval.xVal = DATA.rangeAnomaly(index);
@@ -78,8 +87,7 @@ h_printThesisPNG('compare-baseval');
 figure('name','compare-method-eeof','renderer','painters','position',[108 108 950 900]);
 
 % eof status = EOF
-eof_status = RECAP.eof_bool == 1;
-index = boolean(eof_status.' .* indValid);
+index = EOF_BOOL == 1;
 
 % plot
 eeof.xVal = DATA.rangeAnomaly(index);
@@ -96,25 +104,25 @@ title({bigTitle; smallTitle});
 h_printThesisPNG('compare-eof');
 
 %% figure --- HYCOM
-figure('name','compare-method-hycom','renderer','painters','position',[108 108 950 900]);
-
-% load "data" --- redone w/ HYCOM by original algorithm
-dataHYCOM = readtable('./bellhop-gvel/csv_arr/hycom.csv');
-dataHYCOM.rangeAnomaly = DATA.owtt .* (DATA.recRange./dataHYCOM.owtt) - DATA.recRange;
-
-% plot
-hycom.xVal = dataHYCOM.rangeAnomaly(indValid);
-hycom.yVal = SIM{5}.rangeAnomaly(indValid);
-hycom.zs   = DATA.sourceDepth(indValid);
-hycom.numBounces = SIM{5}.numBounces(indValid);
-hycom.F = h_cross_plot(hycom.xVal,hycom.yVal,hycom.zs,hycom.numBounces);
-
-% title
-bigTitle = '\fontsize{18} Improvement of range estimation error';
-smallTitle = sprintf('\\fontsize{14}\\rm SSP = HYCOM, N = %u events',sum(indValid));
-title({bigTitle; smallTitle});
-
-h_printThesisPNG('compare-hycom');
+% figure('name','compare-method-hycom','renderer','painters','position',[108 108 950 900]);
+% 
+% % load "data" --- redone w/ HYCOM by original algorithm
+% dataHYCOM = readtable('./bellhop-gvel/csv_arr/hycom.csv');
+% dataHYCOM.rangeAnomaly = DATA.owtt .* (DATA.recRange./dataHYCOM.owtt) - DATA.recRange;
+% 
+% % plot
+% hycom.xVal = dataHYCOM.rangeAnomaly(indValid);
+% hycom.yVal = SIM{5}.rangeAnomaly(indValid);
+% hycom.zs   = DATA.sourceDepth(indValid);
+% hycom.numBounces = SIM{5}.numBounces(indValid);
+% hycom.F = h_cross_plot(hycom.xVal,hycom.yVal,hycom.zs,hycom.numBounces);
+% 
+% % title
+% bigTitle = '\fontsize{18} Improvement of range estimation error';
+% smallTitle = sprintf('\\fontsize{14}\\rm SSP = HYCOM, N = %u events',sum(indValid));
+% title({bigTitle; smallTitle});
+% 
+% % h_printThesisPNG('compare-hycom');
 
 %% figure helper function
 function [F] = h_cross_plot(xVal,yVal,zs,numBounces)

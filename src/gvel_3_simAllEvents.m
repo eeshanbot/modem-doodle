@@ -242,7 +242,7 @@ h_printThesisPNG('range-error-owtt-newalgorithm')
 figure('name','rangeanomaly-histogram','renderer','painters','position',[108 108 1200 500]);
 clear h;
 
-edges = -10:2:22;
+edges = [-14:2:22];
 count = 0;
 for s = [5 3 4]
     count = count + 1;
@@ -259,8 +259,8 @@ for s = [5 3 4]
    B(count).FaceAlpha = 0.8;
 end
 grid on
-xlim([min(edges)-1 max(edges)-1]);
-xticks(edges-1);
+xlim([-12 22])
+xticks(edges+1);
 set(gca,'fontsize',14);
 title('Histogram of post-processed range error in 2 meter bins');
 xlabel('range error [m]');
@@ -295,7 +295,7 @@ h_printThesisPNG('rangeError-hist1');
 
 %% histogram of all events by num bounces
 
-figure('name','rangeanomaly-histogram-numbounces','renderer','painters','position',[108 108 1100 900]);
+figure('name','rangeanomaly-histogram-numbounces','renderer','painters','position',[108 108 1200 900]);
 clear h;
 hold on
 
@@ -305,7 +305,7 @@ for nb = [0:4]
 
 nexttile;
 
-edges = [-14:2:20];
+edges = [-14:2:22];
 count = 0;
 for s = [5 3 4]
     count = count + 1;
@@ -324,12 +324,14 @@ for s = [5 3 4]
    B(count).FaceAlpha = 0.8;
 end
 grid on
+xlim([-12 22])
+
 xticks(edges+1);
 set(gca,'fontsize',13);
 title(sprintf('number of bounces = %u',nb));
 
 if nb == 4
-    xlabel('range anomaly [m]');
+    xlabel('range error [m]');
 end
 
 end
