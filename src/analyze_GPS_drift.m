@@ -3,38 +3,20 @@
 clear; clc; close all;
 
 A = load('./data-prep/tobytest-recap-full.mat'); % loads "event"
-global RECAP modem_labels SIM_NEW
+global RECAP modem_labels colorDepth sourceDepth alphaDepth sspGVEL
 RECAP = h_unpack_experiment(A.event);
 modem_labels = {'North','South','East','West','Camp'};
 
-%% load post-processing, new algorithm
-listing = dir('./bellhop-gvel-gridded/csv_arr/*gridded.csv');
+colorDepth = containers.Map([20 30 90],{[70 240 240]./256,[0 130 200]./256,[0 0 128]./256});
+sourceDepth = containers.Map([20 30 90],{'>','^','v'});
+alphaDepth = containers.Map([20 30 90],[.2 .2 .2]);
 
-for f = 1:numel(listing)
-    T0 = readtable([listing(f).folder '/' listing(f).name]);
-    T0.index = T0.index + 1;
-    b = split(listing(f).name,'.');
-    tName{f} = b{1};
-    
-    % assign gvel for each index by closest time comparison
-    for k = 1:numel(T0.index)
-        delay = RECAP.data_owtt(k);
-        tableDelay = table2array(T0(k,2:6));
-        [~,here] = min(abs(tableDelay - delay));
-        T0.gvel(k) = RECAP.data_range(k)./tableDelay(here);
-        T0.owtt(k) = tableDelay(here);
-        T0.numBounces(k) = here-1;
-    end
-    
-    T0.rangeEstimate = RECAP.data_owtt.' .* T0.gvel;
-    T0.rangeEstimate(T0.rangeEstimate > 10000) = NaN;
-    SIM_NEW{f} = T0;
-end
+sspGVEL = 1440/1000; % meters / millisecond
 
 %% 5x5 grid
 
 figure('name','gps-and-time-drift','renderer','painters','position',[108 108 1300 1100]); clf;
-t = tiledlayout(5,5,'TileSpacing','compact','Padding','compact');
+tiledlayout(5,5,'TileSpacing','compact','Padding','compact');
 
 for r = 1:5
     for c = 1:5
@@ -52,7 +34,7 @@ for r = 1:5
         % if r <c, do dx/dy 
         elseif r < c
             nexttile(tileNum);
-            h_d1d2(txNode,rxNode);
+            h_dtdR(txNode,rxNode,100);
             
             if c - r == 1
                 %xlabel('GPS \deltaR [m]')
@@ -65,24 +47,148 @@ for r = 1:5
         % if r > c, do dt/dR    
         elseif r > c   
             nexttile(tileNum);
-            h_dxdy(txNode,rxNode);
+            h_dxdy(txNode,rxNode,100);
+            
+            if c == 1
+                ylabel('GPS \deltay [m]');
+                yticklabels auto
+            end
+            
+            if r == 5
+                xlabel('GPS \deltax [m]');
+                xticklabels auto
+            end
             
             % add label for when tileNum == 21
             if tileNum == 21
                 xlabel('GPS \deltax [m]');
-                ylabel('GPS \deltay [m]');
                 xticklabels auto
-                yticklabels auto
+            end
+            
+            if tileNum == 24
+                cb = colorbar;
+                cb.Ticks = 0:4:12;
+                cb.TickLabels = num2cell(0:4:12);
+                cb.Label.String = 'time past [hours]';
+                cb.Label.FontSize = 10;
             end
         end
     end
 end
 
+%% legend -- 1
+nexttile(1);
+
+% legend
+% add legend
+hold on
+for s = [20 30 90]
+    plot(NaN,NaN,'color',colorDepth(s),'linewidth',6);
+end
+
+for r = [20 30 90]
+    plot(NaN,NaN,sourceDepth(r),'color','k')
+end
+hold off
+lgdstr = {' 20 m',' 30 m',' 90 m',' 20 m',' 30 m',' 90 m'};
+
+lg1 = legend(lgdstr,'location','south','NumColumns',2,'fontsize',11);
+title(lg1,'   source depth & receiver depth');
+
+set(gca,'XColor','white');
+set(gca,'YColor','white');
+
+% export
+h_printThesisPNG('gps-drift');
+
+%% sub-figure
+
+figure('name','gps-drift-example','renderer','painters','position',[108 108 1200 1100]); clf;
+t = tiledlayout(2,2,'TileSpacing','compact');
+
+rbounds1 = [-2.6 2.6];
+rticks1 = [-2:2];
+
+xbounds2 = [-1.1 1.1];
+xticks2 = [-1:0.5:1];
+
+% panel 1
+nexttile;
+h_dxdy('North','East',200);
+%colorbar;
+xlim(rbounds1)
+ylim(rbounds1)
+xticks(rticks1);
+yticks(rticks1);
+xticklabels auto
+yticklabels auto
+xlabel('GPS \deltax [m]');
+ylabel('GPS \deltay [m]');
+title('GPS drift --- North and East buoys','fontsize',15);
+
+% panel 2
+nexttile;
+h_dxdy('South','West',200);
+xlim(rbounds1)
+ylim(rbounds1)
+xticks(rticks1);
+yticks(rticks1);
+xticklabels auto
+yticklabels auto
+xlabel('GPS \deltax [m]');
+ylabel('GPS \deltay [m]');
+title('GPS drift --- South and West buoys','fontsize',15);
+cb = colorbar;
+cb.Ticks = 0:2:14;
+cb.TickLabels = num2cell(0:2:14);
+cb.Label.String = 'time past [hours]';
+
+% panel 3
+nexttile;
+h_dtdR('East','North',200);
+xlim(xbounds2);
+xticks(xticks2);
+ylim(xbounds2.*sspGVEL);
+yticks(xticks2.*sspGVEL);
+title('GPS drift vs OWTT spread --- North and East buoys','fontsize',15);
+ylabel('GPS \deltaR [m]');
+xlabel('\deltat [ms]');
+
+% panel 4
+nexttile;
+h_dtdR('West','South',200);
+xlim(xbounds2);
+xticks(xticks2);
+ylim(xbounds2.*sspGVEL);
+yticks(xticks2.*sspGVEL);
+title('GPS drift vs OWTT spread --- South and West buoys','fontsize',15);
+ylabel('GPS \deltaR [m]');
+xlabel('\deltat [ms]');
+
+% legend
+% add legend
+hold on
+for s = [20 30 90]
+    plot(NaN,NaN,'color',colorDepth(s),'linewidth',6);
+end
+
+for r = [20 30 90]
+    plot(NaN,NaN,sourceDepth(r),'color','k')
+end
+hold off
+lgdstr = {' 20 m',' 30 m',' 90 m',' 20 m',' 30 m',' 90 m'};
+
+lg1 = legend(lgdstr,'location','southeast','NumColumns',2,'fontsize',10);
+title(lg1,'   source depth & receiver depth');
+
+% export
+h_printThesisPNG('gps-drift-example');
+
 %% helper function
-function [] = h_dxdy(txNode,rxNode)
+function [] = h_dxdy(txNode,rxNode,scatterSize)
 global RECAP;
 
-myColor = [51 152 152]./256;
+myColor = [153, 51, 153]./256;
 
 ind1 = strcmp(RECAP.tag_tx,{txNode}) & strcmp(RECAP.tag_rx,{rxNode});
 ind2 = strcmp(RECAP.tag_tx,{rxNode}) & strcmp(RECAP.tag_rx,{txNode});
@@ -97,8 +203,12 @@ y2 = RECAP.tx_y(index);
 dx = abs(x2-x1)-mean(abs(x2-x1));
 dy = abs(y2-y1)-mean(abs(y2-y1));
 
-scatter(dx,dy,100,'filled','MarkerFaceAlpha',0.15,'MarkerFaceColor',myColor);
-set(gca,'fontsize',12);
+ZR = RECAP.rx_z(index);
+ZS = RECAP.tx_z(index);
+timeInHours = 24.*(RECAP.data_time(index) - min(RECAP.data_time));
+scatter(dx,dy,scatterSize,timeInHours,'filled','MarkerFaceAlpha',0.2,'handleVisibility','off');
+colormap(parula(7));
+caxis([0 14]);
 
 text(10,10,sprintf('n=%u',sum(index)),'verticalalignment','top','horizontalalignment','right');
 
@@ -111,13 +221,13 @@ yticklabels([]);
 xticklabels([]);
 
 title(sprintf('%s <--> %s',txNode,rxNode))
+set(gca,'fontsize',12);
+
 end
 
 %% helper function
-function [] = h_d1d2(txNode,rxNode)
-global RECAP SIM_NEW;
-
-myColor = [5 119 177]./256;
+function [] = h_dtdR(txNode,rxNode,scatterSize)
+global RECAP sourceDepth colorDepth alphaDepth sspGVEL
 
 ind1 = strcmp(RECAP.tag_tx,{txNode}) & strcmp(RECAP.tag_rx,{rxNode});
 ind2 = strcmp(RECAP.tag_tx,{rxNode}) & strcmp(RECAP.tag_rx,{txNode});
@@ -130,37 +240,28 @@ dr1 = r1 - median(r1);
 t = RECAP.data_owtt(index);
 dt = t - median(t);
 
-% dr2 -- ALGORITHM difference
-%r2 = SIM_NEW{4}.rangeEstimate(index);
-%dr2 = r2 - mean(r1);
+ZR = RECAP.rx_z(index);
+ZS = RECAP.tx_z(index);
 
-scatter(dt*1000,dr1,100,'filled','MarkerFaceAlpha',0.15,'MarkerFaceColor',myColor);
-set(gca,'fontsize',11);
+hold on
+for k = 1:numel(dt)
+    zr = ZR(k);
+    zs = ZS(k);
+    scatter(dt(k)*1000,dr1(k),scatterSize,'filled',sourceDepth(zr),'MarkerFaceColor',colorDepth(zs),'MarkerFaceAlpha',alphaDepth(zs),'handleVisibility','off');
+end
+hold off
 
 grid on
 
-ssp = 1450/1000;
 xlim([-11 11]);
-ylim(ssp*[-11 11]);
+ylim(sspGVEL*[-11 11]);
 
 hold on
-plot([-11 11],ssp*[-11 11],'k--','linewidth',1);
+plot([-11 11],sspGVEL*[-11 11],'k--','linewidth',1,'handlevisibility','off');
 hold off
 
-% % x/y lim
-%xlim([-10 20]);
-%ylim([-10 20]);
-% 
-% % x/y ticks
-% xticks(tTick);
-% yticks(tTick.*ssp);
-% xticklabels([]);
-% yticklabels([]);
-% 
-% hold on
-% plot([tBuff],ssp*tBuff,'--','color',[0.5 0.5 0.5 0.5]);
-% hold off
-
 title(sprintf('%s <--> %s',rxNode,txNode))
+set(gca,'fontsize',12);
+
 end
 
