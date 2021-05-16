@@ -10,7 +10,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 30;
+zs = 20;
 
 % load modem marker information
 load p_modemMarkerDetails
@@ -166,7 +166,7 @@ for gg = 1:numel(G)
     ylim([min(ymin) max(ymax)]);
     grid on
     if gg == 2
-        title({['Range anomalies for zs = ' num2str(zs) 'm, N = ' num2str(numel(data_gvel.range))],...
+        title({['Range errors for source depth = ' num2str(zs) 'm, N = ' num2str(numel(data_gvel.range))],...
             ['n = ' num2str(G(gg).num) ' from ' G(gg).title]},'fontsize',15)
     else
         title({'    ',...
@@ -175,12 +175,12 @@ for gg = 1:numel(G)
 end
 
 subplot(1,3,1)
-ylabel('range anomaly [m]');
+ylabel('range error [m]');
 
 subplot(1,3,2);
 xlabel('owtt [s]');
 
-h_printThesisPNG(sprintf('zs%u-rangeAnomaly.png',zs));
+h_printThesisPNG(sprintf('zs%u-rangeError',zs));
 
 %% figure : range anomaly plot by receiver depth
 
@@ -318,7 +318,7 @@ for gg = 1:numel(G)
     xlim([min(data_owtt)-xbuff max(data_owtt)+xbuff])
     grid on
     if gg == 2
-        title({['Range anomalies for zs = ' num2str(zs) 'm, N = ' num2str(sum(gvelNanIndex))],...
+        title({['Range error for source depth = ' num2str(zs) 'm, N = ' num2str(sum(gvelNanIndex))],...
             ['n = ' num2str(G(gg).num) ' from ' G(gg).title]},'fontsize',15)
     else
         title({'    ',...
@@ -327,12 +327,12 @@ for gg = 1:numel(G)
 end
 
 subplot(2,3,1)
-ylabel({'zr = 20,30m','range anomaly [m]'},'fontsize',lg_font_size);
+ylabel({'receiver depth = 20,30m','range error [m]'},'fontsize',lg_font_size);
 
 subplot(2,3,4);
-ylabel({'zr = 90m','range anomaly [m]'},'fontsize',lg_font_size);
+ylabel({'receiver depth = 90m','range error [m]'},'fontsize',lg_font_size);
 
 subplot(2,3,5);
 xlabel('owtt [s]');
 
-h_printThesisPNG(sprintf('zs%u-rangeAnomaly-depthBin.png',zs));
+h_printThesisPNG(sprintf('zs%u-rangeError-depthBin',zs));

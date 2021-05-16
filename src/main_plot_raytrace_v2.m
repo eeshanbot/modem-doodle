@@ -6,11 +6,11 @@ clear; clc; close all;
 
 lg_font_size = 14;
 
-myGray = [0.7 0.7 0.7];
-alphaColor   = .1;
+myGray = [0.6 0.6 0.6];
+alphaColor   = .2;
 
 % depth_switch = [20 30 90];
-zs = 90;
+zs = 20;
 
 %% load modem marker info
 load p_modemMarkerDetails
@@ -18,6 +18,8 @@ load p_modemMarkerDetails
 %% load all events
 load('../data/tobytest-recap-clean.mat');
 A = h_unpack_experiment(event);
+
+load bellhop-eigenrays-3ssp/eigentable_flat.mat
 
 %% load all sound speeds
 path = './bellhop-gvel-gridded/';
@@ -36,12 +38,14 @@ for k = 1:3
     ssp(k).ssp   = T.Var2;
     ssp(k).name = fileNames{k};
     ssp(k).color = colorSet{k};
+    temp = split(file{1},'.');
+    ssp(k).filestr = temp{1};
 end
 
 %% make plot
 
 figure('name','raytrace-all','renderer','painters','position',[108 108 1300 1050]);
-t = tiledlayout(3,9,'TileSpacing','default');
+t = tiledlayout(3,9,'TileSpacing','compact');
 
 theta = [-49:2:-31 -30:1:30 31:2:49];
 numstep = 1100;
@@ -52,7 +56,7 @@ for k = 1:3
     %% sound speed plot
     nexttile([1 2]);
     
-    plot(ssp(k).ssp,ssp(k).depth,'linewidth',3);
+    plot(ssp(k).ssp,ssp(k).depth,'linewidth',3,'color',myGray);
     set(gca,'ydir','reverse');
     grid on
     ylim([0 300]);
@@ -69,12 +73,17 @@ for k = 1:3
     nexttile([1 7]);
     [R,Z,~] = eb_raytrace(zs,theta,numstep,sstep,ssp(k).depth,ssp(k).ssp,0,max(ssp(k).depth));
     
-    plot(R.'/1000,Z.','color',[myGray alphaColor]);
+    plot(R.'/1000,Z.','color',[myGray alphaColor],'linewidth',2);
     set(gca,'ydir','reverse');
     ylim([0 300]);
     set(gca,'fontsize',12);
     yticklabels([]);
-    xlim([0 3.5]);
+    
+    if zs == 20
+        xlim([0 2]);
+    else
+        xlim([0 3.5]);
+    end
     
     title(sprintf('Raytrace with a source depth = %u m',zs));
     
@@ -83,6 +92,25 @@ for k = 1:3
     end
     
     hold on
+    
+        % add eigenrays
+    num_eigentable = numel(eigentable);
+    for ne = 1:num_eigentable
+        
+        if strcmp(eigentable{ne}.env,ssp(k).filestr)
+            tx_z = double(eigentable{ne}.tx_z);
+            
+            if tx_z == zs
+                
+                if ~strcmp(eigentable{ne}.ray,'None')
+                    
+                    plot(eigentable{ne}.ray.r./1000,eigentable{ne}.ray.z,...
+                        'color',[markerModemMap(eigentable{ne}.rx_node) 0.5],'linewidth',2,'handlevisibility','off')
+                end
+            end
+        end
+    end
+    
     % add source
     scatter(0,zs,markerSize,'k','s','linewidth',2);
     
@@ -106,12 +134,16 @@ for k = 1:3
                     subindex = intersect(index,subindex);
                     
                     text(mean(A.data_range(subindex))./1000,imd+14,num2str(numel(subindex)),...
-                        'HorizontalAlignment','center','VerticalAlignment','top','fontsize',11,'color',markerModemMap(node));
+                        'HorizontalAlignment','center','VerticalAlignment','top','fontsize',9,'color',markerModemMap(node));
                 end
             end
         end
     end
+    
+
     hold off
 end
+
+h_printThesisPNG(sprintf('raytrace-3env-zs-%u',zs));
 
 

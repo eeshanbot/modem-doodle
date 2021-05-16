@@ -7,9 +7,18 @@ clear; clc; close all;
 % load data
 A = readtable('./bellhop-gvel-gridded/gveltable.csv');
 
+% remove crazy 11 second event, event that is nominally 1.58* seconds
+indBad1 = find(A.owtt > 4);
+indBad2 = find(strcmp(A.rxNode,'East') & A.owtt > 1.55);
+indBad = union(indBad1,indBad2);
+
+% 1.587 events, had clock errors + Bellhop can't resolve these
+A.simGvel(indBad) = NaN;
+
 % load modem marker information
 load p_modemMarkerDetails
 
+% plotbool = [1 1 1 1 1 1];
 plotbool = [0 0 0 0 0 1];
 
 %% figure --- owtt vs range
@@ -111,7 +120,7 @@ end
 %% gvel (data) compared to gvel (sim)
 
 if plotbool(3) == 1
-    figure('name','data-sim-compare','renderer','painters','position',[108 108 1250 550]);
+    figure('name','data-sim-compare','renderer','painters','position',[108 108 900 800]);
     
     % get index for gvel data
     indValid = ~isnan(A.simGvel);
@@ -122,40 +131,26 @@ if plotbool(3) == 1
         % plot gvel
         if indValid(k)==1
             
-            subplot(1,2,1);
-            hold on
-            xval = A.recRange(k) ./ A.owtt(k);
-            yval = A.simGvel(k);
+            yval = A.recRange(k) ./ A.owtt(k);
+            xval = A.simGvel(k);
             scatter(xval,yval,...
-                150,markerModemMap(A.rxNode{k}),markerShape(A.recDepth(k)),...
+                150,markerModemMap(A.txNode{k}),markerShape(A.sourceDepth(k)),...
                 'filled','MarkerFaceAlpha',0.4,'handlevisibility','off');
-            hold off
-            
-            subplot(1,2,2);
-            hold on
-            scatter(xval,yval,...
-                150,markerModemMap(A.rxNode{k}),markerShape(A.recDepth(k)),...
-                'filled','MarkerFaceAlpha',0.4,'handlevisibility','off');
-            hold off
         end
     end
     hold off
     
     % beautify plots
-    subplot(1,2,1);
     grid on
-    xlabel('simulated group velocity [s]');
-    ylabel('naive group velocity [m/s]');
-    sgtitle('Comparing simulated group velocity with naive group velocity calculations','fontsize',18,'fontweight','bold');
-    
-    subplot(1,2,2);
-    grid on
-    xlabel('simulated group velocity [m/s]');
     xlim([1420 1452]);
     ylim([1420 1452]);
     xlabel('simulated group velocity [s]');
     ylabel('naive group velocity [m/s]');
+    title('Naive vs simulated group velocity estimate');
+    
+    % h_printThesisPNG('gvel-sim-naive-compare');
 end
+
 
 
 %% range anomaly vs owtt (all depths?)
@@ -210,15 +205,6 @@ end
 figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1200 1000]);
 t = tiledlayout(3,2,'TileSpacing','none','Padding','compact');
 
-% remove crazy 11 second event
-indBad = find(A.owtt > 4);
-load outlierIndex.mat
-
-% 1.587 events, had clock errors + Bellhop can't resolve these
-indBad = [indBad; outlier];
-A.simGvel(indBad) = NaN;
-
-
 index3 = ~isnan(A.simGvel);
 count = 0;
 for zs = [20 30 90]
@@ -229,6 +215,8 @@ for zs = [20 30 90]
         
         count = count + 1;
         nexttile;
+        
+        
         
         index = boolean(index1.*index2.*index3);
         
@@ -255,12 +243,11 @@ for zs = [20 30 90]
             p.EdgeColor = 'w';
             p.LineWidth = 2;
             
-            for k = 1:numel(index)
-                if index(k) == 1
-                    scatter(A.owtt(index),A.simGvel(index) .* A.owtt(index) - A.recRange(index),...
+            plotIndex = find(index == 1);
+            for k = plotIndex.'
+                    scatter(A.owtt(k),A.simGvel(k) .* A.owtt(k) - A.recRange(k),...
                         150,markerModemMap(A.rxNode{k}),markerShape(A.recDepth(k)),...
                         'filled','MarkerFaceAlpha',0.1,'handlevisibility','off');
-                end
             end
             
             
@@ -270,12 +257,12 @@ for zs = [20 30 90]
         
         % for all grids
         title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','normal');
-        text(2.2,20,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
+        text(2.2,25,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
         
         if sum(index)>1
-            text(2.2,20,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+            text(2.2,25,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
         else
-            text(2.2,20,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+            text(2.2,25,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
         end
         grid on
         
@@ -285,7 +272,7 @@ for zs = [20 30 90]
         if mod(count,2)~=1
             yticklabels([])
         else
-            ylabel('range anomaly [m]');
+            ylabel('range error [m]');
         end
         
         if count >=5
@@ -297,5 +284,5 @@ for zs = [20 30 90]
 end
 
 % title
-sgtitle('Range anomaly by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-% h_printThesisPNG('range-anomaly-owtt-newalgorithm.png')
+sgtitle('Range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
+% h_printThesisPNG('range-error-owtt-data')

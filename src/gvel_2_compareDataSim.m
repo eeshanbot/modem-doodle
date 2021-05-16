@@ -1,12 +1,21 @@
 %% gvel_2_checkSim
 % makes plots to compare ICEX 20 in situ estimates to post-processing
-% simulations
+% simulations *of the same algorithm*
 
 %% prep workspace
 clear; clc; close all;
 
 % load data
 A = readtable('./bellhop-gvel-gridded/gveltable.csv');
+
+% remove crazy 11 second event, event that is nominally 1.58* seconds
+indBad1 = find(A.owtt > 4);
+indBad2 = find(strcmp(A.rxNode,'East') & A.owtt > 1.55);
+indBad = union(indBad1,indBad2);
+
+% 1.587 events, had clock errors + Bellhop can't resolve these
+A.simGvel(indBad) = NaN;
+
 % only simGvel
 indValid = ~isnan(A.simGvel);
 
@@ -31,7 +40,7 @@ for k = 1:numel(listing)
     
     
     nexttile
-    scatter(A.owtt(indValid),T0.owtt(indValid)-A.owtt(indValid),'filled','MarkerFaceAlpha',0.2);
+    scatter(A.owtt(indValid),T0.owtt(indValid)-A.owtt(indValid),100,'filled','MarkerFaceAlpha',0.1);
     grid on
     xlim([0.8 4.2]);
     str = split(listing(k).name,'.');
@@ -39,13 +48,14 @@ for k = 1:numel(listing)
     set(gca,'fontsize',12);
     
     str = sprintf('$$\\delta  \\tilde{t}$$ = %2.4f s ',median(T0.owtt(indValid)-A.owtt(indValid)));
-    text(2.5,0.045,str,'VerticalAlignment','top','HorizontalAlignment','right','interpreter','latex','fontsize',14);
+    text(2.5,0.02,str,'VerticalAlignment','top','HorizontalAlignment','right','interpreter','latex','fontsize',14);
     
-    ylim([-0.12 0.05])
+    ylim([-0.025 0.025])
     xlim([0.9 2.5]);
 end
 
-sgtitle('One-way-travel-time errors between in situ prediction & post-processing prediction given various input files');
+sgtitle({'One way travel time discrepancies between',...
+    'in situ prediction & post-processing algorithm reconstruction given various input files'},'fontweight','bold');
 
 %% second --- by simgvel
 
@@ -55,7 +65,7 @@ t = tiledlayout('flow','TileSpacing','Compact');
 for k = 1:numel(listing)
    
     nexttile
-    scatter(A.owtt(indValid),T{k}.gvel(indValid)-A.simGvel(indValid),'filled','MarkerFaceAlpha',0.2);
+    scatter(A.owtt(indValid),T{k}.gvel(indValid)-A.simGvel(indValid),100,'filled','MarkerFaceAlpha',0.1);
     grid on
     xlim([0.8 4.2]);
     str = split(listing(k).name,'.');
@@ -69,4 +79,5 @@ for k = 1:numel(listing)
     xlim([0.9 2.5]);
 end
 
-sgtitle('Estimated group velocity errors between in situ prediction & post-processing prediction given various input files');
+sgtitle({'Estimated group velocity discrepancies between',...
+    'in situ prediction & post-processing algorithm reconstruction given various input files'},'fontweight','bold');

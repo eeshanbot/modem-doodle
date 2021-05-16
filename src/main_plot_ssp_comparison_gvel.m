@@ -1,7 +1,7 @@
 %% main_plot_ssp_comparison.m
 % plots the EOF, baseval, and HYCOM comparison for the gvel calcluations
 
-close all; clc; clear all;
+%close all; clc; clear all;
 
 path = './bellhop-gvel-gridded/';
 
@@ -13,7 +13,7 @@ lineStyleSet = {'-','-','-'};
 lineWidthSet = [4 3 4];
 colorSet = {[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./256};
 
-figure('name','ssp-for-gvel','renderer','painters','position',[108 108 400 800]);
+figure('name','ssp-for-gvel','renderer','painters','position',[108 108 900 1000]);
 
 for k = 1:3
     T = readtable([path file{k}]);
@@ -26,11 +26,11 @@ end
 grid on
 set(gca,'ydir','reverse');
 title('Sound speed estimates');
-ylim([0 500])
-xlim([1431 1461])
+ylim([0 600])
+xlim([1431 1462])
 ylabel('depth [m]');
 xlabel('c [m/s]');
 
 legend('Mean of EOF set','Chosen EOF weights','HYCOM','location','southwest','fontsize',13);
 
-h_printThesisPNG('ssp-gvel.png');
+h_printThesisPNG('ssp-gvel-large');

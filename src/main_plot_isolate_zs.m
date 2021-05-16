@@ -10,7 +10,7 @@ charcoalGray = [0.6 0.6 0.6];
 alphaColor   = .035;
 
 % depth_switch = [20 30 90];
-zs = 20;
+zs = 90;
 
 % load modem marker information
 load p_modemMarkerDetails
@@ -189,8 +189,8 @@ hold off
 xlabel('x [m]')
 ylabel('y [m]')
 axis equal
-lb = legend(Lgd,LgdStr,'location','bestoutside');
-title(lb,'Nodes');
+%lb = legend(Lgd,LgdStr,'location','bestoutside');
+%title(lb,'Nodes');
 title(['Bird''s Eye View of Camp Seadragon, zs = ' num2str(zs) 'm'],'fontsize',18);
 
-%h_printThesisPNG(sprintf('zs%u-birdseye.png',zs));
+h_printThesisPNG(sprintf('zs%u-birdseye',zs));

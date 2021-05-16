@@ -8,13 +8,13 @@ A = readtable('./bellhop-gvel-gridded/gveltable.csv');
 % only simGvel
 A.gvel = A.recRange ./ A.owtt;
 
-% remove crazy 11 second event
-indBad = find(A.owtt > 4);
-load outlierIndex.mat
+% remove crazy 11 second event, event that is nominally 1.58* seconds
+indBad1 = find(A.owtt > 3);
+indBad2 = find(strcmp(A.rxNode,'East') & A.owtt > 1.55);
+indBad = union(indBad1,indBad2);
 
 % 1.587 events, had clock errors + Bellhop can't resolve these
-indBad = [indBad; outlier];
-A.gvel(indBad) = NaN;
+A.simGvel(indBad) = NaN;
 
 % load simulation
 listing = dir('./bellhop-gvel-gridded/csv_arr/*gridded.csv');
@@ -53,7 +53,7 @@ colorSet = {[0 0 0],[0 0 0],[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./2
 
 %% plot all data group velocity
 
-figure('name','gvel-by-owtt','renderer','painters','position',[108 108 1200 1000]);
+figure('name','gvel-by-owtt','renderer','painters','position',[108 108 1100 900]);
 tiledlayout(3,2,'TileSpacing','none','Padding','compact');
 
 shapeBounce = {'o','x','s','^','d'};
@@ -95,7 +95,7 @@ for zs = [20 30 90]
         set(gca,'fontsize',13)
         
         % for all grids
-        title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','normal');
+        title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','bold');
         text(0.95,1445,sprintf('rx depth = %u m',zr),'HorizontalAlignment','left','VerticalAlignment','bottom','fontsize',12);
         
         if sum(index)>1
@@ -123,35 +123,35 @@ for zs = [20 30 90]
     end
 end
 
-% add legend 1 -- color
+% add legend
 nexttile(1);
+
+% add legend 1 -- color
 hold on
-for s = [3 4 5]
+for s = [5 3 4]
     plot(NaN,NaN,'color',colorSet{s},'linewidth',5);
 end
-lg1 = legend('HYCOM','Mean of EOF set','Chosen Weights','location','northeast');
-title(lg1,'Sound Speed Inputs');
-hold off
+plot(NaN,NaN,'w');
 
 % add legend 2 -- shape
-nexttile(2);
-hold on
-for nb = 0:4
-    sk(nb+1) = scatter(NaN,NaN,shapeBounce{nb+1},'MarkerEdgeColor','k');
+for nb = 0:3
+    scatter(NaN,NaN,shapeBounce{nb+1},'MarkerEdgeColor','k');
 end
-lg2 = legend(sk,'direct path','1 bounce','2 bounces','3 bounces','4 bounces','location','northeast');
-title(lg2,'Multipath Structure');
+
+lgdstr = {'HYCOM','Mean of EOF set','Chosen Weights','','direct path','1 bounce','2 bounces','3 bounces'};
+lgd = legend(lgdstr,'numcolumns',2,'fontsize',11,'location','SouthEast');
+title(lgd,'SSP Source & Multipath Structure');
 hold off
 
 % title
-sgtitle('Group velocity estimates by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
+sgtitle('Post-processed group velocity estimates by source and receiver depths','fontsize',17,'fontweight','bold')
 
 % save plot
-% h_printThesisPNG('gvel-owtt-newalgorithm.png');
+h_printThesisPNG('gvel-owtt-newalgorithm');
 
 %% plot all data RANGE ANOMALY
 
-figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1200 1000]);
+figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1100 900]);
 t = tiledlayout(3,2,'TileSpacing','none','Padding','compact');
 
 count = 0;
@@ -186,9 +186,9 @@ for zs = [20 30 90]
                 % make boundary
                 b = boundary(xval,yval);
                 p = patch(xval(b),yval(b),colorSet{s});
-                p.FaceAlpha = .4;
+                p.FaceAlpha = .2;
                 p.EdgeColor = colorSet{s};
-                p.LineWidth = 2;
+                p.LineWidth = 3;
                 
                 
             end
@@ -197,13 +197,13 @@ for zs = [20 30 90]
         set(gca,'fontsize',13)
         
         % for all grids
-        title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','normal');
-        text(2.2,20,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
+        title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','bold');
+        text(2.25,20,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
         
         if sum(index)>1
-            text(2.2,20,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+            text(2.25,20,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
         else
-            text(2.2,20,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+            text(2.25,20,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
         end
         grid on
         
@@ -213,7 +213,7 @@ for zs = [20 30 90]
         if mod(count,2)~=1
             yticklabels([])
         else
-            ylabel('range anomaly [m]');
+            ylabel('range error [m]');
         end
         
         if count >=5
@@ -234,46 +234,68 @@ lg = legend('HYCOM','Mean of EOF set','Chosen Weights','location','southeast');
 title(lg,'Sound Speed Inputs');
 
 % title
-sgtitle('Range anomaly by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-% h_printThesisPNG('range-anomaly-owtt-newalgorithm.png')
+sgtitle('Post-processed range error by source and receiver depths','fontsize',17,'fontweight','bold')
+h_printThesisPNG('range-error-owtt-newalgorithm')
 
 %% histogram of all events
 
 figure('name','rangeanomaly-histogram','renderer','painters','position',[108 108 1200 500]);
 clear h;
-hold on
 
-edges = [-14:2:20];
+edges = -10:2:22;
 count = 0;
 for s = [5 3 4]
     count = count + 1;
     T{s}.rangeAnomaly = T{s}.gvel .* A.owtt - A.recRange;
     
-    h(count,:) = histcounts(T{s}.rangeAnomaly,edges,'normalization','probability');
+    h(count,:) = histcounts(T{s}.rangeAnomaly,edges,'normalization','count');
 end
-hold off
 
 B = bar(edges(1:end-1),h,0.9,'FaceColor','flat','EdgeColor','none');
 count = 0;
 for s = [5 3 4]
-    count = count + 1;
+   count = count + 1;
    B(count).CData = colorSet{s};
    B(count).FaceAlpha = 0.8;
 end
 grid on
-xticks(edges+1);
+xlim([min(edges)-1 max(edges)-1]);
+xticks(edges-1);
 set(gca,'fontsize',14);
-title('Histogram of range anomaly in 2 meter bins');
-xlabel('range anomaly [m]');
-ylabel('probability');
+title('Histogram of post-processed range error in 2 meter bins');
+xlabel('range error [m]');
+ylabel('count');
+yticks([0:50:400]);
 
 legend('HYCOM','Mean of EOF set','Chosen Weights');
 
-% h_printThesisPNG('rangeAnomaly-hist.png');
+hold on
+buff = -100;
+ylim([buff 400]);
+
+plot([0 0],[buff 0],'k:','linewidth',2,'handlevisibility','off');
+
+kbuff = 25;
+kcount = 0;
+for s = [5 3 4]
+    kcount = kcount + 1;
+    meanVal = mean(T{s}.rangeAnomaly,'omitnan');
+    xQuant1 = quantile(T{s}.rangeAnomaly,[0 1]);
+    xQuant2 = quantile(T{s}.rangeAnomaly,[.25 .5 .75]);
+    
+    plot(xQuant1,ones(2,1).*-kcount*kbuff,'handlevisibility','off','color',[colorSet{s} 0.4]);
+    plot(xQuant1,-kcount*kbuff,'.','handlevisibility','off','color',colorSet{s},'MarkerSize',15);
+    plot(xQuant2,-kcount*kbuff,'o','handlevisibility','off','color',colorSet{s});
+    plot(meanVal,-kcount*kbuff,'x','handlevisibility','off','color',colorSet{s},'MarkerSize',10);
+end
+    
+hold off
+
+h_printThesisPNG('rangeError-hist1');
 
 %% histogram of all events by num bounces
 
-figure('name','rangeanomaly-histogram-numbounces','renderer','painters','position',[108 108 800 1000]);
+figure('name','rangeanomaly-histogram-numbounces','renderer','painters','position',[108 108 1100 900]);
 clear h;
 hold on
 
@@ -314,5 +336,5 @@ end
 
 nexttile(1);
 legend('HYCOM','Mean of EOF set','Chosen Weights');
-sgtitle('Histogram of range anomalies by number of bounces','fontsize',17,'fontweight','bold');
-% h_printThesisPNG('rangeAnomaly-hist.png');
+sgtitle('Histogram of post-processed range error by number of bounces','fontsize',17,'fontweight','bold');
+h_printThesisPNG('rangeError-hist2');
