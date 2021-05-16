@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.10.2
+#       jupytext_version: 1.11.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -63,11 +63,14 @@ with open('./gveltable.csv','r') as ff:
         line = line.split(',')
         if not len(line)==len(it_types):
             break
-        
-        for ii,it in enumerate(line):
-            gveltable[keys[ii]].append(it_types[ii](it))
+        if not line[2]=='NaN':
+            for ii,it in enumerate(line):
+                gveltable[keys[ii]].append(it_types[ii](it))
     
 gveltable = {key:np.array(gveltable[key]) for key in gveltable}
+
+# %%
+gveltable
 
 # %% [markdown]
 # ## Write ENV files
@@ -364,24 +367,27 @@ interact(make_plot,
          continuous_update=False)
 print()
 
-# %%
-all_arrs['fixed-eeof'][0]
+# %% [raw]
+# all_arrs
 
-# %%
+# %% [raw]
+# all_arrs['fixed-eeof'][0]
 
-# pattern :
-# index :
-
-idx_ref = [808,809,810,811,812,
-           814,817,818,819,821,
-           969,971,972,976,984,
-           985,986,997,998,999,
-           1118,1119,1120,1123,
-           1124,1126]
-
-for ii in idx_ref:
-    print(all_arrs['fixed-eeof'][ii]['owtt'])
-    print(all_arrs['fixed-eeof'][ii]['owtt0'])
-    print()
+# %% [raw]
+#
+# # pattern :
+# # index :
+#
+# idx_ref = [808,809,810,811,812,
+#            814,817,818,819,821,
+#            969,971,972,976,984,
+#            985,986,997,998,999,
+#            1118,1119,1120,1123,
+#            1124,1126]
+#
+# for ii in idx_ref:
+#     print(all_arrs['fixed-eeof'][ii]['owtt'])
+#     print(all_arrs['fixed-eeof'][ii]['owtt0'])
+#     print()
 
 # %%
