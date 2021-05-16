@@ -2,7 +2,7 @@
 % compares range anomaly performance between post processing of old and new
 % algorithms
 
-clear; clc;
+clear; clc; close all;
 
 %% load in situ data
 DATA = readtable('./bellhop-gvel-gridded/gveltable.csv');
@@ -24,9 +24,6 @@ indValid = ~isnan(DATA.simGvel);
 
 % calculate RangeAnomaly
 DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - DATA.recRange;
-
-% of interest
-roi = 1215:1224;
 
 %% load post-processing, new algorithm
 listing = dir('./bellhop-gvel-gridded/csv_arr/*gridded.csv');
@@ -76,35 +73,48 @@ end
 % 4 = fixed-eeof
 % 5 = hycom
 
-%% figure --- baseval
-%figure('name','compare-method-baseval','renderer','painters','position',[108 108 1000 900]);
+%% plot things
 
-index = indValid;
+global shapeBounce colorDepth;
+
+% marker shape & color
+shapeBounce = {'o','x','s','^','d'};
+colorDepth = containers.Map([20 30 90],{[70 240 240]./256,[0 130 200]./256,[0 0 128]./256});
+
+figure('name','compare-method-postv1-postv2','renderer','painters','position',[108 108 1470 490]);
+t = tiledlayout(1,3,'Padding','compact','TileSpacing','Compact');
+
+%% figure --- baseval
 
 % plot
-baseval.xVal = SIM_OLD{3}.rangeAnomaly(index);
-baseval.yVal = SIM_NEW{3}.rangeAnomaly(index);
-baseval.zs = DATA.sourceDepth(index);
-baseval.numBounces = SIM_NEW{3}.numBounces(index);
+baseval.xVal = SIM_OLD{3}.rangeAnomaly(indValid);
+baseval.yVal = SIM_NEW{3}.rangeAnomaly(indValid);
+baseval.zs = DATA.sourceDepth(indValid);
+baseval.numBounces = SIM_NEW{3}.numBounces(indValid);
 baseval.F = h_cross_plot(baseval.xVal,baseval.yVal,baseval.zs,baseval.numBounces);
 
-%% figure --- EOF
-%figure('name','compare-method-eeof','renderer','painters','position',[108 108 1000 900]);
+nexttile;
+h_view_plot(baseval.xVal,baseval.yVal,baseval.zs,baseval.numBounces);
+title('SSP = Baseline','fontsize',13);
+xlabel({'minimal bounce criterion error [m]'});
+ylabel({'nearest bounce criterion error [m]'});
 
-% only simGvel
-index = indValid;
+%% figure --- EOF
 
 % plot
 eeof.xVal = SIM_OLD{4}.rangeAnomaly(indValid);
-eeof.yVal = SIM_NEW{4}.rangeAnomaly(index);
-eeof.zs = DATA.sourceDepth(index);
-eeof.numBounces = SIM_NEW{4}.numBounces(index);
+eeof.yVal = SIM_NEW{4}.rangeAnomaly(indValid);
+eeof.zs = DATA.sourceDepth(indValid);
+eeof.numBounces = SIM_NEW{4}.numBounces(indValid);
 eeof.F = h_cross_plot(eeof.xVal,eeof.yVal,eeof.zs,eeof.numBounces);
 
+nexttile;
 h_view_plot(eeof.xVal,eeof.yVal,eeof.zs,eeof.numBounces);
+title({sprintf('\\fontsize{16} Post-processed range errors for all %u beacon to beacon events',sum(indValid)),'\fontsize{13} SSP = Chosen Weights'})
+yticklabels([]);
+xlabel({'minimal bounce criterion error [m]'});
 
 %% figure --- HYCOM
-%figure('name','compare-method-hycom','renderer','painters','position',[108 108 1000 900])
 
 % plot
 hycom.xVal = SIM_OLD{5}.rangeAnomaly(indValid);
@@ -112,6 +122,36 @@ hycom.yVal = SIM_NEW{5}.rangeAnomaly(indValid);
 hycom.zs   = DATA.sourceDepth(indValid);
 hycom.numBounces = SIM_NEW{5}.numBounces(indValid);
 hycom.F = h_cross_plot(hycom.xVal,hycom.yVal,hycom.zs,hycom.numBounces);
+
+nexttile;
+h_view_plot(hycom.xVal,hycom.yVal,hycom.zs,hycom.numBounces);
+title('SSP = HYCOM','fontsize',13);
+yticklabels([]);
+xlabel({'minimal bounce criterion error [m]'});
+
+%% legend
+nexttile(2);
+
+% add legend
+hold on
+for s = [20 30 90]
+    plot(NaN,NaN,'color',colorDepth(s),'linewidth',6);
+end
+
+plot(NaN,NaN,'w');
+
+for r = 1:5
+    plot(NaN,NaN,shapeBounce{r},'color','k')
+end
+hold off
+lgdstr = {' 20 m',' 30 m',' 90 m','','direct path','1 bounce','2 bounces','3 bounces'};
+
+lg1 = legend(lgdstr,'location','south','NumColumns',2,'fontsize',10);
+title(lg1,'   source depth & multipath structure');
+
+%% export
+
+h_printThesisPNG('compare-methods-postv1v2');
 
 %% figure helper function
 function [F] = h_cross_plot(xVal,yVal,zs,numBounces)
@@ -132,6 +172,8 @@ end
 %% figure helper function
 function [F] = h_view_plot(xVal,yVal,zs,numBounces)
 
+global shapeBounce colorDepth;
+
 % marker shape & color
 shapeBounce = {'o','x','s','^','d'};
 colorDepth = containers.Map([20 30 90],{[70 240 240]./256,[0 130 200]./256,[0 0 128]./256});
@@ -139,6 +181,7 @@ colorDepth = containers.Map([20 30 90],{[70 240 240]./256,[0 130 200]./256,[0 0 
 maxVal(1) = max(xVal);
 maxVal(2) = max(yVal);
 maxVal = max(maxVal(:));
+maxVal = 24;
 
 % add patch
 hold on
@@ -168,36 +211,15 @@ F.eff = sum(abs(yVal) <= abs(xVal))./numel(xVal);
 % add grid
 grid on
 
-% add text to explain gray box
-buff = maxVal/8;
-text(-maxVal+buff,maxVal-buff,'more accurate','verticalalignment','top','rotation',-45,'fontsize',11);
-text(-maxVal+buff,maxVal-buff,'less accurate than in situ algorithm','verticalalignment','bottom','rotation',-45,'fontsize',11);
-
 % make xticks and yticks equal
-axis tight
+xlim([-21 21]);
+ylim([-21 21]);
+xtickVal = -20:5:20;
+xticks(xtickVal);
+yticks(xtickVal);
+
 axis square
-xticks(yticks);
 
-% make plot look nice
-xlabel({'in situ algorithm error [m]','\it{minimal bounce criteria}'});
-ylabel({'updated algorithm error [m]','\it{nearest bounce criteria}'});
-set(gca,'fontsize',14);
-
-% add legend
-hold on
-for s = [20 30 90]
-    plot(NaN,NaN,'color',colorDepth(s),'linewidth',6);
-end
-
-plot(NaN,NaN,'w');
-
-for r = 1:5
-    plot(NaN,NaN,shapeBounce{r},'color','k')
-end
-hold off
-lgdstr = {' 20 m',' 30 m',' 90 m','','direct path','1 bounce','2 bounces','3 bounces'};
-
-lg1 = legend(lgdstr,'location','south','NumColumns',2,'fontsize',11);
-title(lg1,'   source depth & multipath structure');
+set(gca,'fontsize',12);
 
 end
