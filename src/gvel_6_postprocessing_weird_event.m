@@ -1,4 +1,4 @@
-%% gvel_5_compare_inSitu_postProcessed
+%% gvel_6_compare_inSitu_postProcessed
 % compares range anomaly performance between post processing of old and new
 % algorithms
 
