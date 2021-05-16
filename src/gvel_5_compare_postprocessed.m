@@ -101,6 +101,8 @@ eeof.zs = DATA.sourceDepth(index);
 eeof.numBounces = SIM_NEW{4}.numBounces(index);
 eeof.F = h_cross_plot(eeof.xVal,eeof.yVal,eeof.zs,eeof.numBounces);
 
+h_view_plot(eeof.xVal,eeof.yVal,eeof.zs,eeof.numBounces);
+
 %% figure --- HYCOM
 %figure('name','compare-method-hycom','renderer','painters','position',[108 108 1000 900])
 
@@ -124,5 +126,78 @@ F.Xstd = std(xVal);
 F.Yquant = quantile(yVal,[0 0.25 0.5 0.75 1]);
 F.Ymean = mean(yVal);
 F.Ystd = std(yVal);
+
+end
+
+%% figure helper function
+function [F] = h_view_plot(xVal,yVal,zs,numBounces)
+
+% marker shape & color
+shapeBounce = {'o','x','s','^','d'};
+colorDepth = containers.Map([20 30 90],{[70 240 240]./256,[0 130 200]./256,[0 0 128]./256});
+
+maxVal(1) = max(xVal);
+maxVal(2) = max(yVal);
+maxVal = max(maxVal(:));
+
+% add patch
+hold on
+p = patch([-maxVal 0 -maxVal maxVal 0 maxVal],[-maxVal 0 maxVal maxVal 0 -maxVal],'w','handlevisibility','off');
+p.FaceColor = [0.7 0.7 0.7];
+p.FaceAlpha = .3;
+p.EdgeColor = 'none';
+hold off
+
+% scatter points
+hold on
+for k = 1:numel(zs)
+    scatter(xVal(k),yVal(k),...
+        150,colorDepth(zs(k)),shapeBounce{numBounces(k)+1},'linewidth',2,'markeredgealpha',0.6,'handlevisibility','off');
+end
+hold off
+
+% performance metrics
+F.dataMean = mean(abs(xVal));
+F.simMean = mean(abs(yVal));
+F.dataMedian = median(abs(xVal));
+F.simMedian = median(abs(yVal));
+F.dataStd = std(abs(xVal));
+F.simStd = std(abs(yVal));
+F.eff = sum(abs(yVal) <= abs(xVal))./numel(xVal);
+
+% add grid
+grid on
+
+% add text to explain gray box
+buff = maxVal/8;
+text(-maxVal+buff,maxVal-buff,'more accurate','verticalalignment','top','rotation',-45,'fontsize',11);
+text(-maxVal+buff,maxVal-buff,'less accurate than in situ algorithm','verticalalignment','bottom','rotation',-45,'fontsize',11);
+
+% make xticks and yticks equal
+axis tight
+axis square
+xticks(yticks);
+
+% make plot look nice
+xlabel({'in situ algorithm error [m]','\it{minimal bounce criteria}'});
+ylabel({'updated algorithm error [m]','\it{nearest bounce criteria}'});
+set(gca,'fontsize',14);
+
+% add legend
+hold on
+for s = [20 30 90]
+    plot(NaN,NaN,'color',colorDepth(s),'linewidth',6);
+end
+
+plot(NaN,NaN,'w');
+
+for r = 1:5
+    plot(NaN,NaN,shapeBounce{r},'color','k')
+end
+hold off
+lgdstr = {' 20 m',' 30 m',' 90 m','','direct path','1 bounce','2 bounces','3 bounces'};
+
+lg1 = legend(lgdstr,'location','south','NumColumns',2,'fontsize',11);
+title(lg1,'   source depth & multipath structure');
 
 end
