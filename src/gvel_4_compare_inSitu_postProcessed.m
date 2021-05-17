@@ -78,7 +78,7 @@ baseval.F = h_cross_plot(baseval.xVal,baseval.yVal,baseval.zs,baseval.numBounces
 
 % title
 bigTitle = '\fontsize{18} Improvement of range estimation error';
-smallTitle = sprintf('\\fontsize{14}\\rm SSP = mean of EOF set, N = %u events',sum(index));
+smallTitle = sprintf('\\fontsize{14}\\rm SSP = Baseline, N = %u events',sum(index));
 title({bigTitle; smallTitle});
 
 h_printThesisPNG('compare-baseval');
@@ -98,7 +98,7 @@ eeof.F = h_cross_plot(eeof.xVal,eeof.yVal,eeof.zs,eeof.numBounces);
 
 % title
 bigTitle = '\fontsize{18} Improvement of range estimation error';
-smallTitle = sprintf('\\fontsize{14}\\rm SSP = chosen weights, N = %u events',sum(index));
+smallTitle = sprintf('\\fontsize{14}\\rm SSP = Chosen Weights, N = %u events',sum(index));
 title({bigTitle; smallTitle});
 
 h_printThesisPNG('compare-eof');
@@ -174,7 +174,7 @@ axis square
 xticks(yticks);
 
 % make plot look nice
-xlabel({'in situ algorithm error [m]','\it{minimal bounce criteria}'});
+xlabel({'in situ error [m]','\it{minimal bounce criteria}'});
 ylabel({'updated algorithm error [m]','\it{nearest bounce criteria}'});
 set(gca,'fontsize',14);
 

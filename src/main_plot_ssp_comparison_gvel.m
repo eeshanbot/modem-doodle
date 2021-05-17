@@ -31,6 +31,6 @@ xlim([1431 1462])
 ylabel('depth [m]');
 xlabel('c [m/s]');
 
-legend('Mean of EOF set','Chosen EOF weights','HYCOM','location','southwest','fontsize',13);
+legend('Baseline','Chosen Weights','HYCOM','location','southwest','fontsize',13);
 
 h_printThesisPNG('ssp-gvel-large');

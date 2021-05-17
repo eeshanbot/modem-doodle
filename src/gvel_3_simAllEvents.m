@@ -138,7 +138,7 @@ for nb = 0:3
     scatter(NaN,NaN,shapeBounce{nb+1},'MarkerEdgeColor','k');
 end
 
-lgdstr = {'HYCOM','Mean of EOF set','Chosen Weights','','direct path','1 bounce','2 bounces','3 bounces'};
+lgdstr = {'HYCOM','Baseline','Chosen Weights','','direct path','1 bounce','2 bounces','3 bounces'};
 lgd = legend(lgdstr,'numcolumns',2,'fontsize',11,'location','SouthEast');
 title(lgd,'SSP Source & Multipath Structure');
 hold off
@@ -230,7 +230,7 @@ hold on
 for s = [3 4 5]
     plot(NaN,NaN,'-','color',colorSet{s});
 end
-lg = legend('HYCOM','Mean of EOF set','Chosen Weights','location','southeast');
+lg = legend('HYCOM','Baseline','Chosen Weights','location','southeast');
 title(lg,'Sound Speed Inputs');
 
 % title
@@ -267,7 +267,7 @@ xlabel('range error [m]');
 ylabel('count');
 yticks([0:50:400]);
 
-legend('HYCOM','Mean of EOF set','Chosen Weights');
+legend('HYCOM','Baseline','Chosen Weights');
 
 hold on
 buff = -100;
@@ -337,6 +337,6 @@ end
 end
 
 nexttile(1);
-legend('HYCOM','Mean of EOF set','Chosen Weights');
+legend('HYCOM','Baseline','Chosen Weights');
 sgtitle('Histogram of post-processed range error by number of bounces','fontsize',17,'fontweight','bold');
 h_printThesisPNG('rangeError-hist2');

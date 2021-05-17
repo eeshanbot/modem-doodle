@@ -37,9 +37,9 @@ for zs = [20 30 90]
             index4 = A.eof_bool == eof_status;
             
             if eof_status == 1
-                eof_str = 'eof';
+                eof_str = 'weighted';
             else
-                eof_str = 'baseval';
+                eof_str = 'baseline';
             end
         
             index = boolean(index1.*index2.*index3.*index4);
@@ -109,14 +109,22 @@ for zs = [20 30 90]
     end
 end
 
+% legend
+nexttile(1);
+hold on
+for k = 1:2
+l2(k) = plot([NaN NaN],[NaN NaN],'color',colorSet{k});
+end
+hold off
+legend(l2,'Baseline','Chosen Weights','location','northwest');
+
 % title
 sgtitle('In situ range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-%h_printThesisPNG('range-error-owtt-data-v2');
+h_printThesisPNG('range-error-owtt-data-v2');
 
 %% find mean, median, etc for baseval vs eof
 
 A.rangeAnomaly = abs(A.sim_gvel.*A.data_owtt - A.data_range);
-figure(99);
 count = 0;
 for eof_status = [0 1]
     indexStat = A.eof_bool == eof_status & ~isnan(A.sim_gvel);
@@ -127,9 +135,6 @@ for eof_status = [0 1]
     bStat(count).med = median(A.rangeAnomaly(indexStat));
     bStat(count).std = std(A.rangeAnomaly(indexStat));
     bStat(count).max = max(A.rangeAnomaly(indexStat));
-    
-    hold on
-    histogram(A.rangeAnomaly(indexStat));
 end
     
     

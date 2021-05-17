@@ -10,7 +10,7 @@ myGray = [0.6 0.6 0.6];
 alphaColor   = .2;
 
 % depth_switch = [20 30 90];
-zs = 20;
+zs = 90;
 
 %% load modem marker info
 load p_modemMarkerDetails
@@ -28,9 +28,8 @@ file{1} = 'ssp-hycom.csv';
 file{2} = 'ssp-fixed-baseval.csv';
 file{3} = 'ssp-fixed-eeof.csv';
 
-fileNames = {'HYCOM','Mean of EOF set','Chosen Weights'};
+fileNames = {'HYCOM','Baseline','Chosen Weights'};
 colorSet = {[152 134 117]./256,[232, 153, 35]./256,[0 85 135]./256};
-
 
 for k = 1:3
     T = readtable([path file{k}]);
