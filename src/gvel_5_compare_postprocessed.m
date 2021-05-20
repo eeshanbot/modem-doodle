@@ -12,9 +12,11 @@ RECAP = h_unpack_experiment(A.event);
 DATA.simGvel(isnan(DATA.simGvel)) = 0;
 
 % remove crazy 11 second event, event that is nominally 1.58* seconds
-indBad1 = find(DATA.owtt > 3);
+indBad1 = find(DATA.owtt > 4);
 indBad2 = find(strcmp(DATA.rxNode,'East') & DATA.owtt > 1.55);
+indBad3 = find(strcmp(DATA.rxNode,'Camp'));
 indBad = union(indBad1,indBad2);
+indBad = union(indBad,indBad3);
 
 % 1.587 events, had clock errors + Bellhop can't resolve these
 DATA.simGvel(indBad) = NaN;
@@ -139,14 +141,15 @@ for s = [20 30 90]
 end
 
 plot(NaN,NaN,'w');
+plot(NaN,NaN,'w');
 
 for r = 1:5
     plot(NaN,NaN,shapeBounce{r},'color','k')
 end
 hold off
-lgdstr = {' 20 m',' 30 m',' 90 m','','direct path','1 bounce','2 bounces','3 bounces'};
+lgdstr = {' 20 m',' 30 m',' 90 m','','','direct path','1 bounce','2 bounces','3 bounces','4 bounces'};
 
-lg1 = legend(lgdstr,'location','south','NumColumns',2,'fontsize',10);
+lg1 = legend(lgdstr,'location','southwest','NumColumns',2,'fontsize',10);
 title(lg1,'   source depth & multipath structure');
 
 %% export
@@ -195,7 +198,7 @@ hold off
 hold on
 for k = 1:numel(zs)
     scatter(xVal(k),yVal(k),...
-        150,colorDepth(zs(k)),shapeBounce{numBounces(k)+1},'linewidth',2,'markeredgealpha',0.6,'handlevisibility','off');
+        150,colorDepth(zs(k)),shapeBounce{numBounces(k)+1},'linewidth',2,'markeredgealpha',0.3,'handlevisibility','off');
 end
 hold off
 

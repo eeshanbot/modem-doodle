@@ -4,19 +4,28 @@
 clear; clc; close all;
 
 % load data
-A = readtable('./bellhop-gvel-gridded/gveltable.csv');
+DATA = readtable('./bellhop-gvel-gridded/gveltable.csv');
 % only simGvel
-A.gvel = A.recRange ./ A.owtt;
+DATA.gvel = DATA.recRange ./ DATA.owtt;
+
+DATA.simGvel(isnan(DATA.simGvel)) = 0;
 
 % remove crazy 11 second event, event that is nominally 1.58* seconds
-indBad1 = find(A.owtt > 3);
-indBad2 = find(strcmp(A.rxNode,'East') & A.owtt > 1.55);
+indBad1 = find(DATA.owtt > 4);
+indBad2 = find(strcmp(DATA.rxNode,'East') & DATA.owtt > 1.55);
+indBad3 = find(strcmp(DATA.rxNode,'Camp'));
 indBad = union(indBad1,indBad2);
+indBad = union(indBad,indBad3);
 
 % 1.587 events, had clock errors + Bellhop can't resolve these
-A.simGvel(indBad) = NaN;
+DATA.simGvel(indBad) = NaN;
+% only simGvel
 
-% load simulation
+indValid = ~isnan(DATA.simGvel);
+
+% calculate RangeAnomaly
+DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - DATA.recRange;
+%% load simulation
 listing = dir('./bellhop-gvel-gridded/csv_arr/*gridded.csv');
 
 for k = 1:numel(listing)
@@ -27,10 +36,10 @@ for k = 1:numel(listing)
     
     % assign gvel for each index by closest time comparison
     for j = 1:numel(T0.index)
-        delay = A.owtt(j);
+        delay = DATA.owtt(j);
         tableDelay = table2array(T0(j,2:6));
         [~,here] = min(abs(tableDelay - delay));
-        T0.gvel(j) = A.recRange(j)./tableDelay(here);
+        T0.gvel(j) = DATA.recRange(j)./tableDelay(here);
         T0.owtt(j) = tableDelay(here);
         T0.numBounces(j) = here-1;
         if sum(j == indBad) == 1
@@ -60,21 +69,21 @@ shapeBounce = {'o','x','s','^','d'};
 
 count = 0;
 for zs = [20 30 90]
-    index1 = A.sourceDepth == zs;
+    index1 = DATA.sourceDepth == zs;
     
     for zr = [30 90]
-        index2 = A.recDepth == zr;
+        index2 = DATA.recDepth == zr;
         
         count = count + 1;
         nexttile;
         
-        index = boolean(index1.*index2);
+        index = boolean(index1.*index2.*indValid);
         
         if sum(index)>=1
             % plot
             hold on
             for s = [5 3 4]
-                xval = A.owtt(index);
+                xval = DATA.owtt(index);
                 yval = T{s}.gvel(index);
                 
                 numBounces = T{s}.numBounces(index);
@@ -132,13 +141,14 @@ for s = [5 3 4]
     plot(NaN,NaN,'color',colorSet{s},'linewidth',5);
 end
 plot(NaN,NaN,'w');
+plot(NaN,NaN,'w');
 
 % add legend 2 -- shape
-for nb = 0:3
+for nb = 0:4
     scatter(NaN,NaN,shapeBounce{nb+1},'MarkerEdgeColor','k');
 end
 
-lgdstr = {'HYCOM','Baseline','Chosen Weights','','direct path','1 bounce','2 bounces','3 bounces'};
+lgdstr = {'HYCOM','Baseline','Chosen Weights','','','direct path','1 bounce','2 bounces','3 bounces','4 bounces'};
 lgd = legend(lgdstr,'numcolumns',2,'fontsize',11,'location','SouthEast');
 title(lgd,'SSP Source & Multipath Structure');
 hold off
@@ -156,15 +166,15 @@ t = tiledlayout(3,2,'TileSpacing','none','Padding','compact');
 
 count = 0;
 for zs = [20 30 90]
-    index1 = A.sourceDepth == zs;
+    index1 = DATA.sourceDepth == zs;
     
     for zr = [30 90]
-        index2 = A.recDepth == zr;
+        index2 = DATA.recDepth == zr;
         
         count = count + 1;
         nexttile;
         
-        index = boolean(index1.*index2);
+        index = boolean(index1.*index2.*indValid);
         
         if sum(index)>=1
             % plot
@@ -172,8 +182,8 @@ for zs = [20 30 90]
             plot([0 4],[0 0],'--','linewidth',3,'color',[0 0 0 0.6],'handlevisibility','off');
 
             for s = [5 3 4]
-                xval = A.owtt(index);
-                yval = T{s}.gvel(index) .* A.owtt(index) - A.recRange(index);
+                xval = DATA.owtt(index);
+                yval = T{s}.gvel(index) .* DATA.owtt(index) - DATA.recRange(index);
                                 
                 % remove nans
                 xval = xval(~isnan(yval));
@@ -246,7 +256,7 @@ edges = [-14:2:22];
 count = 0;
 for s = [5 3 4]
     count = count + 1;
-    T{s}.rangeAnomaly = T{s}.gvel .* A.owtt - A.recRange;
+    T{s}.rangeAnomaly = T{s}.gvel .* DATA.owtt - DATA.recRange;
     
     h(count,:) = histcounts(T{s}.rangeAnomaly,edges,'normalization','count');
 end
@@ -310,7 +320,7 @@ count = 0;
 for s = [5 3 4]
     count = count + 1;
     ind = T{s}.numBounces == nb;
-    rangeAnomaly = T{s}.gvel(ind) .* A.owtt(ind) - A.recRange(ind);
+    rangeAnomaly = T{s}.gvel(ind) .* DATA.owtt(ind) - DATA.recRange(ind);
     
     h(count,:) = histcounts(rangeAnomaly,edges,'normalization','count');
 end
