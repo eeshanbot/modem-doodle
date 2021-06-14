@@ -10,7 +10,7 @@ myGray = [0.6 0.6 0.6];
 alphaColor   = .2;
 
 % depth_switch = [20 30 90];
-zs = 20;
+zs = 30;
 
 %% load modem marker info
 load p_modemMarkerDetails
@@ -101,21 +101,18 @@ for k = 1:3
             
             if tx_z == zs
                 
-                if ~strcmp(eigentable{ne}.ray,'None')
-                    
-                    % rerun ray based on BELLHOP angle + owtt -- this is
-                    % somehow more accurate... not sure why.
-                    theta0 = double(eigentable{ne}.arrival.SrcDeclAngle);
-                    t0 = double(eigentable{ne}.arrival.delay);
-                    [r,z,t] = eb_raytrace(zs,-theta0,numstep,sstep,ssp(k).depth,ssp(k).ssp,0,max(ssp(k).depth));
-                    indStop = find(t>=t0,1,'first');
-                    plot(r(1:indStop)./1000,z(1:indStop),...
-                        'color',[markerModemMap(eigentable{ne}.rx_node) 0.5],'linewidth',2,'handlevisibility','off')
-                    
-                    % plot BELLHOP eigenray
-                    %plot(eigentable{ne}.ray.r./1000,eigentable{ne}.ray.z,...
-                    %'color',[markerModemMap(eigentable{ne}.rx_node) 0.5],'linewidth',2,'handlevisibility','off')
-                end
+                % rerun ray based on BELLHOP angle + owtt -- this is
+                % somehow more accurate... not sure why.
+                theta0 = double(eigentable{ne}.arrival.SrcDeclAngle);
+                t0 = double(eigentable{ne}.arrival.delay);
+                [r,z,t] = eb_raytrace(zs,-theta0,numstep,sstep,ssp(k).depth,ssp(k).ssp,0,max(ssp(k).depth));
+                indStop = find(t>=t0,1,'first');
+                plot(r(1:indStop)./1000,z(1:indStop),...
+                    'color',[markerModemMap(eigentable{ne}.rx_node) 0.5],'linewidth',2,'handlevisibility','off')
+                
+                % plot BELLHOP eigenray
+                %plot(eigentable{ne}.ray.r./1000,eigentable{ne}.ray.z,...
+                %'color',[markerModemMap(eigentable{ne}.rx_node) 0.5],'linewidth',2,'handlevisibility','off')
             end
         end
     end
@@ -149,10 +146,7 @@ for k = 1:3
         end
     end
     
-
     hold off
 end
 
-h_printThesisPNG(sprintf('raytrace-3env-zs-%u',zs));
-
-
+%h_printThesisPNG(sprintf('raytrace-3env-zs-%u',zs));
