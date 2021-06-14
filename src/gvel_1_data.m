@@ -133,9 +133,9 @@ if plotbool(3) == 1
             
             yval = A.recRange(k) ./ A.owtt(k);
             xval = A.simGvel(k);
-            scatter(xval,yval,...
-                150,markerModemMap(A.txNode{k}),markerShape(A.sourceDepth(k)),...
-                'filled','MarkerFaceAlpha',0.4,'handlevisibility','off');
+            scatter(yval,xval,...
+                250,markerModemMap(A.txNode{k}),markerShape(A.sourceDepth(k)),...
+                'filled','MarkerFaceAlpha',0.3,'handlevisibility','off');
         end
     end
     hold off
@@ -144,11 +144,11 @@ if plotbool(3) == 1
     grid on
     xlim([1420 1452]);
     ylim([1420 1452]);
-    xlabel('simulated group velocity [s]');
-    ylabel('naive group velocity [m/s]');
-    title('Naive vs simulated group velocity estimate');
+    ylabel('simulated group velocity [m/s]');
+    xlabel('naive group velocity [m/s]');
+    title('Simulated vs naive group velocity prediction');
     
-    % h_printThesisPNG('gvel-sim-naive-compare');
+    h_printThesisPNG('gvel-sim-naive-compare');
 end
 
 
