@@ -56,8 +56,10 @@ end
 
 %% make plot
 
-figure('name','raytrace-all','renderer','painters','position',[108 108 1300 1050]);
-t = tiledlayout(3,9,'TileSpacing','compact');
+% figure('name','raytrace-all','renderer','painters','position',[108 108 1300 1050]);
+figure('name','raytrace-all-SLIDES','renderer','painters','position',[108 108 1500 1050]);
+
+t = tiledlayout(3,11,'TileSpacing','compact');
 
 theta = [-49:2:-31 -30:1:30 31:2:49];
 numstep = 1100;
@@ -84,7 +86,7 @@ for k = 1:3
     end
     
     %% raytrace plot
-    nexttile([1 7]);
+    nexttile([1 9]);
     [R,Z,~] = eb_raytrace(zs,theta,numstep,sstep,ssp(k).depth,ssp(k).ssp,0,max(ssp(k).depth));
     
     plot(R.'/1000,Z.','color',[myGray alphaColor],'linewidth',2);
@@ -99,7 +101,9 @@ for k = 1:3
         xlim([0 3.5]);
     end
     
-    title(sprintf('Source depth = %u m',zs));
+    if k == 1
+        title(sprintf('Source depth = %u m',zs),'fontsize',15);
+    end
     
     if k == 3
         xlabel('range [km]');
