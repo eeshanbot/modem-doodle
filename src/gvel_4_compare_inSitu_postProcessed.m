@@ -165,8 +165,8 @@ grid on
 
 % add text to explain gray box
 buff = maxVal/8;
-text(-maxVal+buff,maxVal-buff,'more accurate','verticalalignment','top','rotation',-45,'fontsize',11);
-text(-maxVal+buff,maxVal-buff,'less accurate than in situ algorithm','verticalalignment','bottom','rotation',-45,'fontsize',11);
+text(-maxVal+buff,maxVal-buff,'more accurate','verticalalignment','top','rotation',-45,'fontsize',12);
+text(-maxVal+buff,maxVal-buff,'less accurate than in situ algorithm','verticalalignment','bottom','rotation',-45,'fontsize',12);
 
 % make xticks and yticks equal
 axis tight
