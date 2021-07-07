@@ -96,11 +96,8 @@ eeof.zs = DATA.sourceDepth(indValid);
 eeof.numBounces = SIM_NEW{4}.numBounces(indValid);
 eeof.F = h_cross_plot(eeof.xVal,eeof.yVal,eeof.zs,eeof.numBounces);
 
-nexttile;
 h_view_plot(eeof.xVal,eeof.yVal,eeof.zs,eeof.numBounces);
 %title({sprintf('\\fontsize{16} Post-processed range estimation comparison for all %u beacon to beacon events',sum(indValid)),'\fontsize{13} SSP = Chosen Weights'})
-
-yticklabels([]);
 
 %% legend
 
@@ -166,7 +163,7 @@ axis square
 xticks(yticks);
 
 % make plot look nice
-xlabel({'in situ error [m]','\it{minimal bounce criteria}'});
+xlabel({'"in situ" error [m]','\it{minimal bounce criteria}'});
 ylabel({'post-processed error [m]','\it{nearest bounce criteria}'});
 set(gca,'fontsize',14);
 

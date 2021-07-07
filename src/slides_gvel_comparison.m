@@ -82,7 +82,7 @@ colorSet = {[0 0 0],[0 0 0],[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./2
 
 %% plot all data group velocity
 
-figure('name','gvel-by-owtt','renderer','painters','position',[108 108 1300 650]);
+figure('name','gvel-by-owtt','renderer','painters','position',[108 108 1300 700]);
 tiledlayout(1,2,'TileSpacing','none','Padding','compact');
 
 shapeBounce = {'o','x','s','^','d'};
@@ -126,6 +126,10 @@ for zs = [30]
             hold off
         end
         set(gca,'fontsize',13)
+        
+        hold on
+        plot(DATA.owtt(index),DATA.gvel(index),'.','color',[200, 78, 0]./256,'handlevisibility','off','MarkerSize',10)
+        hold off
         
         % for all grids
         %title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','bold');
@@ -174,20 +178,24 @@ end
 plot(NaN,NaN,'w');
 plot(NaN,NaN,'w');
 
-
 plot(NaN,NaN,'k.','markersize',10)
 plot(NaN,NaN,'w');
 plot(NaN,NaN,'w');
-
 
 % add legend 2 -- shape
 for nb = 0:4
     scatter(NaN,NaN,shapeBounce{nb+1},'MarkerEdgeColor','k');
 end
 
+% legend for data
+plot(NaN,NaN,'w');
+plot(NaN,NaN,'w');
+plot(NaN,NaN,'.','color',[200, 78, 0]./256,'markersize',15);
+
 lgdstr = {'HYCOM','Baseline','Chosen Weights','','',...
     'minimal bounce','','',...
-    'direct path','1 bounce','2 bounces','3 bounces','4 bounces'};
+    'direct path','1 bounce','2 bounces','3 bounces','4 bounces',...
+    '','','from data'};
 lgd = legend(lgdstr,'fontsize',12,'location','NorthWestOutside');
 %title(lgd,'SSP Source & Multipath Structure');
 legend boxoff
@@ -196,4 +204,4 @@ hold off
 % title
 sgtitle('Group velocity predictions for a source depth = 30 m','fontsize',17,'fontweight','bold')
 %%
-h_printThesisPNG('SLIDES-gvel-comparison');
+h_printThesisPNG('SLIDES-gvel-comparison-wdata');
