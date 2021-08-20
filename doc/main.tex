@@ -49,7 +49,7 @@ Both simulation capabilities are integral to mission success.
 
 \subsection{Operational paradigm on the ice}
 
-The ICNN is comprised of four ice buoys, loosely in a rectangle, roughly 2 km away from a central ice camp with a topside computer, as shown in Fig.~\ref{fig:icnnOverview}.
+The ICNN is comprised of four ice buoys, in a loose rectangle, roughly 2 km away from a central ice camp with a topside computer, as shown in Fig.~\ref{fig:icnnOverview}.
 
 \begin{figure}[h!]
 	\centering
@@ -59,11 +59,11 @@ The ICNN is comprised of four ice buoys, loosely in a rectangle, roughly 2 km aw
 \end{figure}
 
 Each ice buoy is outfitted with a WHOI Micro-Modem \citep{singh_underwater_2006}, with a four-element receiver array and a single transmitter, and one-tenth of a millisecond resolution.
-The receiving and transmitting elements were split between shallow and deep depths (30 and 90 m, respectively) to provide better coverage due to the acoustic shadow zone in the Beaufort Lens.
-The buoys do not encompass the full operating range of the vehicle but are positioned to minimize overlap in trilateration for spherical positioning\citep{deffenbaugh_relationship_1996}.
+The receiving and transmitting elements were split between shallow and deeper depths (30 and 90 m, respectively) to provide better coverage due to the acoustic shadow zone in the Beaufort Lens.
+The buoys do not encompass the full operating range of the vehicle but are positioned to minimize overlap in trilateration for spherical positioning \citep{deffenbaugh_relationship_1996}.
 
 Vehicle missions in any underwater environment, but especially acoustically complex ones, must balance competing uses of the acoustic channel.
-Thus this network uses a single synchronized digital communication packet to provide both tracking and data to the operator.
+This network uses a single synchronized digital communication packet to provide both tracking and data to the operator.
 The ICNN operational paradigm is as follows:
 \begin{enumerate}
 \item The AUV, running an ice-tracking DVL and an onboard hydrodynamic model, broadcasts its perceived location on a scheduled, time-synchronized message via WHOI Micro-Modem
@@ -96,10 +96,10 @@ Given the complexity of the ICNN system, this experiment did not collect an exha
 
 Importantly, only one modem at a time could run the vehicle behavior to trigger group velocity calculations; other modems that were transmitting simultaneously recorded events as modems, not as vehicles.
 
-The dataset introduced in this thesis has parallel physical and virtual layers; given the small operational scale, on the order of kilometers, and a singular SSP, both layers are projected into a range independent coordinate system for ease of comparison.
+The dataset introduced in this thesis has parallel physical and virtual layer; given the small operational scale, on the order of kilometers, and a singular SSP, both layers are projected into a range independent coordinate system for ease of comparison.
 
 \subsubsection{Physical layer}
-The physical layer, i.e. the physical link through the real ocean, describes the beacon to beacon communication events through the real water column; it covers all source depths (20, 30, and 90 m) and both receive layers (30 and 90 m), where the surface expressions of the beacons are tracked by GPS. Events are sorted by source depth and sound speed profile given that this is the dominating factor for the location and span of the shadow zone compared to any temporal or spatial scales of variability.
+The physical layer, i.e. the acoustic link through the real ocean, describes the beacon to beacon communication events through the water column; it covers all source depths (20, 30, and 90 m) and both receive layers (30 and 90 m), where the surface expressions of the beacons are tracked by GPS. Events are sorted by source depth and sound speed profile, given that these are the dominating factor for the location and span of the shadow zone compared to any temporal or spatial scales of variability.
 
 
 \begin{figure}[h!]
@@ -116,21 +116,21 @@ The physical layer, i.e. the physical link through the real ocean, describes the
 \clearpage
 
 \subsubsection{Virtual layer}
-The virtual layer describes the BELLHOP simulations for each communication event in the physical layer, where a handful of weights applied to a basis function representation can reconstitute any number of candidate SSPs \citep{bhatt_embedded_2021}.
+The virtual layer describes the BELLHOP simulations for each communication event in the physical layer, where a handful of weights applied to a basis function representation can reconstitute a number of realistic candidate SSPs \citep{leblanc_underwater_1980,lin_merging_2010}.
 The SSP is the only configurable input to the group velocity prediction.
 
 During ICEX20, the SSP was toggled between the historical``baseline'' and a ``weighted'' estimate based on a CTD, i.e. an optimal set of weights chosen by a human decision maker via an interactive Tactical Decision Aid framework \citep{bhatt_embedded_2021}.
-For the post-processing analysis, we add the SSP from HYCOM for comparison, to mirror the information available on a submarine\textemdash modeled data, historical data, and in situ data.
+For the post-processing analysis, we add the SSP from HYCOM for comparison, to mirror the information available on a submarine\textemdash modeled data, historical data, and \textit{in situ} data.
 This order corresponds to increasing ducted conditions of the Beaufort Lens.
 
 Fig. \ref{fig:raytrace-zs30} shows eigenrays in a range independent coordinate system for all three sound speed environments for a source depth of 30 m.
 It is important to note that BELLHOP produces an abundance of eigenrays; the ones displayed here are chosen by travel time proximity to the recorded data.
-An important pattern is the increased complexity in multipath as ducted conditions increase.
+The important pattern is the increased complexity in multipath via surface interactions as ducted conditions increase.
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\reprintcolumnwidth]{figs/raytrace-3env-zs-30.pdf}
-  \caption{Eigenrays for beacon to beacon events for each nominal source depth of 30 m. The beacons are highlighted in color/marker coding in figure \ref{fig:overview}. The eigenrays are curated from BELLHOP by travel time proximity and are traced in the representative colors over a total ray fan in gray.}
+  \caption{Eigenrays for beacon to beacon events for each sound speed with a nominal source depth of 30 m. The beacons are highlighted in color/marker coding in figure \ref{fig:overview}. The eigenrays are curated from BELLHOP by travel time proximity and are traced in the representative receiver colors over a total ray fan in gray.}
   \label{fig:raytrace-zs30}
   \end{figure}
 
@@ -210,76 +210,66 @@ As expected, the algorithm is generally overestimating range as it resolves a di
 This section examines the absolute range error between the psuedorange and the GPS derived range with the caveat that the data collected is fairly asymmetrical across source depths and sound speed conditions.
 
 \begin{table}[h!]
-\renewcommand{\arraystretch}{1.5}
+\renewcommand{\arraystretch}{1.3}
 \centering
-\begin{tabular}{r|ccccc}
-SSP & Count & Mean [m] & Median [m] & STD [m] & Max [m] \\ \hline
+\begin{tabular}{r|c|c|c|c|c}
+SSP & Count & ~Mean [m] & ~Median [m] & ~STD [m] & ~Max [m] \\ \hline
 Baseline & 243 & 11.38 & 11.96 & 4.23 & 23.95 \\ 
 Chosen weights & 568 & 11.36 & 11.40 & 8.12 & 26.0 \\
 \end{tabular}
-\caption[Range estimation error for \textit{in situ} events]{The range estimation error for \textit{in situ} events. The error here is presented as the absolute, not directional, error.}
+\caption[Range estimation error for \textit{in situ} events]{The range estimation error for \textit{in situ} events. The error here is presented as the absolute, not directional, error. Almost all directional errors, however, are positive.}
 \label{tab:rangeErrorInSitu}
 \end{table}
 
 Table \ref{tab:rangeErrorInSitu} breaks down the number of events, mean, median, standard deviation, and maximum absolute range error for the \textit{in situ} calculations.
-The mean and median for both sound speeds are similar on the order of centimeters; the chosen weights show a maximum greater than that of baseline, but it is from a OWTT event that has no comparison in the baseline data set.
-The overarching statistical results show that both sound speed environments, given the smaller operational scales and shallow depths, are accurate enough to approximate the group velocity structure given a local grid.
-Of course, these statistics obscure the relationship between range error and range (or OWTT as the proxy for range).
+The mean and median for both sound speeds are similar on the order of centimeters; the chosen weights show a maximum 2 meters greater than that of baseline, but it is from a communication event that has no comparison in the baseline data set.
 Analysis shows that where there is overlap in range between sound speed conditions, the range error difference is no more than a few meters.
 This is likely driven by the prominence of the duct.
-
-Where there is overlap in the physical layer, i.e. in OWTT, the range error driven by the two virtual layers is no more than a few meters.
-This is best demonstrated by all source and receiver depth pairings, except for a source at 30 m and a receiver at 90 m, where the baseline is clearly visibly closer to no range error than the weighted environment.
-This may be driven by the prominence of the duct, but it is certainly occluded by the order of magnitude difference between the number of events in each virtual layer.
+The overarching statistical results show that both sound speed environments, given the smaller operational scales and shallow depths, are accurate enough to approximate the group velocity structure given the local grid.
+Of course, overall statistics obscure the relationship between range error and range (or OWTT as the proxy for range).
 
 \FloatBarrier
 \section{\label{sec:5} Post-processing psuedorange results}
 
-Due to the operational constraint of only one modem running the vehicle behavior at a time, the previous analysis has looked at 811 total beacon to beacon events, where 243 use the baseline SSP and 568 use the weighted SSP.
-While overall statistics are presented, and individual events are compared for the same SSP between the two algorithms, the events themselves are not equally distributed with respect to depth, range, and sound speed status.
-
-The analysis is separated by source depth, and where possible, receiver depth, as the group velocities across source and receiver depths may be different.
-
+A post-processing analysis that replicated the real-time pipeline was run to overcome the unequal distribution of communication events with respect to depth, range, and sound speed status.
 There are 1242 total beacon to beacon events in the modem experiment that would have been accepted by the ICNN for real-time ranging and navigation had the vehicle behavior been running on all modems.
 The value for the extrapolated range, $\hat{r}$, is only tracked when the modem runs the vehicle behavior; thus we replace $\hat{r}$ with the GPS-tracked range for all modem events.
 Naturally, because $\hat{r}$ converges to the correct solution, a comparison of $\hat{r}$ with the GPS-tracked range shows a normal, zero-centered distribution within the bounds of GPS drift.
-The analysis here therefore seeds ``omniscient'' knowledge of the range and leverages the post-processing pipeline to more thoroughly evaluate the acoustic range estimate for all modem events, with all three sound speed sources, and both group velocity criterion.
-Thus, the results in this section evaluate the utility of the algorithms and sound speed sources, divorced from their role in the ICNN.
-We first compare the post-processing results between the two algorithms, and then take a step-by-step approach to examine how the nearest bounce algorithm works in more detail.
+The analysis here therefore seeds ``omniscient'' knowledge of the range and leverages the post-processing pipeline to more thoroughly evaluate the acoustic range estimate for all modem events, with three relevant sound speed sources, and both group velocity criterion.
+Accordingly, the results in this section evaluate the utility of the algorithms and sound speed sources, divorced from their role in the ICNN.
 
 \FloatBarrier
-\subsection{Group velocity prediction}
+\subsection{Group velocity predictions}
 
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{figs/SLIDES-gvel-comparison-wdata-30.pdf}
-\caption{\label{fig:gvel30}{Caption here.}}
-\end{figure}
-
-\subsection{Psuedorange estimations}
-
-\subsubsection{Comparing the nearest and minimal bounce criteria}
-
-\begin{figure}[h!]
-\includegraphics[width=\textwidth]{figs/compare-methods-postv1v2.pdf}
-\caption{\label{fig:gvel30}{Caption here.}}
+\caption{\label{fig:gvel30}{A comparison of group velocity predictions for all beacon to beacon events in post-processing with a source depth of 30 m. The sound speed source is indicated by color. The minimal and nearest bounce criterion are distinguished by different marker shapes, compared to the separately colored orange dots showing the naive, data-driven group velocity calculation.}}
 \end{figure}
 
 \FloatBarrier
-\subsubsection{Psuedorange error versus one way travel time}
+\subsection{Psuedorange estimations from the nearest and minimal bounce criteria}
+
+\begin{figure}[h!]
+\includegraphics[width=\textwidth]{figs/compare-methods-postv1v2.pdf}
+\caption{\label{fig:compareV1V2}{Caption here.}}
+\end{figure}
+
+\FloatBarrier
+\subsection{Psuedorange error versus one way travel time}
 
 If there was an assumed deterministic group velocity, the range error would grow with OWTT proportionally to the difference between the estimated and actual value.
 Thus, an indication that the algorithm is adapting group velocity correctly is that range error does not strictly increase with OWTT.
 
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{figs/range-error-owtt-newalgorithm.pdf}
-\caption{\label{fig:gvel30}{Caption here.}}
+\caption{\label{fig:gvel30}{The post-processed range error for source depths of 20, 30, and 90 m, and receiver depths of 30 and 90 m. The dashed gray line shows no error. The shaded region connects the range performance across all events.}
 \end{figure}
 
 \FloatBarrier
 \subsection{GPS sensor drift}
 
-Systemic GPS drift drives the severe banding found in comparisons of range estimations via both group velocity algorithms, with those bands showing 100\% positive correlation between methods and being a similar size in meters.
-Thus, while this thesis is primarily motivated by achieving similar accuracy and precision of GPS, the impressive results from acoustic ranging necessitate a discussion about the limitations of GPS, particularly at polar latitudes.
+Systemic GPS drift drives the severe banding found in comparisons of range estimations via both group velocity algorithms, as shown in Fig. \ref{fig:compareV1V2}, with those bands showing 100\% positive correlation between methods and being a similar size in meters.
+Thus, while this work is primarily motivated by achieving similar accuracy and precision of GPS, the impressive results from acoustic ranging necessitate a discussion about the limitations of GPS, particularly at polar latitudes.
 
 The ``Global Positioning System Standard Positioning Service Performance Standard'', published by the Department of Defense in Apr 2020 (CITE GPS TECHNICAL STANDARD) claims that well-designed GPS receivers have been achieving a horizontal accuracy of 3 meters and a vertical accuracy of 5 meters, 95\% of the time.
 But ``well-designed'' is an ambiguous enough term that obfuscates two confounding factors for high latitude GPS drift\textemdash operational limitations and ionospheric scattering.
@@ -287,7 +277,7 @@ But ``well-designed'' is an ambiguous enough term that obfuscates two confoundin
 % operational
 There are two metrics that demonstrate the operational limitations of GPS tracking technologies\textemdash fix rate and positional dilution of precision (PDOP) \citep{swanlund_gps_2016}.
 Fix rate looks at the ratio of successful fixes to overall attempts in acquiring a location.
-In animal tracking studies in polar latitudes, fix rates have significantly improved in the last twenty years, from as low as 26\% in 1996\citep{moen_effects_1996} to 87.2\% in 2018 \citep{jung_accuracy_2018}.
+In animal tracking studies in polar latitudes, fix rates have significantly improved in the last twenty years, from as low as 26\% in 1996 \citep{moen_effects_1996} to 87.2\% in 2018 \citep{jung_accuracy_2018}.
 The latter study showed a precision of 4.3 $\pm$ 4.0 m and an accuracy of 6.0 $\pm$ 4.7 m.
 While significant metric to evaluate GPS robustness, accuracy and precision, not the fix rate, explains the severe banding observed; fix rate bias, where various aspects of a landscape can induce bias by impeding the GPS receiver from acquiring its location, is not relevant given the static nature and small time window of ICEX20.
 
@@ -300,7 +290,7 @@ Overall this contributes to higher noise level in observations than usually seen
 The sparse and limited infrastructure in the Arctic make it ideal for satellite-based navigation, with some research proposing new satellite systems to accommodate increased interest in the region \citep{reid_gnss_2016}.
 
 However, both of these metrics are functions of the satellite constellation available to any given GPS receiver.
-The Arctic area is beyond the reach of many geostationary satellites, where they are low on the horizon and only visible for brief periods.
+The Arctic is beyond the reach of many geostationary satellites, where they are low on the horizon and only visible for brief periods.
 Given that their positions are tracked by stations on Earth, and their timing is updated twice a day via atomic clock, a reasonable hypothesis for bands of GPS error are different and/or updated satellite connections.
 
 % ionospheric
@@ -308,50 +298,46 @@ The second confounding factor is the ionosphere, the layer of the Earth's atmosp
 In the ionosphere, electromagnetic signals are affected by the total amount of electrons encountered by the signal; the size of the signal delay is dependent on the carrier frequencies.
 The normal signal delay creates a GPS error of 5 to 15 meters during the daytime and 1 to 3 meters at night (CITATION).
 The literature even references the total amount of electrons encountered by the ``GPS raypath'' as a means of explaining signal fluctuations \citep{themens_nature_2015}.
-This variability is observed by seasonal and solar cycle variabilities,\citep{themens_nature_2015} severe ionospheric storms\citep{mitchell_gps_2005}, and auroral activity (increased electron precipitation)\citep{jin_gps_2014,gwal_gps_2011}.
+This variability is observed by seasonal and solar cycle variabilities \citep{themens_nature_2015}, severe ionospheric storms \citep{mitchell_gps_2005}, and auroral activity (increased electron precipitation) \citep{jin_gps_2014,gwal_gps_2011}.
 In fact, the \textit{aurora borealis} was observed on multiple nights during ICEX20.
 
 In a humbling twist, at polar latitudes, GNSS systems experience similar operational, technical, and environmental challenges that we observe in underwater acoustic communications; the underwater acoustics community generally seems to ignore these challenges when validating localization and navigation efforts.
 
 Figure \ref{fig:gps-drift-example} highlights the GPS and observed OWTT drift relative to the ice movement for two pairs of modem buoy connections.
-The top two panels show GPS drift in both the $x$ and $y$ directions relative to the median $x$ and $y$ distance recorded between the two buoys.
-The bottom two panels indicate the GPS drift as $\delta R = \sqrt{\delta x^2 + \delta y^2}$ and temporal drift, $\delta t$, relative to the median OWTT recorded between the two modems.
-Here we use the median, not the mean, to be more robust to outliers in the dataset.
-The dashed line is scaled by a group velocity of 1440 m/s, such that if there was no GPS drift, all events should exist on the line.
-
-The left hand side of the plot shows the connections between the North and East buoys.
-The top shows consistent change in distance with respect to time, as the $\delta X$ measurement trends from 2 to -2 and the $\delta Y$ measurement trends from -1 to 1 meters.
-This indicates that the ice movement between the North and East buoys is non-rigid, i.e., they are actually moving relative to each other.
-The width of the scatter plot is a decent indicator for the precision of the GPS signal, as it remains consistent across many colors of scattered points, which correspond to similar regions in time.
-The idea that these buoys are moving relative to each other is corroborated in the bottom plot, where some events exist on the dashed line indicating correlation between GPS movement and OWTT change.
-Some of the offsets between the vertical bands relate to different operational configurations of source and receiver depths.
-However, the large majority of events show vertical banding for the same nominal $\delta t$, indicating the amount of GPS drift.
-
-This idea of GPS drift relative to the same OWTT measurements is also indicated by events between the other two buoys, South and West, on the right hand side.
-The GPS drift, on the top, shows a point cloud centered around the origin for events four hours and 13 hours after the experiment origin; thus these buoys are moving in a more rigid ice floe.
-There is minimal impact by source and receiver depth on the spread of OWTT.
-The GPS drift relative to the OWTT, on the bottom, shows a large amount of GPS drift for very little OWTT drift.
-The OWTT drift observed here is sensitive to the acoustic scattering, multipath, or environmental microstructure.
-
-These are two subsets of the physical links, they cover all four GPS modem buoys except for Camp.
-The GPS at camp, as shown in figure \ref{fig:iceFloe}, is the least accurate due to the human activity and infrastructure occluding the physical puck.
-A more comprehensive look at all physical link pairs is in Appendix \ref{app:beacon2beacon}.
+The two panels indicate the GPS drift as $\delta R = \sqrt{\delta x^2 + \delta y^2}$ and temporal drift, $\delta t$, relative to the median OWTT recorded between the two modems.
+The dashed line is scaled by a group velocity of 1440 m/s, such that if there were ideal sensor measurements with no drift, all events should exist on or near the line.
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=\textwidth]{figs/gps-drift-example} 
-	\caption[Examination of GPS and modem drift]{A comparison of GPS drift (top) colored by hours since the experiment origin and GPS drift against OWTT spread (bottom) demarcated by source depth and receiver depth. The physical link between North and East are shown on the left; South and West is on the right. }
+	\includegraphics[width=\reprintcolumnwidth]{figs/gpsDrift-owttDrift.pdf} 
+	\caption{A comparison of GPS drift (y-axis) versus OWTT drift (x-axis), colored by source and receiver depth. The physical link between North and East are shown on the top; South and West is on the bottom.}
 	\label{fig:gps-drift-example}
 \end{figure}
+
+The top panel shows the connections between the North and East buoys.
+There is relative, i.e. non-rigid, ice movement between the North and East buoys, evidenced by events spanning the dashed line.
+But the height of the scatter plot is indicates the precision of the GPS signal, as it remains consistent across many arrival time bands.
+Naturally, some minor offsets between these vertical bands relate to different operational configurations of source and receiver depth.
+However, the large majority of events show vertical banding for the same nominal $\delta t$, indicating the amount of GPS drift.
+
+This idea of GPS drift relative to the same OWTT measurements is further indicated by events between the other two buoys, South and West, in the bottom panel.
+These buoys are moving in a more rigid ice floe and there is minimal impact by source and receiver depth on the spread of OWTT.
+The GPS drift is much larger relative to the OWTT drift, which is sensitive to acoustic scattering, multipath, and/or environmental microstructure.
+
+These are just two subsets of the physical links that cover all four GPS modem buoys, except for Camp.
+The GPS at camp is the least accurate due to the human activity and infrastructure occluding the physical puck.
 
 % =========================================================================== %
 % =========================================================================== %
 \section{\label{sec:4} Discussion}
 
 Range estimation is an essential step of acoustic localization and navigation.
-This work solely focuses on mitigating range estimation error via a stochastic prediction of the group velocity, knowing that this can have an outsized benefit on minimizing trilateration error.
-We hypothesize and validate that the group velocity, especially for mission durations, is smoothly varying in range and multipath structure, and sensitive to source and receiver depth.
+This work solely focuses on mitigating range estimation error via a stochastic prediction of the group velocity, knowing that this can have an disproportionate benefit on minimizing trilateration error.
+We hypothesize and validate that the embedded stochastic prediction of a single group velocity is a smoothly varying function of range, source and receiver depth pairings, and multipath structure.
 We employ a GPS-tracked experiment to have a ground truth comparison for real-time localization algorithms.
+
+The real-time system achieves GPS-like navigation without taking into account multipath structure; the ranging error improves by an order of magnitude with the suggested multipath adaptability, minimizing range error to single meters. 
+Post-processing analysis shows that this method of ranging is actually sensitive to GPS drift.
 
 This work, to our knowledge, is the first successful field deployment of a real-time, ray-based acoustic ranging system for underwater navigation.
 The methods here demonstrate remarkable ranging accuracy and precision for the Beaufort Lens, an acoustically complex environment.
@@ -376,14 +362,13 @@ Thus, we believe that this work enables more accurate range estimation, localiza
 
 (NEED TO SKIM CONCLUSION FOR MORE MATERIAL)
 
-\FloatBarrier
+\clearpage
 \section*{Supplementary Figures}
 
-\clearpage
 \subsection*{Ice movement during the modem experiment}
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{figs/ice-floe-drift.pdf}
-\caption{\label{fig:iceFloeDrift}{Caption here.}}
+\caption{\label{fig:iceFloeDrift}{The ICNN accounts for ice drift throughout the mission duration. This is the magnitude of the ice drift recorded, at each buoy, throughout the modem experiment. The shaded regions reference which sound speed estimate was used.}}
 \end{figure}
 
 \clearpage
@@ -391,7 +376,9 @@ Thus, we believe that this work enables more accurate range estimation, localiza
 \subsection*{Group velocity prediction by source depth}
 \begin{figure}[h!]
 \includegraphics[width=0.8\textwidth]{figs/SLIDES-gvel-comparison-wdata-20.pdf} \\
+\vspace{2em}
 \includegraphics[width=0.8\textwidth]{figs/SLIDES-gvel-comparison-wdata-90.pdf}
+\caption{A comparison of group velocity predictions for all beacon to beacon events in post-processing. The top panel shows a source depth of 20 m; the bottom panel shows a source depth of 90 m. The sound speed source is indicated by color. The minimal and nearest bounce criterion are distinguished by different marker shapes, compared to the separately colored orange dots showing the naive, data-driven group velocity calculation.}
 \end{figure}
 
 
@@ -450,7 +437,10 @@ Thus, we believe that this work enables more accurate range estimation, localiza
 
 
 \begin{acknowledgments}
-This research was supported by the Office of Naval Research and the NDSEG Fellowship. We are grateful to all our collaborators in ICEX20\textemdash Bluefin Robotics, Toby Schneider, Lee Freitag \textemdash 
+We acknowledge the significant operational effort spearheaded by the LAMSS ICEX20 team and all our collaborators.
+Bhatt was funded by a National Defense, Science, and Engineering Graduate Fellowship.
+This work was supported by the Office of Naval Research 322-OA under ICEX20 (N00014-17-1-2474) and Task Force Ocean (N00014-19-1-2716).
+
 \end{acknowledgments}
 
 \bibliography{sampbib}

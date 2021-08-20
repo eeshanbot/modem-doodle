@@ -9,7 +9,7 @@ modem_labels = {'North','South','East','West','Camp'};
 
 colorDepth = containers.Map([20 30 90],{[70 240 240]./256,[0 130 200]./256,[0 0 128]./256});
 sourceDepth = containers.Map([20 30 90],{'>','^','v'});
-alphaDepth = containers.Map([20 30 90],[.2 .2 .2]);
+alphaDepth = containers.Map([20 30 90],[.5 .4 .4]);
 
 sspGVEL = 1440/1000; % meters / millisecond
 
@@ -99,69 +99,71 @@ set(gca,'XColor','white');
 set(gca,'YColor','white');
 
 % export
-h_printThesisPNG('gps-drift');
+% h_printThesisPNG('gps-drift');
 
 %% sub-figure
 
-figure('name','gps-drift-example','renderer','painters','position',[108 108 1200 1100]); clf;
-t = tiledlayout(2,2,'TileSpacing','compact');
+figure('name','gps-drift-example','renderer','painters','position',[108 108 500 1200]); clf;
+t = tiledlayout(2,1,'TileSpacing','compact');
 
 rbounds1 = [-2.6 2.6];
 rticks1 = [-2:2];
 
-xbounds2 = [-1.1 1.1];
+xbounds2 = [-1.05 1.05];
 xticks2 = [-1:0.5:1];
 
-% panel 1
-nexttile;
-h_dxdy('North','East',200);
-%colorbar;
-xlim(rbounds1)
-ylim(rbounds1)
-xticks(rticks1);
-yticks(rticks1);
-xticklabels auto
-yticklabels auto
-xlabel('GPS \deltax [m]');
-ylabel('GPS \deltay [m]');
-title('GPS drift --- North and East buoys','fontsize',15);
-
-% panel 2
-nexttile;
-h_dxdy('South','West',200);
-xlim(rbounds1)
-ylim(rbounds1)
-xticks(rticks1);
-yticks(rticks1);
-xticklabels auto
-yticklabels auto
-xlabel('GPS \deltax [m]');
-ylabel('GPS \deltay [m]');
-title('GPS drift --- South and West buoys','fontsize',15);
-cb = colorbar;
-cb.Ticks = 0:2:14;
-cb.TickLabels = num2cell(0:2:14);
-cb.Label.String = 'time past [hours]';
+% % panel 1
+% nexttile;
+% h_dxdy('North','East',200);
+% %colorbar;
+% xlim(rbounds1)
+% ylim(rbounds1)
+% xticks(rticks1);
+% yticks(rticks1);
+% xticklabels auto
+% yticklabels auto
+% xlabel('GPS \deltax [m]');
+% ylabel('GPS \deltay [m]');
+% title('GPS drift --- North and East buoys','fontsize',15);
+% 
+% % panel 2
+% nexttile;
+% h_dxdy('South','West',200);
+% xlim(rbounds1)
+% ylim(rbounds1)
+% xticks(rticks1);
+% yticks(rticks1);
+% xticklabels auto
+% yticklabels auto
+% xlabel('GPS \deltax [m]');
+% ylabel('GPS \deltay [m]');
+% title('GPS drift --- South and West buoys','fontsize',15);
+% cb = colorbar;
+% cb.Ticks = 0:2:14;
+% cb.TickLabels = num2cell(0:2:14);
+% cb.Label.String = 'time past [hours]';
 
 % panel 3
 nexttile;
 h_dtdR('East','North',200);
+axis square
 xlim(xbounds2);
 xticks(xticks2);
 ylim(xbounds2.*sspGVEL);
 yticks(xticks2.*sspGVEL);
-title('GPS drift vs OWTT spread --- North and East buoys','fontsize',15);
+title({'GPS drift vs OWTT drift','','North and East buoys'},'fontsize',15);
 ylabel('GPS \deltaR [m]');
-xlabel('\deltat [ms]');
+%xlabel('\deltat [ms]');
 
 % panel 4
 nexttile;
 h_dtdR('West','South',200);
+axis square
 xlim(xbounds2);
 xticks(xticks2);
 ylim(xbounds2.*sspGVEL);
 yticks(xticks2.*sspGVEL);
-title('GPS drift vs OWTT spread --- South and West buoys','fontsize',15);
+title('South and West buoys','fontsize',15);
 ylabel('GPS \deltaR [m]');
 xlabel('\deltat [ms]');
 
@@ -178,8 +180,8 @@ end
 hold off
 lgdstr = {' 20 m',' 30 m',' 90 m',' 20 m',' 30 m',' 90 m'};
 
-lg1 = legend(lgdstr,'location','southeast','NumColumns',2,'fontsize',10);
-title(lg1,'   source depth & receiver depth');
+lg1 = legend(lgdstr,'location','southeast','NumColumns',1,'fontsize',10);
+title(lg1,{'tx depth (color)','rx depth (shape)'});
 
 % export
 h_printThesisPNG('gps-drift-example');
@@ -206,7 +208,7 @@ dy = abs(y2-y1)-mean(abs(y2-y1));
 ZR = RECAP.rx_z(index);
 ZS = RECAP.tx_z(index);
 timeInHours = 24.*(RECAP.data_time(index) - min(RECAP.data_time));
-scatter(dx,dy,scatterSize,timeInHours,'filled','MarkerFaceAlpha',0.2,'handleVisibility','off');
+scatter(dx,dy,scatterSize,timeInHours,'filled','MarkerFaceAlpha',0.5,'handleVisibility','off');
 colormap(parula(7));
 caxis([0 14]);
 
