@@ -28,6 +28,9 @@ indValid = ~isnan(DATA.simGvel);
 % calculate RangeAnomaly
 DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - DATA.recRange;
 
+% DEPTH
+ZS = 90;
+
 %% load post-processing sim for v2
 listing = dir('./bellhop-gvel-gridded/csv_arr/*gridded.csv');
 
@@ -88,7 +91,7 @@ tiledlayout(1,2,'TileSpacing','none','Padding','compact');
 shapeBounce = {'o','x','s','^','d'};
 
 count = 0;
-for zs = [30]
+for zs = ZS
     index1 = DATA.sourceDepth == zs;
     
     for zr = [30 90]
@@ -136,18 +139,22 @@ for zs = [30]
         title(sprintf('receiver depth = %u m',zr),'fontsize',14,'fontweight','bold');
         %text(0.95,1445,sprintf('rx depth = %u m',zr),'HorizontalAlignment','left','VerticalAlignment','bottom','fontsize',12);
         
+        xlim auto
+        % xlim([0.9 2.26])
+        ylim([1419 1449])
+        xx = xlim();
+        
         if sum(index)>1
-            text(2.25,1448,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',12);
+            text(xx(2),1449,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',12);
         else
-            text(2.25,1448,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',12);
+            text(xx(2),1449,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',12);
         end
         grid on
         
-        xlim([0.9 2.26])
-        ylim([1423 1448])
+
         
         % add in manual indicator for bottom bounce events for panel 1
-        if zr == 30
+        if ZS == 30 && zr == 30
             indManual = find(T1{4}.gvel < 1000);
             hold on
             plot(DATA.owtt(indManual),1424,'.','handlevisibility','off','markersize',15,'color',[colorSet{4}]);
@@ -172,6 +179,7 @@ nexttile(1);
 
 % add legend 1 -- color
 hold on
+plot(NaN,NaN,'w');
 for s = [5 3 4]
     plot(NaN,NaN,'color',colorSet{s},'linewidth',5);
 end
@@ -192,16 +200,17 @@ plot(NaN,NaN,'w');
 plot(NaN,NaN,'w');
 plot(NaN,NaN,'.','color',[200, 78, 0]./256,'markersize',15);
 
-lgdstr = {'HYCOM','Baseline','Chosen Weights','','',...
-    'minimal bounce','','',...
-    'direct path','1 bounce','2 bounces','3 bounces','4 bounces',...
-    '','','from data'};
+lgdstr = {'\bf{SOUND SPEED SOURCE}','HYCOM','Baseline','Chosen Weights','','\bf{MINIMAL BOUNCE CRITERIA}',...
+    'Minimal bounce','','\bf{NEAREST BOUNCE CRITERIA}',...
+    'Direct path','1 bounce','2 bounces','3 bounces','4 bounces',...
+    '','\bf{NAIVE CALCULATION}','From GPS and modem data'};
 lgd = legend(lgdstr,'fontsize',12,'location','NorthWestOutside');
-%title(lgd,'SSP Source & Multipath Structure');
-legend boxoff
 hold off
+legend boxoff
 
 % title
-sgtitle('Group velocity predictions for a source depth = 30 m','fontsize',17,'fontweight','bold')
+titlestr = sprintf('Group velocity predictions for a source depth = %u m',zs);
+sgtitle(titlestr,'fontsize',17,'fontweight','bold')
+
 %%
-h_printThesisPNG('SLIDES-gvel-comparison-wdata');
+h_printThesisPNG(sprintf('SLIDES-gvel-comparison-wdata-%u',ZS));
