@@ -22,7 +22,7 @@ Almost all underwater navigation paradigms rely on the conversion of recorded tr
 For real-time navigation, this conversion is treated deterministically.
 For positioning in post-processing, more computationally and/or labor intensive modeling methods are often employed to reduce the uncertainty driven by multipath arrivals.
 An autonomous underwater vehicle deployment in March 2020 in the Beaufort Sea faced significant operational challenges with a total ice-covered environment and complex acoustic propagation via the Beaufort Lens.
-We implement an embedded, stochastic, ray-based prediction of the horizontal group velocity and validate its performance with communication events between GPS-aided beacons, achieving a psuedorange mean absolute error of 11 m.
+We implement an embedded, stochastic, ray-based prediction of the horizontal group velocity and validate its performance with communication events between GPS-aided beacons, achieving a pseudorange mean absolute error of 11 m.
 In post-processing, we introduce a multipath criterion and achieve ranging performance that rivals GPS.
 To our knowledge, these results are the first field experiment to demonstrate a real-time, physics-based data processing to minimize ranging error in underwater navigation.
 \end{abstract}
@@ -246,7 +246,7 @@ and the associated weighted standard deviation,
 \end{equation}
 If no direct paths exist, i.e. $N_{0}=0$, then the group velocity is computed using the same algorithm for the ray arrivals with one bounce, and so on.
 
-Finally, the psuedorange is calculated simply as
+Finally, the pseudorange is calculated simply as
 \begin{equation}
 r_{i,j} = u_{i,j} \Delta t_{i,j} 
 \end{equation}
@@ -292,11 +292,11 @@ Lastly, to populate the multipath criterion effectively with a multitude of arri
 % =========================================================================== %
 
 \FloatBarrier
-\section{\label{sec:realtime} Real-time psuedorange results}
+\section{\label{sec:realtime} Real-time pseudorange results}
 
 The modem experiment generated 811 beacon to beacon communication events with their own real-time NBC group velocity predictions.
 As expected, the algorithm is generally overestimating range as it resolves a direct path that does not represent the actual arrival.
-This section examines the absolute range error between the psuedorange and the GPS derived range with the caveat that the data collected is fairly unbalanced across source depths and sound speed conditions.
+This section examines the absolute range error between the pseudorange and the GPS derived range with the caveat that the data collected is fairly unbalanced across source depths and sound speed conditions.
 
 \begin{table}[h!]
 \renewcommand{\arraystretch}{1.3}
@@ -320,7 +320,7 @@ The overarching statistical results show that both sound speed environments, giv
 Indeed, the error statistics indicated here are similar to that of the ICNN \citep{randeni_high-resolution_2021} and accurate enough to have facilitated a successful vehicle recovery.
 
 \FloatBarrier
-\section{\label{sec:postprocess} Post-processing psuedorange results}
+\section{\label{sec:postprocess} Post-processing pseudorange results}
 
 There are 1242 total beacon to beacon events in the modem experiment that would have been accepted by the ICNN for real-time ranging and navigation had the vehicle behavior been running on all modems.
 A post-processing analysis that replicated the real-time pipeline was run to overcome the unequal distribution of communication events with respect to depth, range, and sound speed status.
@@ -356,7 +356,7 @@ However, that data is too small to draw significant conclusions.
 Discontinuities in multipath classification verify our hypothesis for its importance to a smoothly varying group velocity, as shown in the cluster for a receiver depth of 30 m, where HYCOM jumps from one to two bounces amidst the baseline SSP and weighted SSP smoothly increasing while consistently seeing two and three bounces, respectively.
 
 \FloatBarrier
-\subsection{Psuedorange error versus one way travel time}
+\subsection{Pseudorange error versus one way travel time}
 
 Fig. \ref{fig:rangeError} shows the directional range error footprints for all three sound speed inputs with respect to OWTT, separated by source and receiver depth configurations.
 The weighted SSP range error generally has the smallest and most zero-centered footprint.
@@ -374,9 +374,9 @@ Most importantly, we see the consequences of the adaptive group velocity in that
 \end{figure}
 
 \FloatBarrier
-\subsection{Psuedorange estimations from the nearest and minimal bounce criteria}
+\subsection{Pseudorange estimations from the nearest and minimal bounce criteria}
 
-The previous section displayed the psuedorange performance using the NBC.
+The previous section displayed the pseudorange performance using the NBC.
 Here, we explicitly compare the ranging accuracy between the nearest and minimal bounce criteria for all events in the post-processing pipeline.
 It is important to note that because the post-processing pipeline is the same for both methods, that the efficacy of the NBC compared to the MBC is 100\%, as the former simplifies to the latter for direct path classifications.
 
