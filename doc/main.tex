@@ -84,7 +84,7 @@ Modeling output \citep{duda_long-range_2019,duda_effects_2021} and experimental 
 
 An experiment in 2014 exploited this lower duct to provide acoustic navigation and communication at mesoscale ranges in the Canada Basin.
 \citet{freitag_long_2015} and \citet{webster_towards_2015} deployed multiple GPS-linked ice buoys with transducers that were capable of communications greater than 400 km with a range accuracy of 40 m when the sound speed was known.
-The transducers were at at 100 m depth, well-positioned in the lower duct spanning 50 to 200 m.
+The transducers were at 100 m depth, well-positioned in the lower duct spanning 50 to 200 m.
 The glider navigation accuracy, however, was severely degraded as acoustic packets were sent when the gliders were outside the sound channel.
 When gliders were deployed again in 2017, their navigation error was on the order of half a kilometer, and a glider re-navigation using an acoustic arrival method and the average sound-speed profile from the gliders reduced navigation error by a factor of 4-5, depending on the dive \citep{graupe_preliminary_2019}.
 Navigation error is referenced to intermittent GPS fixes, as all of these glider deployments occurred in the Marginal Ice Zone with little to no ice at the time.
@@ -284,7 +284,7 @@ r_{i,j} = u_{i,j}\Delta t_{i,j}
 This method selects a different group velocity based on the multipath arrival structure, as the expected arrival is not always the first arrival and could even be masked by noise or blocked temporarily \citep{deffenbaugh_acoustic_1996}.
 We manually cap the number of bounces to 4 because of the smaller operational scale and the attenuation accrued with many surface interactions.
 Bottom bounces are not encoded separately because of ray's tendency to refract upward, not due to information limitations. 
-In addition, for a more consistent comparison, the local sparse grid is standardized as 11$x$11 points over 10 m in range and 20 m in depth, which is similar to those from the vehicle logs.
+In addition, for a more consistent comparison, the local sparse grid is standardized as 11$\times$11 points over 10 m in range and 20 m in depth, which is similar to those from the vehicle logs.
 The extra size in depth addresses the computational limitations of how time-bounded eigenrays seem to stack vertically in the water column, as shown in Fig \ref{fig:rays3env-zs30}.
 Lastly, to populate the multipath criterion effectively with a multitude of arrivals per number of surface bounces, we abandon the plane-wave extension to the interpolated receiver location.
 
@@ -395,7 +395,7 @@ The order of magnitude improvement in the ducted SSPs demonstrate the effectiven
 Given the computational constraints of real-time modeling, the gridded approach facilitates enough multipath classification to build in a ``ray ensemble'' of characteristic group velocities.
 This result is not always possible when aiming to find eigenrays to just an individual point, even with a higher density of launch angles.
 An important takeaway for those interested in ray-based localization is leveraging a local grid to give BELLHOP tolerance for finding solutions that otherwise may not be found in a center or single point solution.
-The limitations of numerical computation, particularly for a complex environment, are more adeptly addressed by accepting some uncertainty in position to than prescribing an exact solution.
+The limitations of numerical computation, particularly for a complex environment, are more adeptly addressed by accepting some uncertainty in position than by prescribing an exact solution.
 Even though BELLHOP is a greedy estimator for eigenrays, the additional data created is a negligible burden. 
 
 \begin{table}[h!]
@@ -423,7 +423,7 @@ Some bands are adjacent to others of the same styling, likely due to ice drift a
 \subsection{Further analysis of the anomalous beacon to beacon connection}
 \label{subsec:anomalousBeacon}
 
-As shown in table \ref{tab:rangeErrorPost}, there is a striking maximum range error of 1491 m for weighted SSP in the minimal bounce criteria.
+As shown in table \ref{tab:rangeErrorPost}, there is a striking maximum range error of 1491 m for the weighted SSP in the minimal bounce criteria.
 This section isolates the events that encompass that outlier for further examination, summarized in table \ref{tab:rangeErrorPostExplanation}.
 There are 10 events from South transmitting at 30 m depth to North receiving at 30 m depth.
 The OWTT spread is from 2.1958 to 2.1963 s; the naive group velocity is 1429.3 to 1430.1 m/s; and the GPS-tracked range is from 3138.54 m to 3140.87 m.
@@ -501,7 +501,7 @@ The dashed line is scaled by a group velocity of 1440 m/s, such that if there we
 
 The top panel shows the connections between the North and East buoys.
 There is relative, i.e. non-rigid, ice movement between the North and East buoys, evidenced by events spanning the dashed line.
-But the height of the scatter plot is indicates the precision of the GPS signal, as it remains consistent across many arrival time bands.
+But the height of the scatter plot is indicative of the precision of the GPS signal, as it remains consistent across many arrival time bands.
 Naturally, some minor offsets between these vertical bands relate to different operational configurations of source and receiver depth.
 However, the large majority of events show vertical banding for the same nominal $\delta t$, indicating the amount of GPS drift.
 
