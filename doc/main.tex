@@ -170,16 +170,17 @@ There are three important engineering choices in the ICNN network to contextuali
 \item At any given time, the receive depth layers are the same across all four ice buoys
 \end{enumerate}
 
-The design enables a self-adapting network to transmit and receive at the optimal depth to maintain contact with the AUV \citep{schneider_self-adapting_2020}.
+The design of the ICNN enables a self-adapting network to transmit and receive at the optimal depth to maintain contact with the AUV \citep{schneider_self-adapting_2020}.
 This adaptivity was not used during the modem experiment but was instead toggled manually.
 Given the complexity of the ICNN system, this experiment did not collect an exhaustive set of data across all buoy, source depth, receive layer, and sound speed combinations, as this time was also used to verify and resolve any hardware issues in the modems themselves.
 Importantly, only one modem at a time could run the vehicle behavior to trigger group velocity calculations; other modems that were active during the experiment recorded events as tracking buoys, not as vehicles.
 
-A key construction in the ICNN are parallel physical and virtual layers; given the small operational scale, on the order of kilometers, and a singular SSP, both layers are projected into a range independent coordinate system for ease of comparison.
+A key construction in the ICNN are parallel physical and virtual layers; given the small operational scale, on the order of kilometers, and a singular SSP, both layers are projected into a range independent coordinate system for ease of comparison. Furthermore, because one of the buoys was configured to act as a virtual vehicle at any given time during the modem experiment, the tracking range was supplemented with an additional modem deployed from the camp site and configured to act as a virtual buoy; the transducer attached to the camp site modem was lowered to a depth of 20 m.
+
 
 \subsubsection{Physical layer}
 The physical layer describes the acoustic link between beacons in the water column.
-It covers all source depths (20, 30, and 90 m) and both receive layers (30 and 90 m), where the surface expressions of the beacons are tracked by GPS.
+It covers all source depths (20, 30, and 90 m) and both buoy receive layers (30 and 90 m), where the surface expressions of the beacons are tracked by GPS.
 Events are sorted by source depth and sound speed profile, given that these are the dominating factor for the location and span of the shadow zone compared to any temporal or spatial scales of variability.
 
 
@@ -190,7 +191,7 @@ Events are sorted by source depth and sound speed profile, given that these are 
   \vspace{1em}
   \includegraphics[width=.48\textwidth]{figs/zs30-birdseye.pdf} \hfill
   \includegraphics[width=.48\textwidth]{figs/zs90-birdseye.pdf} \\
-  \caption{An overview of the modem experiment by source and receiver depth and position. Subfigure (a) shows a chart of the successful events between source and receiver depth. The black column on the left, $tx$, shows the source depth, $z_s$. The column on the right, $rx$, shows the receivers with the amount of good contacts. The orientation of the triangles\textemdash sideways, upwards, and downwards\textemdash corresponds to depths of 20, 30, and 90 m. Subfigures (b-d) correspond to receiver depths of 20, 30, and 90 m, respectively. Camp Seadragon, demarcated by the purple triangle, is situated just north of the continental shelf.}
+  \caption{An overview of the modem experiment by source and receiver depth and position. Subfigure (a) shows a chart of the successful events between source and receiver depth. The black column on the left, $tx$, shows the source depth, $z_s$. The column on the right, $rx$, shows the receivers with the amount of good contacts. The orientation of the triangles\textemdash sideways, upwards, and downwards\textemdash corresponds to depths of 20, 30, and 90 m. Subfigures (b-d) correspond to transmitter depths of 20, 30, and 90 m, respectively. Camp Seadragon, demarcated by the purple triangle, is situated just north of the continental shelf.}
   \label{fig:overview}
   \end{figure}
 
@@ -261,10 +262,10 @@ The MBC improves upon a deterministic estimate in that it considers the simplest
 
 As shown in the eigenray traces of Fig. \ref{fig:raytrace-zs30}, an acoustic arrival does not always take the direct path from source to the receiver, and the path it takes is extremely dependent on the sound speed profile.
 The suggested algorithm, the nearest bounce criteria (NBC), is a slight modification from the minimal bounce criteria, and includes multipath as a new dimension of information with negligible additional computation.
-This metric was introduced in post-processing and does not include the plane wave approximation.
+This metric was evaluated in post-processing.
 
 Given a running estimate for the horizontal group velocity $u_{i,j}$ between nodes $i$ and $j$, the navigation system has an extrapolated value for range, $\hat{r}$, in the virtual layer, and a recorded travel time, $\Delta t_{i,j}$, in the physical layer.
-Instead of using only the $N_0$ rays with neither surface nor bottom bounces to estimate group velocity, we solve for the power weighted average of the ray travel time for the $N_k$ rays with $k$ bounces,
+Instead of using only the $N_0$ rays with neither surface nor bottom bounces to estimate group velocity and subsequently moving to incremental number of bounces only when no valid direct path solutions exist, we solve for the power weighted average of the ray travel time for the $N_k$ rays with $k$ bounces,
 \begin{equation}
 t_k = \frac{\sum_{n=1}^{N_{k}} dt_{n}a_{n}^{2}}{\sum_{n=1}^{N_{k}} a_{n}^{2}} ~, 
 \end{equation}
@@ -281,12 +282,11 @@ and estimate the range as was done previously.
 r_{i,j} = u_{i,j}\Delta t_{i,j}
 \end{equation}
 
-This method selects a different group velocity based on the multipath arrival structure, as the expected arrival is not always the first arrival and could even be masked by noise or blocked temporarily \citep{deffenbaugh_acoustic_1996}.
+This method selects a different group velocity based on the multipath arrival structure, as the detected arrival is not always the first arrival or the direct path and could even be masked by noise or blocked temporarily \citep{deffenbaugh_acoustic_1996}.
 We manually cap the number of bounces to 4 because of the smaller operational scale and the attenuation accrued with many surface interactions.
 Bottom bounces are not encoded separately because of ray's tendency to refract upward, not due to information limitations. 
 In addition, for a more consistent comparison, the local sparse grid is standardized as 11$\times$11 points over 10 m in range and 20 m in depth, which is similar to those from the vehicle logs.
 The extra size in depth addresses the computational limitations of how time-bounded eigenrays seem to stack vertically in the water column, as shown in Fig \ref{fig:rays3env-zs30}.
-Lastly, to populate the multipath criterion effectively with a multitude of arrivals per number of surface bounces, we abandon the plane-wave extension to the interpolated receiver location.
 
 % =========================================================================== %
 % =========================================================================== %
@@ -294,7 +294,7 @@ Lastly, to populate the multipath criterion effectively with a multitude of arri
 \FloatBarrier
 \section{\label{sec:realtime} Real-time pseudorange results}
 
-The modem experiment generated 811 beacon to beacon communication events with their own real-time NBC group velocity predictions.
+The modem experiment generated 811 beacon to beacon communication events with their own real-time MBC group velocity predictions.
 As expected, the algorithm is generally overestimating range as it resolves a direct path that does not represent the actual arrival.
 This section examines the absolute range error between the pseudorange and the GPS derived range with the caveat that the data collected is fairly unbalanced across source depths and sound speed conditions.
 
@@ -313,16 +313,16 @@ Chosen weights & 568 & 11.36 & 11.40 & 8.12 & 26.0 \\
 
 Table \ref{tab:rangeErrorInSitu} breaks down the number of events, mean, median, standard deviation, and maximum absolute range error for the \textit{in situ} calculations.
 The mean and median for both sound speeds are similar on the order of centimeters; the chosen weights show a maximum 2 meters greater than that of baseline, but it is from a communication event that has no comparison in the baseline data set.
-Analysis shows that where there is overlap in range between sound speed conditions, the range error difference is no more than a few meters.
+Analysis shows that where there is overlap in range between sound speed conditions used for the real-time MBC, the range error difference is no more than a few meters.
 This is likely driven by the prominence of the duct.
 
 The overarching statistical results show that both sound speed environments, given the smaller operational scales and shallow depths, are accurate enough to approximate the group velocity structure given the local grid.
-Indeed, the error statistics indicated here are similar to that of the ICNN \citep{randeni_high-resolution_2021} and accurate enough to have facilitated a successful vehicle recovery.
+Indeed, the error statistics indicated here are similar to those reported for the ICNN \citep{randeni_high-resolution_2021} and accurate enough to have facilitated a successful vehicle recovery.
 
 \FloatBarrier
 \section{\label{sec:postprocess} Post-processing pseudorange results}
 
-There are 1242 total beacon to beacon events in the modem experiment that would have been accepted by the ICNN for real-time ranging and navigation had the vehicle behavior been running on all modems.
+There are 1242 total beacon to beacon events in the modem experiment that would have been accepted by the ICNN for real-time ranging and navigation had the ranging behavior been running for all modems in the network, and not only for tracking the vehicle.
 A post-processing analysis that replicated the real-time pipeline was run to overcome the unequal distribution of communication events with respect to depth, range, and sound speed status.
 
 It is important to note that the value for the extrapolated range, $\hat{r}$, is only tracked when the modem runs the vehicle behavior; thus we replace $\hat{r}$ with the GPS-tracked range for all modem events.
@@ -387,7 +387,7 @@ It is important to note that because the post-processing pipeline is the same fo
 
 Figure \ref{fig:compareV1V2} is a crossmap for all three SSPs for both group velocity predictors, with the minimal bounce on the x-axis and the nearest bounce on the y-axis; the important range estimation metrics are summarized in table \ref{tab:rangeErrorV1V2}.
 
-All the events are on the right hand side of the plots\textemdash the MBC has a systemic overestimation, which is reduced via NBC as events straddle the x-axis.
+All the events are on the unshaded region of the plots\textemdash the MBC has a systemic overestimation, which is reduced via NBC as events straddle the x-axis.
 The improvement from MBC to NBC is most evident for the realistic sound speed; while the HYCOM SSP improves from a median absolute range error of 6.41 to 4.61 m, the baseline SSP improves from 10.30 to 2.27 m, and the weighted SSP improves from 13.28 to 2.12 m.
 Table \ref{tab:rangeErrorPost} shows further statistics on the absolute range error by SSP and group velocity algorithm.
 The order of magnitude improvement in the ducted SSPs demonstrate the effectiveness of the algorithm exploiting the multipath conditions.
@@ -415,7 +415,7 @@ Even though BELLHOP is a greedy estimator for eigenrays, the additional data cre
 \label{tab:rangeErrorV1V2}
 \end{table}
 
-All plots show the same 45 degree banding of source depth and multipath structure, indicating systemic GPS noise.
+All plots in Fig. \ref{fig:compareV1V2} show the same 45 degree banding of source depth and multipath structure, indicating systemic GPS noise.
 The width of those bands indicates the high precision of the acoustic methods relative to lower precision from GPS.
 Some bands are adjacent to others of the same styling, likely due to ice drift and/or various GPS satellite constellations.
 
@@ -534,14 +534,14 @@ Amongst them is defining the uncertainty grid for BELLHOP via stochastic or data
 Another is to entirely remove the seeded range and instead rely on the submerged asset's depth and recorded OWTT to find high probability fields in range.
 
 The literature in underwater acoustic navigation and positioning is either real-time or physics-based.
-In this paper we demonstrate a field-tested approach that, by coupling data streams with fast acoustic modeling, is both real-time and physics-based.
+In this paper we demonstrate a field-tested approach that is both real-time and physics-based; this is achieved by coupling data streams with fast acoustic modeling.
 The methods exploit the upward refracting nature and the total ice cover of the Arctic environment to achieve remarkable ranging accuracy and precision.
 It transforms multipath, widely considered as an obstacle for acoustic ranging, into a new information content to refine ranging accuracy.
 We believe that this work enables more accurate range estimation, localization, and/or navigation for any field experiment given known source and receiver depths.
 
 \subsection{Broader relevance \& future work}
 
-Performance in other acoustic environments will require introducing a different thresholded metric to sort time of arrivals.
+Performance in other acoustic environments may require introducing a different thresholded metric to sort time of arrivals.
 Given the NBC algorithm's improvement with increased multipath, its effectiveness is likely only challenged by the valid operational scales of a range independent propagation environment.
 For mesoscale operations, like that of many gliders, the group velocity criteria may need to be modified to better account for variability driven by range dependent propagation through internal waves, eddies, or even bathymetric changes like underwater volcanoes.
 BELLHOP simulations provide other relevant eigenray information, like time and angle of arrival, that is ripe for statistical and machine learning methods to classify a representative group velocity.
