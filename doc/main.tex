@@ -106,7 +106,7 @@ A team was able to dig a hole through the 2 meter ice sheet and immediately see 
 Its successful recovery amidst total ice cover is shown in Fig. \ref{fig:vehicleRecovery}.
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=\reprintcolumnwidth]{figs/vehicleRecovery.jpg}
+	\includegraphics[width=\reprintcolumnwidth]{figs/Fig1.jpg}
 	\caption{The successful emergency recovery of AUV Macrura, with the the auger used to drill through the ice sheet in the background. Photo courtesy of LT CDR D. Goodwin.}
 	\label{fig:vehicleRecovery}
 \end{figure} 
@@ -132,7 +132,7 @@ The ICNN is comprised of four ice buoys, in a loose rectangle, roughly 2 km away
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=\reprintcolumnwidth]{figs/ICNN_Overview}
+	\includegraphics[width=\reprintcolumnwidth]{figs/Fig2.pdf}
 	\caption{A schematic overview of the Integrated Communication and Navigation Network (ICNN), which provides joint data-transfer and tracking between AUV and a human decision maker at Topside.}
 	\label{fig:icnnOverview}
 \end{figure}
@@ -186,11 +186,11 @@ Events are sorted by source depth and sound speed profile, given that these are 
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=.51\textwidth]{figs/modem-chart.pdf} \hfill
-  \includegraphics[width=.48\textwidth]{figs/zs20-birdseye.pdf} \\
+  \includegraphics[width=.51\textwidth]{figs/Fig3a.pdf} \hfill
+  \includegraphics[width=.48\textwidth]{figs/Fig3b.pdf} \\
   \vspace{1em}
-  \includegraphics[width=.48\textwidth]{figs/zs30-birdseye.pdf} \hfill
-  \includegraphics[width=.48\textwidth]{figs/zs90-birdseye.pdf} \\
+  \includegraphics[width=.48\textwidth]{figs/Fig3c.pdf} \hfill
+  \includegraphics[width=.48\textwidth]{figs/Fig3d.pdf} \\
   \caption{An overview of the modem experiment by source and receiver depth and position. Subfigure (a) shows a chart of the successful events between source and receiver depth. The black column on the left, $tx$, shows the source depth, $z_s$. The column on the right, $rx$, shows the receivers with the amount of good contacts. The orientation of the triangles\textemdash sideways, upwards, and downwards\textemdash corresponds to depths of 20, 30, and 90 m. Subfigures (b-d) correspond to transmitter depths of 20, 30, and 90 m, respectively. Camp Seadragon, demarcated by the purple triangle, is situated just north of the continental shelf.}
   \label{fig:overview}
   \end{figure}
@@ -213,7 +213,7 @@ With this filter, the chosen eigenrays show a greater amount of surface interact
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=\reprintcolumnwidth]{figs/raytrace-3env-zs-30.pdf}
+  \includegraphics[width=\reprintcolumnwidth]{figs/Fig4.pdf}
   \caption{Eigenrays for beacon to beacon events for each sound speed with a nominal source depth of 30 m. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}. The eigenrays are curated from BELLHOP by travel time proximity and are traced in the representative receiver colors over a total ray fan in gray.}
   \label{fig:raytrace-zs30}
   \end{figure}
@@ -338,7 +338,7 @@ The resulting predicted group velocities for a source depth of 30 m are shown in
 The takeaways from this source depth are representative of those from 20 and 90 m as well (see Supplementary Fig.~\ref{fig:gvelMore}).
 
 \begin{figure}[h!]
-\includegraphics[width=\columnwidth]{figs/SLIDES-gvel-comparison-wdata-30.pdf}
+\includegraphics[width=\columnwidth]{figs/Fig5.pdf}
 \caption{A comparison of group velocity predictions for all beacon to beacon events in post-processing with a source depth of 30 m, with group velocity on the y-axis and recorded travel time on the x-axis. The left panel is for a receiver depth of 30 m; the right panel for 90 m. The sound speed source is indicated by color. The minimal and nearest bounce criterion are distinguished by different marker shapes, compared to the separately colored red dots showing the naive, data-driven group velocity calculation.}
 \label{fig:gvel30}
 \end{figure}
@@ -368,7 +368,7 @@ When using a linear scaling to convert travel time into range, any offset betwee
 Most importantly, we see the consequences of the adaptive group velocity in that range error does not strictly increase with OWTT.
 
 \begin{figure}[!ht]
-\includegraphics[width=\textwidth]{figs/range-error-owtt-newalgorithm.pdf}
+\includegraphics[width=\textwidth]{figs/Fig6.pdf}
 \caption{The post-processed range error for source depths of 20, 30, and 90 m, and receiver depths of 30 and 90 m. The dashed gray line shows no error. The shaded region connects the range performance across all events.}
 \label{fig:rangeError}
 \end{figure}
@@ -381,7 +381,7 @@ Here, we explicitly compare the ranging accuracy between the nearest and minimal
 It is important to note that because the post-processing pipeline is the same for both methods, that the efficacy of the NBC compared to the MBC is 100\%, as the former simplifies to the latter for direct path classifications.
 
 \begin{figure}[h!]
-\includegraphics[width=\textwidth]{figs/compare-methods-postv1v2.pdf}
+\includegraphics[width=\textwidth]{figs/Fig7.pdf}
 \caption{\label{fig:compareV1V2}{A comparison of range estimation error for all beacon to beacon events in post-processing. From left to right, the SSPs are the baseline, the chosen weights, and HYCOM. The colors indicate the source depth, darkening with depth, and the shapes indicate the multipath structure. Because this plot is square, the shaded region shows where the updated algorithm is less accurate than the \textit{in situ} algorithm.}}
 \end{figure}
 
@@ -494,7 +494,7 @@ The dashed line is scaled by a group velocity of 1440 m/s, such that if there we
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=\reprintcolumnwidth]{figs/gpsDrift-owttDrift.pdf} 
+	\includegraphics[width=\reprintcolumnwidth]{figs/Fig8.pdf} 
 	\caption{A comparison of GPS drift (y-axis) versus OWTT drift (x-axis), colored by source and receiver depth. The physical link between North and East are shown on the top; South and West is on the bottom.}
 	\label{fig:gps-drift-example}
 \end{figure}
@@ -574,7 +574,7 @@ We hope this work enables more frequent and confident monitoring for remote and/
 
 \subsection*{Ice movement during the modem experiment}
 \begin{figure}[h!]
-\includegraphics[width=\textwidth]{figs/ice-floe-drift.pdf}
+\includegraphics[width=\textwidth]{figs/Fig9.pdf}
 \caption{\label{fig:iceFloeDrift}{The ICNN accounts for ice drift throughout the mission duration. This is the magnitude of the ice drift recorded, at each buoy, throughout the modem experiment. The shaded regions reference which sound speed estimate was used.}}
 \end{figure}
 
@@ -582,9 +582,9 @@ We hope this work enables more frequent and confident monitoring for remote and/
 \FloatBarrier
 \subsection*{Group velocity prediction by source depth}
 \begin{figure}[h!]
-\includegraphics[width=0.8\textwidth]{figs/SLIDES-gvel-comparison-wdata-20.pdf} \\
+\includegraphics[width=0.8\textwidth]{figs/Fig10a.pdf} \\
 \vspace{2em}
-\includegraphics[width=0.8\textwidth]{figs/SLIDES-gvel-comparison-wdata-90.pdf}
+\includegraphics[width=0.8\textwidth]{figs/Fig10b.pdf}
 \caption{A comparison of group velocity predictions for all beacon to beacon events in post-processing. The top panel shows a source depth of 20 m; the bottom panel shows a source depth of 90 m. The sound speed source is indicated by color. The minimal and nearest bounce criterion are distinguished by different marker shapes, compared to the separately colored orange dots showing the naive, data-driven group velocity calculation.}
 \label{fig:gvelMore}
 \end{figure}
@@ -605,7 +605,8 @@ We hope this work enables more frequent and confident monitoring for remote and/
 % [For these sample pages we have used only figsamp.jpg for convenience]
 % \end{figure}
 % ================================================== %
-
+\FloatBarrier
+\clearpage
 \begin{acknowledgments}
 We acknowledge the significant operational effort spearheaded by the LAMSS ICEX20 team and all our collaborators.
 Bhatt was funded by a National Defense, Science, and Engineering Graduate Fellowship.
