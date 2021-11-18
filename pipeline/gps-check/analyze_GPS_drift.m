@@ -1,8 +1,12 @@
 %% analyze_GPS_drift.m
 
+%% prep workspace
 clear; clc; close all;
+addpath('./../../src/');
 
-A = load('./data-prep/tobytest-recap-full.mat'); % loads "event"
+%% load data
+
+A = load('../../data/tobytest-recap-clean.mat'); % loads "event"
 global RECAP modem_labels colorDepth sourceDepth alphaDepth sspGVEL
 RECAP = h_unpack_experiment(A.event);
 modem_labels = {'North','South','East','West','Camp'};
@@ -10,7 +14,6 @@ modem_labels = {'North','South','East','West','Camp'};
 colorDepth = containers.Map([20 30 90],{[70 240 240]./256,[0 130 200]./256,[0 0 128]./256});
 sourceDepth = containers.Map([20 30 90],{'>','^','v'});
 alphaDepth = containers.Map([20 30 90],[.5 .4 .4]);
-
 sspGVEL = 1440/1000; % meters / millisecond
 
 %% 5x5 grid
@@ -184,7 +187,7 @@ lg1 = legend(lgdstr,'location','southeast','NumColumns',1,'fontsize',10);
 title(lg1,{'tx depth (color)','rx depth (shape)'});
 
 % export
-h_printThesisPNG('gps-drift-example');
+% h_printThesisPNG('gps-drift-example');
 
 %% helper function
 function [] = h_dxdy(txNode,rxNode,scatterSize)

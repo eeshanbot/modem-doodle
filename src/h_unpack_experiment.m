@@ -8,7 +8,7 @@ OBJ.sim_owtt = h_get_nested_val_filter(experiment,'gvel','delay');
 
 data_filter = OBJ.data_owtt > 0;
 sim_filter = OBJ.sim_owtt ~= 0;
-t_filter = boolean(data_filter .* sim_filter);
+t_filter = logical(data_filter .* sim_filter);
 
 OBJ.data_owtt = h_get_nested_val_filter(experiment,'tag','owtt',t_filter);
 
@@ -59,15 +59,11 @@ OBJ.num_events      = numel(OBJ.tag_tx);
 
 % sound speed estimate
 toby_test_eof_bool = h_get_nested_val_filter(experiment,'tag','eeof',t_filter);
-OBJ.eof_bool = boolean(toby_test_eof_bool);
+OBJ.eof_bool = logical(toby_test_eof_bool);
 if mode(toby_test_eof_bool) == mean(toby_test_eof_bool)
     eof_bool = toby_test_eof_bool(1);
     
-    % w/ artifact (icex20)
-    %OBJ_EOF = eb_read_eeof('../data/eeof_itp_Mar2013.nc',true);
-    %weights = [-10 -9.257 -1.023 3.312 -5.067 1.968 1.47].'; % manually written down weights from Toby's notes
-    
-    % fixed for rehaul
+    % Bradli's chosen weights
     OBJ_EOF = eb_read_eeof('../data/eeof-itp-fix-2013.nc',true);
     weights = [-6.112 15.368 -1.441 2.219 0.138 -0.322 -1.994].'; % chosen by Bradli for CTD at 2020 Mar 09 1202
     
