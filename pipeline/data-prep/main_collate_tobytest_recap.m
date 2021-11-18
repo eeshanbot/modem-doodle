@@ -116,7 +116,7 @@ end
 event(bad_events) = [];
 
 %% save file
-save('tobytest-recap-clean','event');
+save('../../data/tobytest-recap-clean','event');
 
 %% helper function : smart_input2double();
 % not all data inputs are saved as strings... this checks before
