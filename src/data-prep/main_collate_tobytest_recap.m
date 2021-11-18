@@ -12,7 +12,7 @@
 clear; clc;
 
 %% load toby test recap
-load('~/.dropboxmit/icex_2020_mat/toby_test_recap.mat');
+load('../../data/toby_test_recap.mat');
 A = good_events;
 clear good_events;
 num_events = length(A);
@@ -96,8 +96,7 @@ for k = 1:num_events
         bad_events(end+1) = k;
     end
     
-    % event that is 0.7601 seconds, Bellhop cannot find arrival, must be
-    % clock error
+    % event that is 0.7601 seconds, must be clock error
     if strcmp(node,'West') && owtt < 0.8
         warn_str = sprintf('2: removed k = %d, rx node = %s, owtt = %2.4f',k,node,owtt);
         warning(warn_str);
