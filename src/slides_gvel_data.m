@@ -5,7 +5,7 @@
 clear; clc; close all;
 
 % load data
-A = readtable('./bellhop-gvel-gridded/gveltable.csv');
+A = readtable('../pipeline/bellhop-gvel-gridded/gveltable.csv');
 
 % remove crazy 11 second event, event that is nominally 1.58* seconds
 indBad1 = find(A.owtt > 4);
@@ -34,7 +34,7 @@ for zr = [30 90]
         count = count + 1;
         nexttile;
         
-        index = boolean(index1.*index2.*index3);
+        index = logical(index1.*index2.*index3);
         
         if sum(index)>=1
             % plot
@@ -105,5 +105,5 @@ end
 
 % title
 sgtitle('Range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-h_printThesisPNG('SLIDES-range-error-owtt-data')
+%h_printThesisPNG('SLIDES-range-error-owtt-data')
 

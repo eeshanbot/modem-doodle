@@ -27,7 +27,7 @@ for fRNX = filter_node
     for fRXZ = filter_rxz
         index_rxz = RECAP.rx_z == fRXZ;
         
-        index = boolean(index_rxn .* index_rxz);
+        index = logical(index_rxn .* index_rxz);
         
         scatter(RECAP.sim_range(index),RECAP.sim_gvel(index),...
             markerSize,markerModemMap(fRNX{1}),markerShape(fRXZ),'filled','MarkerFaceAlpha',.1)
@@ -52,7 +52,7 @@ for fRNX = filter_node
     for fRXZ = filter_rxz
         index_rxz = RECAP.rx_z == fRXZ;
         
-        index = boolean(index_gvel .* index_rxn .* index_rxz);
+        index = logical(index_gvel .* index_rxn .* index_rxz);
         
         scatter(RECAP.data_range(index),RECAP.data_range(index) ./ RECAP.data_owtt(index),...
             markerSize,markerModemMap(fRNX{1}),markerShape(fRXZ),'filled','MarkerFaceAlpha',.4)
@@ -74,7 +74,7 @@ for fRNX = filter_node
     for fRXZ = filter_rxz
         index_rxz = RECAP.rx_z == fRXZ;
         
-        index = boolean(index_gvel .* index_rxn .* index_rxz);
+        index = logical(index_gvel .* index_rxn .* index_rxz);
         hold on
         scatter(RECAP.data_range(index) ./ RECAP.data_owtt(index),...
             RECAP.sim_gvel(index),...

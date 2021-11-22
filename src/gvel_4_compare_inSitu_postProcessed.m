@@ -7,7 +7,7 @@ clear; clc; close all;
 %% load in situ data
 % DATA = readtable('./bellhop-gvel-gridded-simRange/gveltable.csv');
 
-DATA = readtable('./bellhop-gvel-gridded-simRange/gveltable.csv');
+DATA = readtable('../pipeline/bellhop-gvel-gridded-simRange/gveltable.csv');
 indValid1 = ~isnan(DATA.recRange) | ~isnan(DATA.simGvel);
 DATA = DATA(indValid1,:);
 
@@ -34,7 +34,7 @@ EOF_BOOL(indBad) = NaN;
 DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - GPS_RANGE;
 
 %% range error for "sim" aka post processing nearest bounce criterion
-listing = dir('./bellhop-gvel-gridded-simRange/csv_arr/*gridded.csv');
+listing = dir('../pipeline/bellhop-gvel-gridded-simRange/csv_arr/*gridded.csv');
 
 for f = 1:numel(listing)
     T0 = readtable([listing(f).folder '/' listing(f).name]);
@@ -81,7 +81,7 @@ bigTitle = '\fontsize{18} Improvement of range estimation error';
 smallTitle = sprintf('\\fontsize{14}\\rm SSP = Baseline, N = %u events',sum(index));
 title({bigTitle; smallTitle});
 
-h_printThesisPNG('compare-baseval');
+% h_printThesisPNG('compare-baseval');
 
 %% figure --- EOF
 figure('name','compare-method-eeof','renderer','painters','position',[108 108 950 900]);
@@ -101,7 +101,7 @@ bigTitle = '\fontsize{18} Improvement of range estimation error';
 smallTitle = sprintf('\\fontsize{14}\\rm SSP = Chosen Weights, N = %u events',sum(index));
 title({bigTitle; smallTitle});
 
-h_printThesisPNG('compare-eof');
+% h_printThesisPNG('compare-eof');
 
 %% figure --- HYCOM
 % figure('name','compare-method-hycom','renderer','painters','position',[108 108 950 900]);

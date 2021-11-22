@@ -5,7 +5,7 @@
 clear; clc; close all;
 
 % load data
-A = readtable('./bellhop-gvel-gridded/gveltable.csv');
+A = readtable('../pipeline/bellhop-gvel-gridded/gveltable.csv');
 
 % remove crazy 11 second event, event that is nominally 1.58* seconds
 indBad1 = find(A.owtt > 4);
@@ -218,7 +218,7 @@ for zs = [20 30 90]
         
         
         
-        index = boolean(index1.*index2.*index3);
+        index = logical(index1.*index2.*index3);
         
         if sum(index)>=1
             % plot

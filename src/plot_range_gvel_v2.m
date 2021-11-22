@@ -3,7 +3,7 @@
 clear; clc; close all;
 
 %% load data
-A = load('./data-prep/tobytest-recap-full.mat'); % loads "event"
+A = load('../data/tobytest-recap-clean.mat'); % loads "event"
 A = h_unpack_experiment(A.event);
 
 % remove crazy 11 second event, event that is nominally 1.58* seconds
@@ -34,7 +34,7 @@ for zs = [20 30 90]
         
         % in situ values
         index3 = ~isnan(A.sim_gvel);
-        index = boolean(index1.*index2.*index3);
+        index = logical(index1.*index2.*index3);
         
         if sum(index)>=1
             % plot
@@ -67,7 +67,7 @@ for zs = [20 30 90]
         
         % in situ values
         index3 = ~isnan(A.sim_gvel);
-        index = boolean(index1.*index2.*index3);
+        index = logical(index1.*index2.*index3);
         
         if sum(index)>=1
             % plot
@@ -105,7 +105,7 @@ for zs = [20 30 90]
         
         % in situ values
         index3 = ~isnan(A.sim_gvel);
-        index = boolean(index1.*index2.*index3);
+        index = logical(index1.*index2.*index3);
         
         if sum(index)>=1
             % plot
@@ -157,7 +157,7 @@ for zs = [20 30 90]
         
         % in situ values
         index3 = ~isnan(A.sim_gvel);
-        index = boolean(index1.*index2.*index3);
+        index = logical(index1.*index2.*index3);
         
         if sum(index)>=1
             % plot
@@ -186,7 +186,7 @@ title('Zoomed in on furthest range');
 
 %% export
 
-h_printThesisPNG('gvel-by-range');
+% h_printThesisPNG('gvel-by-range');
 
 %% helper function
 function [] = h_common_plot()

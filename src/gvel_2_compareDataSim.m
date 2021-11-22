@@ -6,7 +6,7 @@
 clear; clc; close all;
 
 % load data
-A = readtable('./bellhop-gvel-gridded/gveltable.csv');
+A = readtable('../pipeline/bellhop-gvel-gridded/gveltable.csv');
 
 % remove crazy 11 second event, event that is nominally 1.58* seconds
 indBad1 = find(A.owtt > 4);
@@ -23,7 +23,7 @@ indValid = ~isnan(A.simGvel);
 load p_modemMarkerDetails
 
 % load simulated values
-listing = dir('./bellhop-gvel/csv_arr/*.csv');
+listing = dir('../pipeline/bellhop-gvel/csv_arr/*.csv');
 
 %% tiled layout --- just by owtt
 

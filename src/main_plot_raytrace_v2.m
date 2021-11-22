@@ -16,9 +16,9 @@ zs = 90;
 load p_modemMarkerDetails
 
 %% load all events
-load('./data-prep/tobytest-recap-full.mat'); % loads "event
+load('../data/tobytest-recap-clean.mat'); % loads "event
 A = h_unpack_experiment(event);
-DATA = readtable('./bellhop-gvel-gridded/gveltable.csv');
+DATA = readtable('../pipeline/bellhop-gvel-gridded/gveltable.csv');
 %DATA.simGvel(isnan(DATA.simGvel)) = 0;
 
 % remove crazy 11 second event, event that is nominally 1.58* seconds
@@ -30,12 +30,12 @@ indBad = union(indBad1,indBad2);
 DATA.simGvel(indBad) = NaN;
 % only simGvel
 
-load bellhop-eigenrays-3ssp/eigentable_flat.mat
-load bellhop-eigenrays-3ssp/eig_reruns_jun21.mat
+load ../pipeline/bellhop-eigenrays-3ssp/eigentable_flat.mat
+load ../pipeline/bellhop-eigenrays-3ssp/eig_reruns_jun21.mat
 arCell = struct2cell(all_rays);
 
 %% load all sound speeds
-path = './bellhop-gvel-gridded/';
+path = '../pipeline/bellhop-gvel-gridded/';
 
 file{1} = 'ssp-hycom.csv';
 file{2} = 'ssp-fixed-baseval.csv';
@@ -196,7 +196,7 @@ for k = 1:3
     toc;
 end
 
-h_printThesisPNG(sprintf('raytrace-3env-zs-%u',zs));
+%h_printThesisPNG(sprintf('raytrace-3env-zs-%u',zs));
 
 %% helper function : h_interpolate_by_owtt
 function [Ri,Zi] = h_interpolate_by_owtt(ttSpread,R,Z,T)

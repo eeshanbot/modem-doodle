@@ -68,4 +68,4 @@ h_plot_patch(eof_bool,eof_time,[.025 0.025])
 title('Ice Floe Drift from Modem Buoy GPS');
 hold off
 
-h_printThesisPNG('ice-floe-drift');
+% h_printThesisPNG('ice-floe-drift');

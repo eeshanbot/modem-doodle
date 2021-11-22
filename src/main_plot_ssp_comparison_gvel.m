@@ -3,7 +3,7 @@
 
 %close all; clc; clear all;
 
-path = './bellhop-gvel-gridded/';
+path = '../pipeline/bellhop-gvel-gridded/';
 
 file{3} = 'ssp-hycom.csv';
 file{2} = 'ssp-fixed-eeof.csv';
@@ -33,4 +33,4 @@ xlabel('c [m/s]');
 
 legend('Baseline','Chosen Weights','HYCOM','location','southwest','fontsize',13);
 
-h_printThesisPNG('ssp-gvel-large');
+% h_printThesisPNG('ssp-gvel-large');

@@ -37,7 +37,7 @@ for fTNX = filter_txz
             index_rxz = RECAP.rx_z == fRXZ;
             index_manual_time_filter = RECAP.data_owtt <= 4;
             
-            index = boolean(index_tx .* index_rxn .* index_rxz .* index_manual_time_filter);
+            index = logical(index_tx .* index_rxn .* index_rxz .* index_manual_time_filter);
             
             hold on
             scatter(RECAP.data_time(index),RECAP.data_owtt(index),...
@@ -63,4 +63,4 @@ end
 xlabel('time [hh:mm]');
 
 %% export
-h_printThesisPNG('timeline-by-zs.png')
+% h_printThesisPNG('timeline-by-zs.png')

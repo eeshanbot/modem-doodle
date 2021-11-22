@@ -16,7 +16,7 @@ zs = 90;
 load p_modemMarkerDetails
 
 %% load bathymetry data
-bathyfile = '~/missions-lamss/cruise/icex20/data/environment/noaa_bathy_file.nc';
+bathyfile = '../data/etopo1_bedrock.nc';
 plotBathy = h_unpack_bathy(bathyfile);
 
 %% load toby test data by experiment design
@@ -193,4 +193,4 @@ axis equal
 %title(lb,'Nodes');
 title(['Bird''s Eye View of Camp Seadragon, zs = ' num2str(zs) 'm'],'fontsize',18);
 
-h_printThesisPNG(sprintf('zs%u-birdseye',zs));
+% h_printThesisPNG(sprintf('zs%u-birdseye',zs));

@@ -4,7 +4,7 @@
 clear; clc; close all;
 
 % load data
-DATA = readtable('./bellhop-gvel-gridded/gveltable.csv');
+DATA = readtable('../pipeline/bellhop-gvel-gridded/gveltable.csv');
 % only simGvel
 DATA.gvel = DATA.recRange ./ DATA.owtt;
 
@@ -26,7 +26,7 @@ indValid = ~isnan(DATA.simGvel);
 % calculate RangeAnomaly
 DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - DATA.recRange;
 %% load simulation
-listing = dir('./bellhop-gvel-gridded/csv_arr/*gridded.csv');
+listing = dir('../pipeline/bellhop-gvel-gridded/csv_arr/*gridded.csv');
 
 for k = 1:numel(listing)
     T0 = readtable([listing(k).folder '/' listing(k).name]);
@@ -77,7 +77,7 @@ for zs = [20 30 90]
         count = count + 1;
         nexttile;
         
-        index = boolean(index1.*index2.*indValid);
+        index = logical(index1.*index2.*indValid);
         
         if sum(index)>=1
             % plot
@@ -157,7 +157,7 @@ hold off
 sgtitle('Post-processed group velocity estimates by source and receiver depths','fontsize',17,'fontweight','bold')
 
 % save plot
-h_printThesisPNG('gvel-owtt-newalgorithm');
+% h_printThesisPNG('gvel-owtt-newalgorithm');
 
 %% plot all data RANGE ANOMALY
 
@@ -174,7 +174,7 @@ for zs = [20 30 90]
         count = count + 1;
         nexttile;
         
-        index = boolean(index1.*index2.*indValid);
+        index = logical(index1.*index2.*indValid);
         
         if sum(index)>=1
             % plot
@@ -245,7 +245,7 @@ title(lg,'Sound Speed Inputs');
 
 % title
 sgtitle('Post-processed range error by source and receiver depths','fontsize',17,'fontweight','bold')
-h_printThesisPNG('range-error-owtt-newalgorithm')
+% h_printThesisPNG('range-error-owtt-newalgorithm')
 
 %% histogram of all events
 
@@ -301,7 +301,7 @@ end
     
 hold off
 
-h_printThesisPNG('rangeError-hist1');
+% h_printThesisPNG('rangeError-hist1');
 
 %% histogram of all events by num bounces
 
@@ -349,4 +349,4 @@ end
 nexttile(1);
 legend('HYCOM','Baseline','Chosen Weights');
 sgtitle('Histogram of post-processed range error by number of bounces','fontsize',17,'fontweight','bold');
-h_printThesisPNG('rangeError-hist2');
+% h_printThesisPNG('rangeError-hist2');

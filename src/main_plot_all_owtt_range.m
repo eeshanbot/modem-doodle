@@ -30,7 +30,7 @@ for fRNX = filter_node
         for fRXZ = filter_rxz
             index_rxz = RECAP.rx_z == fRXZ;
             
-            index = boolean(index_rxn .* index_rxz);
+            index = logical(index_rxn .* index_rxz);
             
             scatter(RECAP.data_owtt(index),RECAP.data_range(index),...
                     markerSize,markerModemMap(fRNX{1}),markerShape(fRXZ),'filled','MarkerFaceAlpha',0.2)

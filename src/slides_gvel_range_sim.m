@@ -2,7 +2,7 @@
 clear; clc; close all;
 
 % load data
-DATA = readtable('./bellhop-gvel-gridded/gveltable.csv');
+DATA = readtable('../pipeline/bellhop-gvel-gridded/gveltable.csv');
 % only simGvel
 DATA.gvel = DATA.recRange ./ DATA.owtt;
 
@@ -25,7 +25,7 @@ indValid = ~isnan(DATA.simGvel);
 DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - DATA.recRange;
 
 %% load simulation
-listing = dir('./bellhop-gvel-gridded/csv_arr/*gridded.csv');
+listing = dir('../pipeline/bellhop-gvel-gridded/csv_arr/*gridded.csv');
 
 for k = 1:numel(listing)
     T0 = readtable([listing(k).folder '/' listing(k).name]);
@@ -70,7 +70,7 @@ for zr = [30 90]
         count = count + 1;
         nexttile;
         
-        index = boolean(index1.*index2.*indValid);
+        index = logical(index1.*index2.*indValid);
         
         if sum(index)>=1
             % plot
@@ -145,4 +145,4 @@ title(lg,'Sound Speed Inputs');
 
 % title
 sgtitle('Range error by source and receiver depths','fontsize',17,'fontweight','bold')
-h_printThesisPNG('SLIDES-range-error-owtt-newalgorithm')
+% h_printThesisPNG('SLIDES-range-error-owtt-newalgorithm')

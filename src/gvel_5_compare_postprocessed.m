@@ -5,8 +5,8 @@
 clear; clc; close all;
 
 %% load in situ data
-DATA = readtable('./bellhop-gvel-gridded/gveltable.csv');
-A = load('./data-prep/tobytest-recap-full.mat'); % loads "event"
+DATA = readtable('../pipeline/bellhop-gvel-gridded/gveltable.csv');
+A = load('../data/tobytest-recap-clean.mat'); % loads "event"
 RECAP = h_unpack_experiment(A.event);
 
 DATA.simGvel(isnan(DATA.simGvel)) = 0;
@@ -28,7 +28,7 @@ indValid = ~isnan(DATA.simGvel);
 DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - DATA.recRange;
 
 %% load post-processing, new algorithm
-listing = dir('./bellhop-gvel-gridded/csv_arr/*gridded.csv');
+listing = dir('../pipeline/bellhop-gvel-gridded/csv_arr/*gridded.csv');
 
 for f = 1:numel(listing)
     T0 = readtable([listing(f).folder '/' listing(f).name]);
@@ -51,7 +51,7 @@ for f = 1:numel(listing)
 end
 
 %% load post-processing, old algorithm
-listing = dir('./bellhop-gvel-gridded/csv_arr/*old.csv');
+listing = dir('../pipeline/bellhop-gvel-gridded/csv_arr/*old.csv');
 
 for f = 1:numel(listing)
     T0 = readtable([listing(f).folder '/' listing(f).name]);
@@ -154,7 +154,7 @@ title(lg1,'   source depth & multipath structure');
 
 %% export
 
-h_printThesisPNG('compare-methods-postv1v2');
+% h_printThesisPNG('compare-methods-postv1v2');
 
 %% figure helper function
 function [F] = h_cross_plot(xVal,yVal,zs,numBounces)

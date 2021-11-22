@@ -3,7 +3,7 @@
 clear; clc; close all;
 
 %% load data
-A = load('./data-prep/tobytest-recap-full.mat'); % loads "event"
+A = load('../data/tobytest-recap-clean.mat'); % loads "event"
 A = h_unpack_experiment(A.event);
 
 % remove crazy 11 second event, event that is nominally 1.58* seconds
@@ -42,7 +42,7 @@ for zs = [20 30 90]
                 eof_str = 'baseline';
             end
         
-            index = boolean(index1.*index2.*index3.*index4);
+            index = logical(index1.*index2.*index3.*index4);
             
             if sum(index)>=1
                 % plot
