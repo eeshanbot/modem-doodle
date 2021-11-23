@@ -20,76 +20,49 @@ bathyfile = '../data/etopo1_bedrock.nc';
 plotBathy = h_unpack_bathy(bathyfile);
 
 %% load toby test data by experiment design
-location = ['../data/tobytest-txz' num2str(zs) '*.mat'];
-listing = dir(location);
-num_listing = numel(listing);
-
-% isolate eeof OFF
-A = load([listing(1).folder '/' listing(1).name]);
-BASE = h_unpack_experiment(A.experiment);
-
-% isolate eeeof ON
-A = load([listing(2).folder '/' listing(2).name]);
-EEOF = h_unpack_experiment(A.experiment);
-
-% create cell array of structure
-BASE.title = 'baseval';
-EEOF.title = 'eof';
-CONFIG = {BASE EEOF};
-clear BASE EEOF;
-
-maxOwtt = max([CONFIG{1}.data_owtt CONFIG{2}.data_owtt]);
-maxRange = max([CONFIG{1}.data_range CONFIG{2}.data_range])+100;
-
-% loop through for modifications
-for cfg = 1:2
-    
-    [CONFIG{cfg}.rx_x,CONFIG{cfg}.rx_y] = eb_ll2xy(CONFIG{cfg}.rx_lat,CONFIG{cfg}.rx_lon,plotBathy.olat,plotBathy.olon);
-    [CONFIG{cfg}.tx_x,CONFIG{cfg}.tx_y] = eb_ll2xy(CONFIG{cfg}.tx_lat,CONFIG{cfg}.tx_lon,plotBathy.olat,plotBathy.olon);
-end
+A = load('../data/tobytest-recap-clean.mat'); % loads "event"
+RECAP = h_unpack_experiment(A.event);
 
 %% figure : timeline
 
 figure('Name','timeline','Renderer', 'painters', 'Position', [10 10 1700 1100]); clf;
 load p_legendDetails.mat
 
-for cfg = 1:2
-    for node = CONFIG{cfg}.unique_rx
-        node = node{1};
-        for imd = modem_rx_depth
-            index1 = find(strcmp(CONFIG{cfg}.tag_rx,node) & CONFIG{cfg}.rx_z == imd);
+for node = RECAP.unique_rx
+    node = node{1};
+    for imd = modem_rx_depth
+        index1 = find(strcmp(RECAP.tag_rx,node) & RECAP.rx_z == imd);
+        
+        if sum(index1) > 0
+            % group velocity estimates (simulation)
+            subplot(3,1,3);
+            hold on
+            scatter(RECAP.sim_time(index1),RECAP.sim_gvel(index1),...
+                markerSize,markerModemMap(node),markerShape(imd),'filled','MarkerFaceAlpha',0.3)
             
-            if sum(index1) > 0
-                % group velocity estimates (simulation)
-                subplot(3,1,3);
-                hold on
-                scatter(CONFIG{cfg}.sim_time(index1),CONFIG{cfg}.sim_gvel(index1),...
-                    markerSize,markerModemMap(node),markerShape(imd),'filled','MarkerFaceAlpha',0.3)
-                
-                % data owtt
-                subplot(3,1,1);
-                hold on
-                scatter(CONFIG{cfg}.data_time(index1),CONFIG{cfg}.data_owtt(index1),...
-                    markerSize,markerModemMap(node),markerShape(imd),'filled','MarkerFaceAlpha',0.3);
-                
-                % sim owtt
-                subplot(3,1,2);
-                hold on
-                scatter(CONFIG{cfg}.sim_time(index1),CONFIG{cfg}.sim_owtt(index1),...
-                    markerSize,markerModemMap(node),markerShape(imd),'filled','MarkerFaceAlpha',0.3);
-            end
+            % data owtt
+            subplot(3,1,1);
+            hold on
+            scatter(RECAP.data_time(index1),RECAP.data_owtt(index1),...
+                markerSize,markerModemMap(node),markerShape(imd),'filled','MarkerFaceAlpha',0.3);
+            
+            % sim owtt
+            subplot(3,1,2);
+            hold on
+            scatter(RECAP.sim_time(index1),RECAP.sim_owtt(index1),...
+                markerSize,markerModemMap(node),markerShape(imd),'filled','MarkerFaceAlpha',0.3);
         end
     end
 end
 
-eof_bool = [CONFIG{1}.eof_bool CONFIG{2}.eof_bool];
-eof_time = [CONFIG{1}.data_time CONFIG{2}.data_time];
+eof_bool = RECAP.eof_bool;
+eof_time = RECAP.data_time;
 [eof_time,order] = sort(eof_time);
 eof_bool = eof_bool(order);
 
 subplot(3,1,3);
 axis tight
-h_set_xy_bounds(eof_time,eof_time,CONFIG{1}.sim_gvel,CONFIG{2}.sim_gvel);
+h_set_xy_bounds(eof_time,eof_time,RECAP.sim_gvel,RECAP.sim_gvel);
 datetick('x');
 title('group velocity | in situ prediction');
 ylabel('c [m/s]');
@@ -99,7 +72,7 @@ grid on
 
 subplot(3,1,1);
 axis tight
-h_set_xy_bounds(eof_time,eof_time,CONFIG{1}.data_owtt,CONFIG{2}.data_owtt);
+h_set_xy_bounds(eof_time,eof_time,RECAP.data_owtt,RECAP.data_owtt);
 datetick('x');
 title('one way travel time | data');
 ylabel('time [s]')
@@ -108,7 +81,7 @@ grid on
 
 subplot(3,1,2);
 axis tight
-h_set_xy_bounds(eof_time,eof_time,CONFIG{1}.sim_owtt,CONFIG{2}.sim_owtt);
+h_set_xy_bounds(eof_time,eof_time,RECAP.sim_owtt,RECAP.sim_owtt);
 datetick('x');
 title('one way travel time | in situ prediction');
 ylabel('time [s]')
@@ -133,14 +106,12 @@ clabel(C,h,'LabelSpacing',1000,'color','w','fontweight','bold','BackgroundColor'
 hold on
 
 % line connections
-for cfg = 1:2
-    for nx = 1:CONFIG{cfg}.num_events
-        txNode = CONFIG{cfg}.tag_tx{nx};
-        
-        %plot([CONFIG{cfg}.rx_x(nx) CONFIG{cfg}.tx_x(nx)],[CONFIG{cfg}.rx_y(nx) CONFIG{cfg}.tx_y(nx)],...
-        %'color',[1 1 1 .03],'linewidth',10,'HandleVisibility','off');
-        plot([CONFIG{cfg}.rx_x(nx) CONFIG{cfg}.tx_x(nx)],[CONFIG{cfg}.rx_y(nx) CONFIG{cfg}.tx_y(nx)],...
-            '--','color',markerModemMap(txNode),'linewidth',3);
+for nx = 1:RECAP.num_events
+    
+    if RECAP.tx_z(nx) == zs
+        txNode = RECAP.tag_tx{nx};
+        plot([RECAP.rx_x(nx) RECAP.tx_x(nx)],[RECAP.rx_y(nx) RECAP.tx_y(nx)],...
+        '--','color',markerModemMap(txNode),'linewidth',3);
     end
 end
 
@@ -149,26 +120,26 @@ for node = modem_labels
     node = node{1}; % change from cell to char
     for imd = modem_rx_depth
         
-        index1 = find(strcmp(CONFIG{1}.tag_rx,node) & CONFIG{1}.rx_z == imd);
-        index2 = find(strcmp(CONFIG{2}.tag_rx,node) & CONFIG{2}.rx_z == imd);
+        index1 = find(strcmp(RECAP.tag_rx,node) & RECAP.rx_z == imd);
+        index2 = find(strcmp(RECAP.tag_rx,node) & RECAP.rx_z == imd);
         index = union(index1,index2);
         
         if ~isempty(index)
             ixlgd = ixlgd + 1;
-            rx_x = [CONFIG{1}.rx_x(index1) CONFIG{2}.rx_x(index2)];
-            rx_y = [CONFIG{1}.rx_y(index1) CONFIG{2}.rx_y(index2)];
+            rx_x = RECAP.rx_x(index);
+            rx_y = RECAP.rx_y(index);
             Lgd(ixlgd) = scatter(rx_x,rx_y,1.5.*markerSize,markerModemMap(node),markerShape(imd),'filled');
             LgdStr{ixlgd} = [num2str(imd) 'm | ' node];
             
         else % check to see if TX was valid
-            index1 = find(strcmp(CONFIG{1}.tag_tx,node) & CONFIG{1}.tx_z == imd);
-            index2 = find(strcmp(CONFIG{2}.tag_tx,node) & CONFIG{2}.tx_z == imd);
+            index1 = find(strcmp(RECAP.tag_tx,node) & RECAP.tx_z == imd);
+            index2 = find(strcmp(RECAP.tag_tx,node) & RECAP.tx_z == imd);
             index = union(index1,index2);
             
             if ~isempty(index)
                 ixlgd = ixlgd + 1;
-                tx_x = [CONFIG{1}.tx_x(index1) CONFIG{2}.tx_x(index2)];
-                tx_y = [CONFIG{1}.tx_y(index1) CONFIG{2}.tx_y(index2)];
+                tx_x = [RECAP.tx_x(index1) RECAP.tx_x(index2)];
+                tx_y = [RECAP.tx_y(index1) RECAP.tx_y(index2)];
                 Lgd(ixlgd) = scatter(tx_x,tx_y,1.5.*markerSize,markerModemMap(node),markerShape(imd),'filled');
                 LgdStr{ixlgd} = [num2str(imd) 'm | ' node];
             end
@@ -177,7 +148,7 @@ for node = modem_labels
 end
 
 % tx connections in legend
-tx_node = [CONFIG{1}.tag_tx CONFIG{2}.tag_tx];
+tx_node = [RECAP.tag_tx RECAP.tag_tx];
 tx_node = unique(tx_node);
 for utn = tx_node
     ixlgd = ixlgd + 1;
