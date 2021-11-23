@@ -18,8 +18,8 @@ A.simGvel(indBad) = NaN;
 % load modem marker information
 load p_modemMarkerDetails
 
-% plotbool = [1 1 1 1 1 1];
-plotbool = [0 0 0 0 0 1];
+plotbool = [1 1 1 1 1 1];
+% plotbool = [0 0 0 0 0 1];
 
 %% figure --- owtt vs range
 if plotbool(1) == 1
@@ -148,7 +148,7 @@ if plotbool(3) == 1
     xlabel('naive group velocity [m/s]');
     title('Simulated vs naive group velocity prediction');
     
-    h_printThesisPNG('gvel-sim-naive-compare');
+    % h_printThesisPNG('gvel-sim-naive-compare');
 end
 
 
