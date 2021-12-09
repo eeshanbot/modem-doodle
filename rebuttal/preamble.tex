@@ -1,0 +1,154 @@
+\usepackage[includeheadfoot,top=20mm, bottom=20mm, footskip=2.5cm]{geometry}
+
+% TYPOGRAPHY
+\usepackage{cmbright}
+\usepackage{amssymb,amsmath}
+\usepackage{microtype}
+\usepackage[utf8]{inputenc}
+
+%% CROSS REFERENCE TO ORIGINAL DOCUMENT
+
+% if you just use cite
+% \usepackage{xr}
+% \externaldocument[v1-]{pathToDoc}
+% in doc, do \ref{v1-sec:intro}
+
+% if you use hyperref
+\usepackage{xr-hyper}
+\usepackage[hidelinks]{hyperref}
+\makeatletter
+  \long\def\myempty{}
+  \def\XR@addURL#1{\XR@@dURL#1\myempty{}{}{}{}{}\\}
+  \def\XR@@dURL#1#2#3#4#5#6#7\\{%
+    {#1}{#2}%
+    \ifx\myempty#6\@empty
+      {#3}{#4}{\XR@URL}%
+    \else
+    \fi
+  }
+\makeatother
+\externaldocument[v1:]{../doc/preprint}
+
+
+% MISC
+\usepackage{graphicx}
+\usepackage{soul} % Highlight using \hl{}
+
+% TABLE
+
+\usepackage{adjustbox} % center large tables across textwidth by surrounding tabular with \begin{adjustbox}{center}
+\renewcommand{\arraystretch}{1.5} % enlarge spacing between rows
+\usepackage{caption} 
+\captionsetup[table]{skip=10pt} % enlarge spacing between caption and table
+
+%% SECTION STYLES
+
+\usepackage{titlesec}
+
+% section
+\titleformat{\section}{\pagebreak \normalfont\LARGE}{\makebox[0pt][r]{\bf \thesection.\hspace{4mm}}}{0em}{\bfseries}
+%\titleformat*{\section}{\pagebreak \LARGE\bfseries}
+
+% subsection
+
+\titleformat{\subsection}{\normalfont}{\makebox[0pt][r]{\bf \thesubsection.\hspace{4mm}}}{0em}{\bfseries}
+\titlespacing{\subsection}{0em}{1em}{-0.3em} % left before after
+\titleformat*{\subsection}{\large\bfseries}
+\titlespacing*{\subsection}
+{0em}{1em}{1em}
+
+% subsubsection
+\titlespacing*{\subsubsection}
+{0em}{0.5em}{0.5em}
+\renewcommand\thesubsubsection{\arabic{section}.\arabic{subsubsection}}
+
+%% PARAGRAPH STYLES
+
+\setlength{\parskip}{0.6\baselineskip}%
+\setlength{\parindent}{0pt}%
+
+%% QUOTATION STYLES
+
+\usepackage{framed}
+\let\oldquote=\quote
+\let\endoldquote=\endquote
+\renewenvironment{quote}{\begin{fquote}\advance\leftmargini -2.4em\begin{oldquote}}{\end{oldquote}\end{fquote}}
+
+\usepackage{xcolor}
+\newenvironment{fquote}
+  {\def\FrameCommand{
+	\fboxsep=0.6em % box to text padding
+	\fcolorbox{black}{white}}%
+	% the "2" can be changed to make the box smaller
+    \MakeFramed {\advance\hsize-2\width \FrameRestore}
+    \begin{minipage}{\linewidth}
+  }
+  {\end{minipage}\endMakeFramed}
+
+%% TABLE STYLES
+
+\let\oldtabular=\tabular
+\let\endoldtabular=\endtabular
+\renewenvironment{tabular}[1]{\begin{adjustbox}{center}\begin{oldtabular}{#1}}{\end{oldtabular}\end{adjustbox}}
+
+%% MACROS FOR FORMATTING NICELY
+
+% common
+\usepackage{mdframed}
+\newmdenv[
+  topline=false,
+  bottomline=false,
+  rightline=false
+]{sideline}
+
+\newcommand{\ebline}[1]{
+	\begin{sideline}
+	\begin{em}
+	#1
+	\end{em}
+	\end{sideline}
+}
+
+% rebuttal-letter
+\newcommand{\reviewer}[2]{
+	\subsubsection{#1}
+	\ebline{#2}
+}
+
+% reviewer-letter
+\newcommand{\bigcomment}[1]{
+\subsection{}
+\vspace{-3em}
+#1
+}
+
+%%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%% DIF UNDERLINE PREAMBLE %DIF PREAMBLE
+\RequirePackage[normalem]{ulem} %DIF PREAMBLE
+\RequirePackage{color}\definecolor{RED}{rgb}{1,0,0}\definecolor{BLUE}{rgb}{0,0,1} %DIF PREAMBLE
+\providecommand{\DIFadd}[1]{{\protect\color{blue}\uwave{#1}}} %DIF PREAMBLE
+\providecommand{\DIFdel}[1]{{\protect\color{red}\sout{#1}}}                     %DIF PREAMBLE
+%DIF SAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddbegin}{} %DIF PREAMBLE
+\providecommand{\DIFaddend}{} %DIF PREAMBLE
+\providecommand{\DIFdelbegin}{} %DIF PREAMBLE
+\providecommand{\DIFdelend}{} %DIF PREAMBLE
+%DIF FLOATSAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}} %DIF PREAMBLE
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}} %DIF PREAMBLE
+\providecommand{\DIFaddbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFaddendFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelendFL}{} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
+
+%% RANDO TEXT FOR EXAMPLE
+\usepackage{lipsum}
+
+%% CHECKS IF THINGS ARE EMPTY
+\usepackage{etoolbox}
+
+%% NICE REFERENCING
+% must be loaded after hyperref
+% puts in section, fig, etc in front of comment
+% \usepackage[capitalise]{cleveref}
