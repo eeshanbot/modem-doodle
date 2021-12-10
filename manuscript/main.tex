@@ -32,9 +32,6 @@ To our knowledge, these results are the first field experiment to demonstrate a 
 
 \maketitle
 
-\newcommand{\llabel}[1]{\hypertarget{llineno:#1}{\linelabel{#1}}}
-\newcommand{\lref}[1]{\hyperlink{llineno:#1}{\ref*{#1}}}
-
 % =========================================================================== %
 % =========================================================================== %
 
@@ -43,14 +40,12 @@ To our knowledge, these results are the first field experiment to demonstrate a 
 
 Autonomous underwater vehicles (AUVs) are an increasingly capable platform to explore and sample the ocean, particularly for remote and/or dangerous environments.
 Lightweight, mobile, and inexpensive compared to crewed and ship-based systems, these vehicles can enable a safer, data-forward style of field oceanography \citep{bellingham_robotics_2007,petillot_underwater_2019}.
-
 \llabel{test}
 
 But navigation uncertainty is a major challenge in considering AUVs as reliable and standard tools for oceanographic research.
 While land and air-based robots utilize satellite-based global positioning system (GPS) to achieve stunning location accuracy and precision throughout the duration of their missions, AUVs cannot access GPS while underwater due to the rapid attenuation of electromagnetic waves \citep{preisig_acoustic_2007}.
 A vehicle can stall on the surface to receive a GPS fix, but this foolproof method of re-positioning is inaccessible in an ice-covered environment or other GPS-denied situations.
 A recent study tracking 22 floats under the ice in the Weddell Gyre near Antarctica showed that they were unable to surface for 8 months and position uncertainty grew to 116 $\pm$ 148 km in the lateral directions \citep{chamberlain_observing_2018}.
-
 \llabel{test2}
 
 Much progress has been made in underwater vehicle navigation, which relies on any combination of dead reckoning, hydrodynamic models, inertial navigation systems, doppler velocity logs, and/or acoustic baseline navigation systems \citep{paull_auv_2014}.
