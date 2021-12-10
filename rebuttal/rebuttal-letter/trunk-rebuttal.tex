@@ -4,7 +4,7 @@
 	\def\journal{Journal of the Acoustical Society of America}
 	\def\doi{}
 
-\input{p-rebuttal-letter.tex}
+\input{../p-rebuttal-letter.tex}
 
 Dear Editors,
 
@@ -15,6 +15,11 @@ Sincerely,
 Dr. EeShan Bhatt \\
 \emph{on behalf of all authors}
 
+%\ref*{v1:test}
+% \pageref*{v1:test}
+
+% \formatLineTracking{test}{v1:test}
+
 % table of contents
 \renewcommand{\contentsname}{}
 \begingroup
@@ -23,9 +28,6 @@ Dr. EeShan Bhatt \\
 \tableofcontents
 \endgroup
 
-%% ------- MACRO FOR CROSS REFERENCING ----- %%
-\newcommand{\llabel}[1]{\hypertarget{llineno:#1}{\linelabel{#1}}}
-\newcommand{\lref}[1]{\hyperlink{llineno:#1}{\ref*{#1}}}
 
 %% ------- COMMENTS FROM REVIEWER ONE ------ %%
 \section{Reviewer One}
@@ -33,8 +35,6 @@ Dr. EeShan Bhatt \\
 	\subsection*{Summary}
 
 	\ebline{This paper demonstrates how a positioning system over ~1.5-3 km of range achieves 11 m of positioning uncertainty.  The work demonstrates how a single group velocity calculated from acoustic rays predicted by BELLHOP can be used to estimate ranges to be used in a LBL network for positioning.  The data presented are from transceivers on fixed ice-tethered buoys but the system could also be implemented on an autonomous underwater vehicle.}
-
-	\lref{v1:test}, \lref{v1:test2}
 
 	This summary captures some of the concepts and results presented in the paper but misses the fact that this system was in fact deployed onboard an underwater vehicle during under-ice deployments. The motivation behind this paper is to improve LBL navigation’s conversion of travel time to range for an under-ice environment that could be generalized to any acoustic environment. To do this, we introduce the Minimal Bounce Criteria method to operationalize real-time acoustic modeling into an effective horizontal group velocity estimate.
 
@@ -65,100 +65,100 @@ Dr. EeShan Bhatt \\
 
 	\subsection*{Specific Comments}
 
-	\reviewer{Line 226}
+	\lreviewer{Line 226}{}
 	{In the section describing post-processing analysis, the authors bring up that the processing was designed to mirror information available on a submarine – modeled data, historical data, and in situ data.  This is a nice rationale for the analysis, and I’d suggest highlighting this in the introduction.}
 
-	\reviewer{}{How long was the experiment from start to finish, and how much did the sound speed profile change over the duration of the experiment?}
+	\lreviewer{}{}{How long was the experiment from start to finish, and how much did the sound speed profile change over the duration of the experiment?}
 
-	\reviewer{}{What is the magnitude of the uncertainty in the position of the transceivers relative to the GPS positions measured at the surface? Presumably the transceivers particularly at 90 m depth could move from the lat/lon position of the GPS receivers at the surface.}
+	\lreviewer{}{}{What is the magnitude of the uncertainty in the position of the transceivers relative to the GPS positions measured at the surface? Presumably the transceivers particularly at 90 m depth could move from the lat/lon position of the GPS receivers at the surface.}
 
-	\reviewer{Lines 40-42}{Note ranging via one way travel times that have been used prior to the advent of the micro-modem, for example RAFOS.}
+	\lreviewer{Lines 40-42}{}{Note ranging via one way travel times that have been used prior to the advent of the micro-modem, for example RAFOS.}
 
-	\reviewer{Line 192}{Clarify what you mean when you state that the transmit and receive layers are independent? Also, the discussions of physical and virtual layers are confusing. I think everything is there, but reorganization would make this more clear. Consider moving up the paragraph starting at line 203.}
+	\lreviewer{Line 192}{}{Clarify what you mean when you state that the transmit and receive layers are independent? Also, the discussions of physical and virtual layers are confusing. I think everything is there, but reorganization would make this more clear. Consider moving up the paragraph starting at line 203.}
 
-	\reviewer{Line 205}{What do you mean that the coordinate system is range independent?}
+	\lreviewer{Line 205}{}{What do you mean that the coordinate system is range independent?}
 
-	\reviewer{Line 222}{Could you provide more information on the baseline and weighted SSPs.  Where did the baseline profile come from?  }
+	\lreviewer{Line 222}{}{Could you provide more information on the baseline and weighted SSPs.  Where did the baseline profile come from?  }
 
-	\reviewer{Line 256}{How is the group velocity uncertainty calculated?}
+	\lreviewer{Line 256}{}{How is the group velocity uncertainty calculated?}
 
-	\reviewer{Line 231}{Quantify the travel-time proximity to recorded data that was used to filter the eigenrays.}
+	\lreviewer{Line 231}{}{Quantify the travel-time proximity to recorded data that was used to filter the eigenrays.}
 
-	\reviewer{Lines 260, 303-305}{Please provide more information on the BELLHOP implementation.   Line 260 indicates a sparse grid.  From lines 303-305 do I understand that the grid is 1m in range and 2 m in depth?}
+	\lreviewer{Lines 260, 303-305}{}{Please provide more information on the BELLHOP implementation.   Line 260 indicates a sparse grid.  From lines 303-305 do I understand that the grid is 1m in range and 2 m in depth?}
 
 	{\color{blue}different definitions of sparse. we meant that we're not computing other locations. they think sparse means the grid points are far apart.}
 
-	\reviewer{Line 309}{Suggest re-writing this sentence for clarity: “As expected, the algorithm is generally overestimating range as it resolves a direct path that does not represent the actual arrival.”}
+	\lreviewer{Line 309}{}{Suggest re-writing this sentence for clarity: “As expected, the algorithm is generally overestimating range as it resolves a direct path that does not represent the actual arrival.”}
 
-	\reviewer{Line 364}{Could use a figure reference.}
+	\lreviewer{Line 364}{}{Could use a figure reference.}
 
-	\reviewer{Line 562}{I don’t agree that many approaches to underwater navigation combine it with acoustic tomography.}
+	\lreviewer{Line 562}{}{I don’t agree that many approaches to underwater navigation combine it with acoustic tomography.}
 	{\color{blue}Benefit of concurrent navigation and tomography has been discussed, which is not necessarily that many approaches combine it.}
 
-	\reviewer{Figure 1}{Figure 1 is a nice picture showing the vehicle, which motivates the work presented here, but was not used for collection of any of the data presented.  As it’s not pertinent to the data presented here, I’d suggest removing this figure or at least combining this figure with Figure 2.}
+	\lreviewer{Figure 1}{}{Figure 1 is a nice picture showing the vehicle, which motivates the work presented here, but was not used for collection of any of the data presented.  As it’s not pertinent to the data presented here, I’d suggest removing this figure or at least combining this figure with Figure 2.}
 
-	\reviewer{Figure 3}{Figure 3 tallies the number of successful events, and I think the use of the directional arrows communicates the data well.  How many events are successful in comparison with those that are considered unsuccessful and what generally causes an event to be deemed unsuccessful?}
+	\lreviewer{Figure 3}{}{Figure 3 tallies the number of successful events, and I think the use of the directional arrows communicates the data well.  How many events are successful in comparison with those that are considered unsuccessful and what generally causes an event to be deemed unsuccessful?}
 
-	\reviewer{Figure 5}{What is the point labeled u=751 m/s that appears to fall around 1424 m/s?}
+	\lreviewer{Figure 5}{}{What is the point labeled u=751 m/s that appears to fall around 1424 m/s?}
 
-	\reviewer{Table II}{Might this information be portrayed better by a box plot?}
+	\lreviewer{Table II}{}{Might this information be portrayed better by a box plot?}
 
 	\subsection*{Minor Edits}
 
-	\reviewer{Fig. 2 and 3}{Fig 2 refers to central node position as Topside and Fig. 3 as Camp Seadragon. Suggest standardizing.}
+	\lreviewer{Fig. 2 and 3}{}{Fig 2 refers to central node position as Topside and Fig. 3 as Camp Seadragon. Suggest standardizing.}
 
-	\reviewer{Lines 311, 359}{'Data' should be plural.}
+	\lreviewer{Lines 311, 359}{}{'Data' should be plural.}
 
-	\reviewer{Figure 6}{Suggest including receiver depth along with source depth in the title as they are both important in distinguishing between the cases.}
+	\lreviewer{Figure 6}{}{Suggest including receiver depth along with source depth in the title as they are both important in distinguishing between the cases.}
 
-	\reviewer{Table I}{Table I indicates direction errors are positive.  Please note the sign convention in the caption.}
+	\lreviewer{Table I}{}{Table I indicates direction errors are positive.  Please note the sign convention in the caption.}
 
-	\reviewer{Table II}{‘range estimation error metrics’ rather than ‘range estimation metrics’?}
+	\lreviewer{Table II}{}{‘range estimation error metrics’ rather than ‘range estimation metrics’?}
 
-	\reviewer{Table II and III}{Suggest removing ‘algorithm’ label.  Also substitute ‘MBC’ and ‘NBC’ for minimal and nearest to match the text.}
+	\lreviewer{Table II and III}{}{Suggest removing ‘algorithm’ label.  Also substitute ‘MBC’ and ‘NBC’ for minimal and nearest to match the text.}
 
-	\reviewer{}{There are several figures and tables which are not referenced properly (Line 305, 391, 411)}
+	\lreviewer{}{}{There are several figures and tables which are not referenced properly (Line 305, 391, 411)}
 
 %% ------- COMMENTS FROM REVIEWER TWO ------ %%
 
 \section{Reviewer Two}
 
-	\reviewer{Line 7}{'Beaufort Lens' This is not yet a scientific term, suggest finding descriptive terms to use. What comprises the 'lens'? The Pacific Summer Water is the warm layer.}
+	\lreviewer{Line 7}{}{'Beaufort Lens' This is not yet a scientific term, suggest finding descriptive terms to use. What comprises the 'lens'? The Pacific Summer Water is the warm layer.}
 
-	\reviewer{Line 10}{'GPS aided', do  you mean GPS-navigated?}
+	\lreviewer{Line 10}{}{'GPS aided', do  you mean GPS-navigated?}
 	Yes.
 
-	\reviewer{Line 12}{'rival GPS' is a fairly bold statement when GPS is used as ground truth.}
+	\lreviewer{Line 12}{}{'rival GPS' is a fairly bold statement when GPS is used as ground truth.}
 	{\color{blue} Accuracy comparable to conventional GPS; does not introduce decrease precision than is already documented by GPS puck precision; Effectively extends single GPS into the water column with comparable performance. Given more beacons, there is potential to reduce uncertainty in the same way that GPS / differential GPS works}
 
-	\reviewer{Line 89}{Is the 'lens' the warm water? Or a combination of layers? What does 'lens' mean acoustically? Normally in ocean acoustics people refer to ducts and layers.}
+	\lreviewer{Line 89}{}{Is the 'lens' the warm water? Or a combination of layers? What does 'lens' mean acoustically? Normally in ocean acoustics people refer to ducts and layers.}
 
-	\reviewer{Line 94}{Ice Tethered profiler data shows fairly slow variability in space and time in the Beaufort, but changes in characteristics occur as the deep basin transitions to the Chukchi, so what is meant by 'high degree' exactly?}
+	\lreviewer{Line 94}{}{Ice Tethered profiler data shows fairly slow variability in space and time in the Beaufort, but changes in characteristics occur as the deep basin transitions to the Chukchi, so what is meant by 'high degree' exactly?}
 
-	\reviewer{Fig 4 and Line 216}{Fig 4 and 216 - where did the baseline come from (exactly)? What database, etc.}
+	\lreviewer{Fig 4 and Line 216}{}{Fig 4 and 216 - where did the baseline come from (exactly)? What database, etc.}
 
-	\reviewer{Line 224}{why did a human have to chose an optimal set of weights? Why not just use the measured SSP, or an average of a few?}
+	\lreviewer{Line 224}{}{why did a human have to chose an optimal set of weights? Why not just use the measured SSP, or an average of a few?}
 
-	\reviewer{Line 231}{'abundance'. Is there a more precise way to say this? Bellhop does what it is programmed to…}
+	\lreviewer{Line 231}{}{'abundance'. Is there a more precise way to say this? Bellhop does what it is programmed to…}
 
-	\reviewer{Line 241}{'modem triggering time', do you mean 'detected arrival time'?}
+	\lreviewer{Line 241}{}{'modem triggering time', do you mean 'detected arrival time'?}
 
-	\reviewer{Line 249}{Use of the word 'range' for the 'navy range' type of use is intermixed with range as in distance. Suggest not using 'range' and in 'navy range' and saying 'nav' or 'comms' system or network.}
+	\lreviewer{Line 249}{}{Use of the word 'range' for the 'navy range' type of use is intermixed with range as in distance. Suggest not using 'range' and in 'navy range' and saying 'nav' or 'comms' system or network.}
 
-	\reviewer{Line 261}{'bring'. Do you mean interpolate?}
+	\lreviewer{Line 261}{}{'bring'. Do you mean interpolate?}
 
-	\reviewer{Line 281}{Awkward sentence, either unclear or extremely obvious. "...an acoustic arrival does not always take the direct path from source to the receiver,".}
+	\lreviewer{Line 281}{}{Awkward sentence, either unclear or extremely obvious. "...an acoustic arrival does not always take the direct path from source to the receiver,".}
 
-	\reviewer{}{for both criteria: a graphic that shows the method could be very useful.}
+	\lreviewer{}{}{for both criteria: a graphic that shows the method could be very useful.}
 
-	\reviewer{Line 319}{"This is likely driven by the prominence of the duct." Do you mean: consistency of sound speed within the duct where the rays were trapped and thus traveled? Or something else?}
+	\lreviewer{Line 319}{}{"This is likely driven by the prominence of the duct." Do you mean: consistency of sound speed within the duct where the rays were trapped and thus traveled? Or something else?}
 
-	\reviewer{Line 410}{'anomalous' - does this section need to be included? Or just the issue summarized and noted? Delete the table?}
+	\lreviewer{Line 410}{}{'anomalous' - does this section need to be included? Or just the issue summarized and noted? Delete the table?}
 	{\color{blue}Delete table, summarize issue.}
 
-	\reviewer{Lines 585-591}{Suggest deleting, not very appropriate for an academic paper.}
+	\lreviewer{Lines 585-591}{}{Suggest deleting, not very appropriate for an academic paper.}
 
-	\reviewer{Fig 10}{Would be good to have some conclusions in addition to the description.}
+	\lreviewer{Fig 10}{}{Would be good to have some conclusions in addition to the description.}
 
 %% ------- COMMENTS FROM EDITOR ------ %%
 \section{Comments from the Editor}
@@ -203,38 +203,38 @@ Dr. EeShan Bhatt \\
 
 \section{Reviewer's Responses to Questions}
 
-	\reviewer{Is the manuscript of good scientific quality, free from errors, misconceptions or ambiguities; does it present original work; and does it contain sufficient new results, new applications or new developments of reasonable enough significance to warrant its publication in JASA? Please indicate in your report (in detailed comments, below) any points which are objectionable or which need attention.}
+	\reviewer{}{Is the manuscript of good scientific quality, free from errors, misconceptions or ambiguities; does it present original work; and does it contain sufficient new results, new applications or new developments of reasonable enough significance to warrant its publication in JASA? Please indicate in your report (in detailed comments, below) any points which are objectionable or which need attention.}
 	{Reviewer 1: It presents original work.  There are aspects which need clarification and are outlined in the attached report.
 
 	Reviewer 2: The work is interesting and describes a data set collected from the Arctic, which is of high value. However, some of the writing is a bit awkward and occasionally vague or imprecise.}
 
-	\reviewer{Is JASA an appropriate journal in which to present this work? In this regard, please consider carefully the commitment of JASA to publish work that is within the scope of Acoustics. Does the content of the manuscript, including terminology and the references cited, meet this criterion?}
+	\reviewer{}{Is JASA an appropriate journal in which to present this work? In this regard, please consider carefully the commitment of JASA to publish work that is within the scope of Acoustics. Does the content of the manuscript, including terminology and the references cited, meet this criterion?}
 	{Reviewer 1: I wouldn’t say JASA is the most appropriate journal.  As written, this work might be better suited to an ocean engineering journal. The results do, however, rely on acoustic propagation models which does make it fall within the scope of JASA, and it is particularly applicable to the Arctic Acoustics special issue.  I've made some suggestions in the attached (e.g., I didn't see that the frequency of the acoustic transmissions was  mentioned.  That is something that should be mentioned for an acoustics audience).
 
 	Reviewer 2: Yes.}
 
-	\reviewer{Is the manuscript a clear, concise, reasonably self-contained presentation of the material, giving adequate references to related work? Is English satisfactory? Please indicate needed changes in your report.}
+	\reviewer{}{Is the manuscript a clear, concise, reasonably self-contained presentation of the material, giving adequate references to related work? Is English satisfactory? Please indicate needed changes in your report.}
 	{Reviewer 1: The English is satisfactory.  This paper could benefit from some reorganization and careful editing. Several references to figures and tables were missing or incomplete. The hypothesis was presented in the discussion, but could be improved if this was more clearly stated at the outset.  Please see attached report for specific comments and suggestions.
 
 	Reviewer 2: Overall the language is fine, details below.}
 
-	\reviewer{Are the tables and figures clear and relevant, and are the captions adequate? Are there either too many or too few? If any of the figures are in color, is the color essential for conveying the scientific point?}
+	\reviewer{}{Are the tables and figures clear and relevant, and are the captions adequate? Are there either too many or too few? If any of the figures are in color, is the color essential for conveying the scientific point?}
 	{Reviewer 1: I would suggest combining Figures 1 and 2 or eliminating Figure 1.  Some suggestions for improving figure and table titles and captions are in the attached report.  The use of color does help convey the scientific point.
 
 	Reviewer 2: In general they are fine except as noted.}
 
-	\reviewer{If Supplementary material was submitted, is it relevant to the manuscript and should it be deposited in the Supplemental Depository for reference to the manuscript?}
+	\reviewer{}{If Supplementary material was submitted, is it relevant to the manuscript and should it be deposited in the Supplemental Depository for reference to the manuscript?}
 	{Reviewer 1: The supplemental figures were relevant to the manuscript.
 
 	Reviewer 2: NA}
 
-	\reviewer{Does the paper make effective use of journal space, or are parts unnecessary, unimportant, or subject to condensation? If so, which?
+	\reviewer{}{Does the paper make effective use of journal space, or are parts unnecessary, unimportant, or subject to condensation? If so, which?
 	}
 	{Reviewer 1: I'd suggest condensing the section on GPS drift (Section III E).
 
 	Reviewer 2: The GPS section seems out of place. Can it be shortened to a few sentences and references?}
 
-	\reviewer{
+	\reviewer{}{
 	Is the title appropriate and the abstract adequate for verbatim reproduction in abstract journals? IMPORTANT: The lead paragraph should advertise the main points of the article and must describe in terms accessible to the general reader the context and significance or the research problem studied and the importance of the results.}
 	{Reviewer 1: The title and abstract are a bit misleading as there is no navigation demonstrated in the paper and the ranging results were from fixed buoys rather than a vehicle.  The abstract, and the final sentence in particular, should be tempered to reflect the scope of the results.  Also, the abstract specifies absolute error of 11m, but should note the range over which it’s measured.  The lead paragraph does not advertise the main points of the article.
 
