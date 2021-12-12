@@ -9,6 +9,7 @@
 \email{henrik@mit.edu}
 \affiliation{Department of Mechanical Engineering, Massachusetts Institute of Technology, Cambridge, MA}
 
+
 % \author{Author Four}
 % \email{author.four@university.edu}
 % \affiliation{Department2,  University2, City, State ZipCode, Country}
@@ -34,15 +35,18 @@ To our knowledge, these results are the first field experiment to demonstrate a 
 % =========================================================================== %
 % =========================================================================== %
 
-\section{\label{sec:1} Introduction} 
+\section{Introduction}
+\label{sec:1}  
 
 Autonomous underwater vehicles (AUVs) are an increasingly capable platform to explore and sample the ocean, particularly for remote and/or dangerous environments.
 Lightweight, mobile, and inexpensive compared to crewed and ship-based systems, these vehicles can enable a safer, data-forward style of field oceanography \citep{bellingham_robotics_2007,petillot_underwater_2019}.
+\llabel{test}
 
 But navigation uncertainty is a major challenge in considering AUVs as reliable and standard tools for oceanographic research.
 While land and air-based robots utilize satellite-based global positioning system (GPS) to achieve stunning location accuracy and precision throughout the duration of their missions, AUVs cannot access GPS while underwater due to the rapid attenuation of electromagnetic waves \citep{preisig_acoustic_2007}.
 A vehicle can stall on the surface to receive a GPS fix, but this foolproof method of re-positioning is inaccessible in an ice-covered environment or other GPS-denied situations.
 A recent study tracking 22 floats under the ice in the Weddell Gyre near Antarctica showed that they were unable to surface for 8 months and position uncertainty grew to 116 $\pm$ 148 km in the lateral directions \citep{chamberlain_observing_2018}.
+\llabel{test2}
 
 Much progress has been made in underwater vehicle navigation, which relies on any combination of dead reckoning, hydrodynamic models, inertial navigation systems, doppler velocity logs, and/or acoustic baseline navigation systems \citep{paull_auv_2014}.
 In particular, the long baseline (LBL) navigation system is the most similar in scale and style to GPS, and most appropriate for mitigating drift in underwater vehicle localization without overburdening computation on the vehicle \citep{van_uffelen_global_2021}.
@@ -117,7 +121,8 @@ section \ref{sec:realtime} quickly conveys real-time results and the limitations
 
 % =========================================================================== %
 % =========================================================================== %
-\section{\label{sec:methods} Methods}
+\section{Methods}
+\label{sec:methods}
 
 The acoustic communication dataset accrued for ICEX20 relied on the Integrated Communication and Navigation Network (ICNN) \citep{schneider_self-adapting_2020,randeni_construction_2020,randeni_high-resolution_2021}.
 The ICNN was initially developed via numerous virtual experiments, to push the boundaries of algorithms and interfaces between different hardware components.
@@ -204,7 +209,7 @@ of the SSP variability to reconstitute a number of realistic candidate SSPs \cit
 The SSP is the only human configurable input to the group velocity prediction.
 
 During ICEX20, the SSP was toggled between the historical``baseline'' and a ``weighted'' estimate based on a local CTD cast, i.e. an optimal set of weights chosen by a human decision maker via an interactive Tactical Decision Aid framework \citep{bhatt_embedded_2021}.
-For the post-processing analysis, we add the SSP from HYCOM for comparison, to mirror the information available on a submarine\textemdash modeled data, historical data, and \textit{in situ} data (personal conversation with LT B. Howard and LT CDR D. Goodwin).
+For the post-processing analysis, we add the SSP from HYCOM for comparison, to mirror the information available on a submarine\textemdash modeled data, historical data, and \textit{in situ} data (personal conversation with LT B. Howard and LT CDR D. Goodwin). 
 This order corresponds to increasing ducted conditions of the Beaufort Lens.
 
 Fig. \ref{fig:raytrace-zs30} shows eigenrays in a range independent coordinate system for all three sound speed environments, for a source depth of 30 m.

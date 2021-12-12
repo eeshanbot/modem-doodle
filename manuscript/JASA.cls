@@ -224,6 +224,9 @@ or MikTeX to have all the current files}\stop
 \usepackage{xcolor}
 \definecolor{asalinkcolor}{cmyk}{1,.5,0,0}
 
+
+% xr-hyper
+\usepackage{xr-hyper}
  \usepackage[bookmarks=false,         % show bookmarks bar?
      pdfnewwindow=true,      % links in new window
      colorlinks=true,    % false: boxed links; true: colored links
@@ -231,8 +234,7 @@ or MikTeX to have all the current files}\stop
      citecolor=asalinkcolor,     % color of links to bibliography
      filecolor=asalinkcolor,  % color of file links
      urlcolor=asalinkcolor,      % color of external links
-final=true
- ]{hyperref}
+      ]{hyperref}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
