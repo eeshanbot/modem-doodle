@@ -18,14 +18,35 @@
 
 \date{\today}
 
+% The motivation behind this work is to improve the standard LBL navigation’s conversion of travel time to range for an under-ice environment in a way that could be generalized to any acoustic waveguide. To do this, we introduce the Minimal Bounce Criteria method to operationalize real-time acoustic modeling into an effective horizontal group velocity estimate.
+
+% 	This system was implemented on an autonomous underwater vehicle (AUV) on multiple missions, including an 11 km untethered, under-ice deployment, in March 2020. The AUV was deployed through a hydrohole from Topside and due to a disk error, stalled underneath the ice surface while transmitting its perceived location. The AUV was found within a meter away from its reported location, which serves as strong (but qualitative) evidence of the navigation performance provided by the single group velocity calculation. Because the navigation updates throughout the AUV mission have no GPS ground truth to compare to, this paper evaluates the same system performance across the GPS-navigated LBL beacons. 
+
+% 	The real-time error from the Nearest Bounce Criteria (NBC) achieves a mean absolute positioning error of 11 m. Upon further evaluation of the acoustic events, the Minimal Bounce Criteria (MBC) is run in the same automated pipeline in post-processing (akin to real-time computational constraints and needs) and achieves an error of roughly 3 m.
+
+% 	Both the NBC and MBC pseudorange estimations are compared to the GPS data on the LBL beacons. The error itself is small and the pattern of error exhibited indicates that the GPS ground truth data has significant noise (drift) that is not replicated by either pseudorange estimation method. For the MBC in particular, the post-processing error is within the precision of the GPS sensor, suggesting that its performance rivals that of GPS.
+
 \begin{abstract}
-Almost all underwater navigation paradigms rely on the conversion of recorded travel time into range to compute a trilateration solution.
-For real-time navigation, this conversion is treated deterministically.
-For positioning in post-processing, more computationally and/or labor intensive modeling methods are often employed to reduce the uncertainty driven by multipath arrivals.
-\llabel{2.1} An autonomous underwater vehicle deployment in March 2020 in the Beaufort Sea faced significant operational challenges with a total ice-covered environment and complex acoustic propagation via the Beaufort Lens.
-\llabel{2.2} We implement an embedded, stochastic, ray-based prediction of the horizontal group velocity and validate its performance with communication events between GPS-aided beacons, achieving a pseudorange mean absolute error of 11 m.
-\llabel{2.3} In post-processing, we introduce a multipath criterion and achieve ranging performance that rivals GPS.
-To our knowledge, these results are the first field experiment to demonstrate a real-time, physics-based data processing to minimize ranging error in underwater navigation.
+The long baseline (LBL) underwater navigation paradigm relies on the conversion of recorded travel time to range to trilaterate for position.
+For real-time navigation, this conversion assumes an isovelocity sound speed.
+For re-navigation in post-processing, computationally and/or labor intensive acoustic modeling may be employed to reduce uncertainty driven by multipath arrivals.
+This work demonstrates an embedded, ray-based prediction method of the effective horizontal group speed to minimize vehicle position error.
+\llabel{2.1} This method, the Minimal Bounce Criteria (MBC), was implemented for a small scale AUV-LBL system in March 2020, in the Beaufort Sea, in total under-ice conditions and a double ducted acoustic propagation environment.
+The vehicle was successfully deployed and recovered.
+\llabel{2.2} Given the lack of GPS data throughout the vehicle's mission, however, the localization performance is quantified between GPS-linked beacon-to-beacon connections where a single beacon ran the vehicle's navigation stack.
+The real-time positioning error is roughly 11 meters at distances up to 3 km.
+In post-processing, the dataset is extended to all possible beacon-to-beacon events.
+The localization performance is reevaluated with an operationally equivalent navigation stack using modeled, historical, and data-based sound speed profiles for the MBC and for a new method, the Nearest Bounce Criteria (NBC).
+The best performing median re-positioning errors are roughly 10 and 2 meters, respectively.
+\llabel{2.3} Further investigation suggests that the GPS ground truth data have some noise that is not reciprocated in either acoustic localization method.
+
+% Almost all underwater navigation paradigms rely on the conversion of recorded travel time into range to compute a trilateration solution.
+% For real-time navigation, this conversion is treated deterministically.
+% For positioning in post-processing, more computationally and/or labor intensive modeling methods are often employed to reduce the uncertainty driven by multipath arrivals.
+% \llabel{2.1} An autonomous underwater vehicle deployment in March 2020 in the Beaufort Sea faced significant operational challenges with a total ice-covered environment and complex acoustic propagation via the Beaufort Lens.
+% \llabel{2.2} We implement an embedded, stochastic, ray-based prediction of the horizontal group velocity and validate its performance with communication events between GPS-aided beacons, achieving a pseudorange mean absolute error of 11 m.
+% \llabel{2.3} In post-processing, we introduce a multipath criterion and achieve ranging performance that rivals GPS.
+% To our knowledge, these results are the first field experiment to demonstrate a real-time, physics-based data processing to minimize ranging error in underwater navigation.
 \end{abstract}
 
 %% pacs numbers not used
@@ -291,7 +312,7 @@ This method selects a different group velocity based on the multipath arrival st
 We manually cap the number of bounces to 4 because of the smaller operational scale and the attenuation accrued with many surface interactions.
 Bottom bounces are not encoded separately because of ray's tendency to refract upward, not due to information limitations. 
 \llabel{1.17} In addition, for a more consistent comparison, the local sparse grid is standardized as 11$\times$11 points over 10 m in range and 20 m in depth, which is similar to those from the vehicle logs.
-The extra size in depth addresses the computational limitations of how time-bounded eigenrays seem to stack vertically in the water column, as shown in Fig \ref{fig:rays3env-zs30}.
+The extra size in depth addresses the computational limitations of how time-bounded eigenrays seem to stack vertically in the water column, as shown in Fig \ref{fig:raytrace-zs30}.
 
 % =========================================================================== %
 % =========================================================================== %
@@ -312,7 +333,7 @@ Baseline & 243 & 11.38 & 11.96 & 4.23 & 23.95 \\
 Chosen weights & 568 & 11.36 & 11.40 & 8.12 & 26.0 \\
 \toprule
 \end{tabular}
-\caption[Range estimation error for \textit{in situ} events]{The range estimation error for \textit{in situ} events. The error here is presented as the absolute, not directional, error. Almost all directional errors, however, are positive.}
+\caption[Range estimation error for \textit{in situ} events]{The range estimation error metrics for \textit{in situ} events. The error here is presented as the absolute, not directional, error. Almost all directional errors, however, are positive.}
 \label{tab:rangeErrorInSitu}
 \end{table}
 
@@ -357,7 +378,7 @@ For a 30 m receiver depth, the NBC shows more overlap with data-derived values a
 For a 90 m receiver depth, the overlap is less accurate due to computational constraints of a limited fan of rays entering the shadow zone rendering a less reliable simulated times of arrival packet.
 
 Overall, analysis shows that the higher multipath classification produces more accurate range estimates, likely driven by a tighter bundle of rays.
-However, that data is too small to draw significant conclusions.
+However, that data are too small to draw significant conclusions.
 \llabel{1.19} Discontinuities in multipath classification verify our hypothesis for its importance to a smoothly varying group velocity, as shown in the cluster for a receiver depth of 30 m, where HYCOM jumps from one to two bounces amidst the baseline SSP and weighted SSP smoothly increasing while consistently seeing two and three bounces, respectively.
 
 \FloatBarrier
@@ -394,7 +415,7 @@ Figure \ref{fig:compareV1V2} is a crossmap for all three SSPs for both group vel
 
 All the events are on the unshaded region of the plots\textemdash the MBC has a systemic overestimation, which is reduced via NBC as events straddle the x-axis.
 The improvement from MBC to NBC is most evident for the realistic sound speed; while the HYCOM SSP improves from a median absolute range error of 6.41 to 4.61 m, the baseline SSP improves from 10.30 to 2.27 m, and the weighted SSP improves from 13.28 to 2.12 m.
-Table \ref{tab:rangeErrorPost} shows further statistics on the absolute range error by SSP and group velocity algorithm.
+Table \ref{tab:rangeErrorV1V2} shows further statistics on the absolute range error by SSP and group velocity algorithm.
 The order of magnitude improvement in the ducted SSPs demonstrate the effectiveness of the algorithm exploiting the multipath conditions.
 
 Given the computational constraints of real-time modeling, the gridded approach facilitates enough multipath classification to build in a ``ray ensemble'' of characteristic group velocities.
@@ -408,7 +429,7 @@ Even though BELLHOP is a greedy estimator for eigenrays, the additional data cre
 \centering
 \begin{tabular}{r|cc|cc|cc}\toprule
  & \multicolumn{2}{c|}{\textbf{Baseline} } & \multicolumn{2}{c|}{\textbf{Chosen Weights} } & \multicolumn{2}{c}{\textbf{HYCOM}} \\
- algorithm & \cellcolor[HTML]{EFEFEF}minimal & nearest & \cellcolor[HTML]{EFEFEF} minimal& nearest & \cellcolor[HTML]{EFEFEF}minimal & nearest \\ \hline
+  & \cellcolor[HTML]{EFEFEF}MBC & NBC & \cellcolor[HTML]{EFEFEF} MBC& NBC & \cellcolor[HTML]{EFEFEF}MBC & NBC \\ \hline
  minimum [m] 	& \cellcolor[HTML]{EFEFEF}0.01 & 0.00	& \cellcolor[HTML]{EFEFEF}0.00 	& 0.00 	& \cellcolor[HTML]{EFEFEF}0.11 & 0.01 \\
  25th \% [m]   & \cellcolor[HTML]{EFEFEF}4.96 & 0.99	& \cellcolor[HTML]{EFEFEF}6.26 	& 0.95 	& \cellcolor[HTML]{EFEFEF}3.30 & 2.25 \\   
  median [m]		& \cellcolor[HTML]{EFEFEF}10.30 & 2.27 	& \cellcolor[HTML]{EFEFEF}13.28 & 2.12 	& \cellcolor[HTML]{EFEFEF}6.41 & 4.61 \\
@@ -428,7 +449,7 @@ Some bands are adjacent to others of the same styling, likely due to ice drift a
 \subsection{Further analysis of the anomalous beacon to beacon connection}
 \label{subsec:anomalousBeacon}
 
-As shown in table \ref{tab:rangeErrorPost}, there is a striking maximum range error of 1491 m for the weighted SSP in the minimal bounce criteria.
+As shown in table \ref{tab:rangeErrorV1V2}, there is a striking maximum range error of 1491 m for the weighted SSP in the minimal bounce criteria.
 This section isolates the events that encompass that outlier for further examination, summarized in table \ref{tab:rangeErrorPostExplanation}.
 There are 10 events from South transmitting at 30 m depth to North receiving at 30 m depth.
 The OWTT spread is from 2.1958 to 2.1963 s; the naive group velocity is 1429.3 to 1430.1 m/s; and the GPS-tracked range is from 3138.54 m to 3140.87 m.
@@ -439,7 +460,7 @@ This example ends up being an excellent case study for how sound speed and multi
 \centering
 \begin{tabular}{r|cc|cc|cc}\toprule
  & \multicolumn{2}{c|}{\textbf{Baseline} } & \multicolumn{2}{c|}{\textbf{Chosen Weights} } & \multicolumn{2}{c}{\textbf{HYCOM}} \\
- algorithm & \cellcolor[HTML]{EFEFEF}minimal & nearest & \cellcolor[HTML]{EFEFEF} minimal& nearest & \cellcolor[HTML]{EFEFEF}minimal & nearest \\ \hline
+  & \cellcolor[HTML]{EFEFEF}minimal & nearest & \cellcolor[HTML]{EFEFEF} MBC& NBC & \cellcolor[HTML]{EFEFEF}minimal & nearest \\ \hline
  \# bounces 				& \cellcolor[HTML]{EFEFEF}1 		& 3 		& \cellcolor[HTML]{EFEFEF}1 		& 4 		& \cellcolor[HTML]{EFEFEF}0 	 & 2 \\
  mean OWTT [s] 				& \cellcolor[HTML]{EFEFEF}2.1853 	& 2.1943 	& \cellcolor[HTML]{EFEFEF}4.1812 	& 2.1955 	& \cellcolor[HTML]{EFEFEF}2.1877 & 2.1902 \\
  mean group velocity [m/s] 	& \cellcolor[HTML]{EFEFEF}1436.7 	& 1430.8 	& \cellcolor[HTML]{EFEFEF}750.88 	& 1430.0 	& \cellcolor[HTML]{EFEFEF}1435.1 & 1433.4 \\

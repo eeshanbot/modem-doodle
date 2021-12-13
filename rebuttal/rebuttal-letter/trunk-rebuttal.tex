@@ -8,7 +8,7 @@
 
 Dear Editors,
 
-We thank the reviewers and editor for their thoughtful feedback and comments in improving this work. We have significantly restructured the manuscript along several suggestions to separate the real-time navigation methodology, the real-time localization results (Mininum Bounce Criteria), and the post-processing re-localization improvement (Nearest Bounce Criteria). We have also introduced that language (navigation, localization, and re-localization) more explicitly and consistently to avoid confusion and better contextualize our contribution.
+We thank the reviewers and editor for their thoughtful feedback and comments in improving this work. We have significantly restructured the manuscript along several suggestions to separate the real-time navigation methodology, the real-time positioning results (Mininum Bounce Criteria), and the post-processing re-positioning improvement (Nearest Bounce Criteria). We have also introduced that language (navigation, positioning, and re-positioning) more explicitly to avoid confusion and better contextualize our contribution.
 
 We have also refashioned the abstract and introduction to better elucidate the motivation for this work as a model-aided component for LBL navigation in total under-ice conditions, which could be further generalized for any acoustic environment. The rebuttal letter is organized with sections delineated by the review, shown in the table of contents.
 
@@ -36,24 +36,36 @@ Dr. EeShan Bhatt \\
 
 	\subsection*{Summary}
 
-	\ebline{This paper demonstrates how a positioning system over ~1.5-3 km of range achieves 11 m of positioning uncertainty.  The work demonstrates how a single group velocity calculated from acoustic rays predicted by BELLHOP can be used to estimate ranges to be used in a LBL network for positioning.  The data presented are from transceivers on fixed ice-tethered buoys but the system could also be implemented on an autonomous underwater vehicle.}
+	\ebline{This paper demonstrates how a positioning system over \~1.5-3 km of range achieves 11 m of positioning uncertainty. The work demonstrates how a single group velocity calculated from acoustic rays predicted by BELLHOP can be used to estimate ranges to be used in a LBL network for positioning. The data presented are from transceivers on fixed ice-tethered buoys but the system could also be implemented on an autonomous underwater vehicle.}
 
-	This summary key concepts and results presented in the paper. However, this system was in fact deployed onboard an underwater vehicle during under-ice deployments. The motivation behind this work is to improve the standard LBL navigation’s conversion of travel time to range for an under-ice environment in a way that could be generalized to any acoustic waveguide. To do this, we introduce the Minimal Bounce Criteria method to operationalize real-time acoustic modeling into an effective horizontal group velocity estimate.
-
-	This system was implemented on an autonomous underwater vehicle (AUV) on multiple missions, including an 11 km untethered, under-ice deployment, in March 2020. The AUV was deployed through a hydrohole from Topside and due to a disk error, stalled underneath the ice surface while transmitting its perceived location. The AUV was found within a meter away from its reported location, which serves as strong (but qualitative) evidence of the navigation performance provided by the single group velocity calculation. Because the navigation updates throughout the AUV mission have no GPS ground truth to compare to, this paper evaluates the same system performance across the GPS-navigated LBL beacons. 
-
-	The real-time error from the Nearest Bounce Criteria (NBC) achieves a mean absolute positioning error of 11 m. Upon further evaluation of the acoustic events, the Minimal Bounce Criteria (MBC) is run in the same automated pipeline in post-processing (akin to real-time computational constraints and needs) and achieves an error of roughly 3 m.
-
-	Both the NBC and MBC pseudorange estimations are compared to the GPS data on the LBL beacons. The error itself is small and the pattern of error exhibited indicates that the GPS ground truth data has significant noise (drift) that is not replicated by either pseudorange estimation method. For the MBC in particular, the post-processing error is within the precision of the GPS sensor, suggesting that its performance rivals that of GPS.
-
+	This summary captures key results presented in the paper. However, we note that the system was successfully deployed on an underwater vehicle during ICEX20. The results from this work are specifically limited to the methodology behind calculating a single group velocity, which can be quantified through beacon-to-beacon communications.
 
 	\subsection*{Overall Comments}
 
-	\reviewer{}{The claims made in the abstract need to be better supported by the data presented or else tempered a bit. What is demonstrated here is not real-time navigation on a vehicle, but calculation of a handful of short fixed ranges from ice-tethered buoys. The limited data presented here begs more discussion with regards to how applicable the algorithm would be in normal vehicle operation and to navigation of the vehicle, as there were limited ranges between the beacons. What depths does the vehicle typically operate at and what  is the maximum range from the beacons?  The abstract stresses real-time results, but the real-time results are just 3 paragraphs, and the paper mostly concentrates on post-processing results.}
+	\reviewer{}{The claims made in the abstract need to be better supported by the data presented or else tempered a bit. What is demonstrated here is not real-time navigation on a vehicle, but calculation of a handful of short fixed ranges from ice-tethered buoys. The limited data presented here begs more discussion with regards to how applicable the algorithm would be in normal vehicle operation and to navigation of the vehicle, as there were limited ranges between the beacons. What depths does the vehicle typically operate at and what is the maximum range from the beacons?  The abstract stresses real-time results, but the real-time results are just 3 paragraphs, and the paper mostly concentrates on post-processing results.}
 
-	We agree that there are limitations to how transferable this analysis is, which have now been made clearer in the abstract, introduction, and conclusion.
+	We have tempered the claims in the abstract to reflect the limitations of the dataset collected and the transferability of the analysis in this paper.
+	We have also included a discussion of how these results might compare for various depths and ranges during vehicle operations (see \hl{XXX}).
+
+	With respect to the concentrating on real-time results versus post-processing results, we would point out that the AUV was deployed through a hydrohole from Topside and due to a disk error, stalled underneath the ice surface while transmitting its perceived location.
+	The AUV was found within a meter from its reported location, which serves as strong (but qualitative) evidence of the navigation performance provided by the single group velocity calculation.
+	Work currently review in the Journal of Field Robotics details the other components to vehicle navigation (DVL-aided INS and a vehicle flight model) along with the magnitude of position corrections.
+
+	Given that our vehicle navigation data only has one GPS point to compare to, we use the beacon-to-beacon communications as a natural experiment to compare the effectiveness of the real-time NBC method.
+	The real-time section is small because only one modem at a time ran the vehicle behavior to calculate these acoustic pseudoranges.
+	A robust comparison is tainted by the mismatch of experimental conditions in estimated sound speed environment and source / receiver position.
+
+	We extended the dataset to all possible communication events through the same automated pipeline to decouple the effects of the sound speed environment from source and receiver position. This is in effect no different than running the computation during the field; the real-time NBC data is a subset of the post-processed NBC data.
+
+	While post-processing, we began to see a pattern of range overestimation using the NBC method. Thus, we developed the Minimal Bounce Criteria instead and ran it through the same pipeline, subject to the same computational constraints.
+
+	By comparing the errors between these two pseudorange estimation methods, we noticed a surprising underlying pattern compared to the ground truth GPS data.
+	Further investigation suggests there is noise in the GPS measurement that is not incurred in the travel time measurement that informs the acoustic range estimation. 
+
+	The manuscript has been significantly restructured to separate analyses along this narrative.
 
 	\reviewer{}{The hypothesis is stated in the discussion section lines 515 and following: “We hypothesize and validate that the embedded stochastic prediction of a single group velocity is a smoothly varying function of range, source, and receiver depth pairings as well as multipath structure.”  I am not convinced that the few short fixed ranges presented here validate this hypothesis.  Lines 248 and following indicate how the system should track a continuously changing group velocity, but this is not demonstrated with the few fixed ranges presented here.  Also, it would be good to state this hypothesis more clearly earlier in the manuscript.}
+	We agree that a few short fixed ranges do not validate this hypothesis. With the overarching motivation and design of LBL navigation, we have recast this hypothesis as an assumption. We would note, again, that the vehicle navigation performance would better determine a continuously changing group velocity, but this data would have no way of being verified.
 
 	\reviewer{}{The introduction and conclusion sections should be tightened up to clarify the state of the art in various arenas of underwater vehicle navigation and how this work fits in.  The error metrics presented here should be specifically compared with other positioning systems or algorithms over similar spatial scales that do not integrate the ray propagation physics. Various ranging and positioning methods are referenced, but the narrative jumps between different types of AUVs and implementations and between scales of a few kilometers and hundreds of kilometers. This should be discussed in terms of range, vehicle, and propagation conditions.  Line 176 mentions that the SSP and the physics of ray refraction are often overlooked in positioning algorithms; this is, I presume, referring to real-time results or short-range results, but doesn’t specifically say this.}
 
@@ -109,19 +121,24 @@ Dr. EeShan Bhatt \\
 	\subsection*{Minor Edits}
 
 	\lreviewer{Fig. 2 and 3}{}{Fig 2 refers to central node position as Topside and Fig. 3 as Camp Seadragon. Suggest standardizing.}
-	Thank you. We have standardizes this to Topside.
+	Thank you. We have standardized this to Topside.
 
 	\lreviewer{lines 311, 359}{}{'Data' should be plural.}
+	Thank you. This has been corrected.
 
 	\lreviewer{Figure 6}{v1:fig:rangeError}{Suggest including receiver depth along with source depth in the title as they are both important in distinguishing between the cases.}
 
-	\lreviewer{Table I}{v1:tab:rangeErrorInSitu}{Table I indicates direction errors are positive.  Please note the sign convention in the caption.}
+	\lreviewer{Table I}{v1:tab:rangeErrorInSitu}{Table I indicates direction errors are positive. Please note the sign convention in the caption.}
+	{\color{blue} caption is correct but text references an ``overstimation'' of range that is not obvious given absolute error shown.}
 
 	\lreviewer{Table II}{v1:tab:rangeErrorV1V2}{‘range estimation error metrics’ rather than ‘range estimation metrics’?}
+	Agreed. We have made the suggested change.
 
 	\lreviewer{Table II and III}{}{Suggest removing ‘algorithm’ label.  Also substitute ‘MBC’ and ‘NBC’ for minimal and nearest to match the text.}
+	Agreed. We have made the suggested changes.
 
 	\lreviewer{}{}{There are several figures and tables which are not referenced properly (Line 305, 391, 411)}
+	Thank you. This has been corrected.
 
 %% ------- COMMENTS FROM REVIEWER TWO ------ %%
 
@@ -129,8 +146,8 @@ Dr. EeShan Bhatt \\
 
 	\lreviewer{line 7}{v1:2.1}{'Beaufort Lens' This is not yet a scientific term, suggest finding descriptive terms to use. What comprises the 'lens'? The Pacific Summer Water is the warm layer.}
 
-	\lreviewer{line 10}{v1:2.2}{'GPS aided', do  you mean GPS-navigated?}
-	Yes.
+	\lreviewer{line 10}{v1:2.2}{'GPS aided', do you mean GPS-navigated?}
+	We have changed this to ``GPS-linked'' because navigation implies self-movement.
 
 	\lreviewer{line 12}{v1:2.3}{'rival GPS' is a fairly bold statement when GPS is used as ground truth.}
 	{\color{blue} Accuracy comparable to conventional GPS; does not introduce decrease precision than is already documented by GPS puck precision; Effectively extends single GPS into the water column with comparable performance. Given more beacons, there is potential to reduce uncertainty in the same way that GPS / differential GPS works}
