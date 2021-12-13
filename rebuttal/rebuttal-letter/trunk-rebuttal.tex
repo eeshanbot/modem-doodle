@@ -8,14 +8,16 @@
 
 Dear Editors,
 
-We thank the reviewers and editor for their thoughtful feedback and comments in improving this work. We have significantly restructured the manuscript along several suggestions to separate the real-time navigation methodology, the real-time localization results (Mininum Bounce Criteria), and the post-processing re-localization improvement (Nearest Bounce Criteria). We have also refashioned the abstract and introduction to better elucidate the motivation for this work as a model-aided component for LBL navigation in total under-ice conditions, which could be further generalized for any acoustic environment. The rebuttal letter is organized with sections delineated by the review, shown in the table of contents.
+We thank the reviewers and editor for their thoughtful feedback and comments in improving this work. We have significantly restructured the manuscript along several suggestions to separate the real-time navigation methodology, the real-time localization results (Mininum Bounce Criteria), and the post-processing re-localization improvement (Nearest Bounce Criteria). We have also introduced that language (navigation, localization, and re-localization) more explicitly and consistently to avoid confusion and better contextualize our contribution.
+
+We have also refashioned the abstract and introduction to better elucidate the motivation for this work as a model-aided component for LBL navigation in total under-ice conditions, which could be further generalized for any acoustic environment. The rebuttal letter is organized with sections delineated by the review, shown in the table of contents.
 
 Sincerely,
 
 Dr. EeShan Bhatt \\
 \emph{on behalf of all authors}
 
-%\ref*{v1:test}
+% \ref*{v1:test}
 % \pageref*{v1:test}
 
 % \formatLineTracking{test}{v1:test}
@@ -36,7 +38,7 @@ Dr. EeShan Bhatt \\
 
 	\ebline{This paper demonstrates how a positioning system over ~1.5-3 km of range achieves 11 m of positioning uncertainty.  The work demonstrates how a single group velocity calculated from acoustic rays predicted by BELLHOP can be used to estimate ranges to be used in a LBL network for positioning.  The data presented are from transceivers on fixed ice-tethered buoys but the system could also be implemented on an autonomous underwater vehicle.}
 
-	This summary captures some of the concepts and results presented in the paper but misses the fact that this system was in fact deployed onboard an underwater vehicle during under-ice deployments. The motivation behind this paper is to improve LBL navigation’s conversion of travel time to range for an under-ice environment that could be generalized to any acoustic environment. To do this, we introduce the Minimal Bounce Criteria method to operationalize real-time acoustic modeling into an effective horizontal group velocity estimate.
+	This summary key concepts and results presented in the paper. However, this system was in fact deployed onboard an underwater vehicle during under-ice deployments. The motivation behind this work is to improve the standard LBL navigation’s conversion of travel time to range for an under-ice environment in a way that could be generalized to any acoustic waveguide. To do this, we introduce the Minimal Bounce Criteria method to operationalize real-time acoustic modeling into an effective horizontal group velocity estimate.
 
 	This system was implemented on an autonomous underwater vehicle (AUV) on multiple missions, including an 11 km untethered, under-ice deployment, in March 2020. The AUV was deployed through a hydrohole from Topside and due to a disk error, stalled underneath the ice surface while transmitting its perceived location. The AUV was found within a meter away from its reported location, which serves as strong (but qualitative) evidence of the navigation performance provided by the single group velocity calculation. Because the navigation updates throughout the AUV mission have no GPS ground truth to compare to, this paper evaluates the same system performance across the GPS-navigated LBL beacons. 
 
@@ -65,34 +67,35 @@ Dr. EeShan Bhatt \\
 
 	\subsection*{Specific Comments}
 
-	\lreviewer{Line 226}{}
+	\lreviewer{line 226}{v1:1.8}
 	{In the section describing post-processing analysis, the authors bring up that the processing was designed to mirror information available on a submarine – modeled data, historical data, and in situ data.  This is a nice rationale for the analysis, and I’d suggest highlighting this in the introduction.}
 
 	\lreviewer{}{}{How long was the experiment from start to finish, and how much did the sound speed profile change over the duration of the experiment?}
 
 	\lreviewer{}{}{What is the magnitude of the uncertainty in the position of the transceivers relative to the GPS positions measured at the surface? Presumably the transceivers particularly at 90 m depth could move from the lat/lon position of the GPS receivers at the surface.}
 
-	\lreviewer{Lines 40-42}{}{Note ranging via one way travel times that have been used prior to the advent of the micro-modem, for example RAFOS.}
+	\lreviewer{lines 40-42}{v1:1.11}{Note ranging via one way travel times that have been used prior to the advent of the micro-modem, for example RAFOS.}
 
-	\lreviewer{Line 192}{}{Clarify what you mean when you state that the transmit and receive layers are independent? Also, the discussions of physical and virtual layers are confusing. I think everything is there, but reorganization would make this more clear. Consider moving up the paragraph starting at line 203.}
+	\lreviewer{line 192}{v1:1.12}{Clarify what you mean when you state that the transmit and receive layers are independent? Also, the discussions of physical and virtual layers are confusing. I think everything is there, but reorganization would make this more clear. Consider moving up the paragraph starting at line 203.}
 
-	\lreviewer{Line 205}{}{What do you mean that the coordinate system is range independent?}
+	\lreviewer{line 205}{v1:1.13}{What do you mean that the coordinate system is range independent?}
 
-	\lreviewer{Line 222}{}{Could you provide more information on the baseline and weighted SSPs.  Where did the baseline profile come from?  }
+	\lreviewer{line 222}{v1:1.14}{Could you provide more information on the baseline and weighted SSPs. Where did the baseline profile come from?}
+	\label{1.14}
 
-	\lreviewer{Line 256}{}{How is the group velocity uncertainty calculated?}
+	\lreviewer{line 256}{v1:1.15}{How is the group velocity uncertainty calculated?}
 
-	\lreviewer{Line 231}{}{Quantify the travel-time proximity to recorded data that was used to filter the eigenrays.}
+	\lreviewer{line 231}{v1:1.16}{Quantify the travel-time proximity to recorded data that was used to filter the eigenrays.}
 
-	\lreviewer{Lines 260, 303-305}{}{Please provide more information on the BELLHOP implementation.   Line 260 indicates a sparse grid.  From lines 303-305 do I understand that the grid is 1m in range and 2 m in depth?}
+	\lreviewer{lines 260, 303-305}{v1:1.17}{Please provide more information on the BELLHOP implementation.   Line 260 indicates a sparse grid.  From lines 303-305 do I understand that the grid is 1m in range and 2 m in depth?}
 
 	{\color{blue}different definitions of sparse. we meant that we're not computing other locations. they think sparse means the grid points are far apart.}
 
-	\lreviewer{Line 309}{}{Suggest re-writing this sentence for clarity: “As expected, the algorithm is generally overestimating range as it resolves a direct path that does not represent the actual arrival.”}
+	\lreviewer{line 309}{v1:1.18}{Suggest re-writing this sentence for clarity: “As expected, the algorithm is generally overestimating range as it resolves a direct path that does not represent the actual arrival.”}
 
-	\lreviewer{Line 364}{}{Could use a figure reference.}
+	\lreviewer{line 364}{v1:1.19}{Could use a figure reference.}
 
-	\lreviewer{Line 562}{}{I don’t agree that many approaches to underwater navigation combine it with acoustic tomography.}
+	\lreviewer{line 562}{v1:1.20}{I don’t agree that many approaches to underwater navigation combine it with acoustic tomography.}
 	{\color{blue}Benefit of concurrent navigation and tomography has been discussed, which is not necessarily that many approaches combine it.}
 
 	\lreviewer{Figure 1}{}{Figure 1 is a nice picture showing the vehicle, which motivates the work presented here, but was not used for collection of any of the data presented.  As it’s not pertinent to the data presented here, I’d suggest removing this figure or at least combining this figure with Figure 2.}
@@ -106,14 +109,15 @@ Dr. EeShan Bhatt \\
 	\subsection*{Minor Edits}
 
 	\lreviewer{Fig. 2 and 3}{}{Fig 2 refers to central node position as Topside and Fig. 3 as Camp Seadragon. Suggest standardizing.}
+	Thank you. We have standardizes this to Topside.
 
-	\lreviewer{Lines 311, 359}{}{'Data' should be plural.}
+	\lreviewer{lines 311, 359}{}{'Data' should be plural.}
 
-	\lreviewer{Figure 6}{}{Suggest including receiver depth along with source depth in the title as they are both important in distinguishing between the cases.}
+	\lreviewer{Figure 6}{v1:fig:rangeError}{Suggest including receiver depth along with source depth in the title as they are both important in distinguishing between the cases.}
 
-	\lreviewer{Table I}{}{Table I indicates direction errors are positive.  Please note the sign convention in the caption.}
+	\lreviewer{Table I}{v1:tab:rangeErrorInSitu}{Table I indicates direction errors are positive.  Please note the sign convention in the caption.}
 
-	\lreviewer{Table II}{}{‘range estimation error metrics’ rather than ‘range estimation metrics’?}
+	\lreviewer{Table II}{v1:tab:rangeErrorV1V2}{‘range estimation error metrics’ rather than ‘range estimation metrics’?}
 
 	\lreviewer{Table II and III}{}{Suggest removing ‘algorithm’ label.  Also substitute ‘MBC’ and ‘NBC’ for minimal and nearest to match the text.}
 
@@ -123,42 +127,44 @@ Dr. EeShan Bhatt \\
 
 \section{Reviewer Two}
 
-	\lreviewer{Line 7}{}{'Beaufort Lens' This is not yet a scientific term, suggest finding descriptive terms to use. What comprises the 'lens'? The Pacific Summer Water is the warm layer.}
+	\lreviewer{line 7}{v1:2.1}{'Beaufort Lens' This is not yet a scientific term, suggest finding descriptive terms to use. What comprises the 'lens'? The Pacific Summer Water is the warm layer.}
 
-	\lreviewer{Line 10}{}{'GPS aided', do  you mean GPS-navigated?}
+	\lreviewer{line 10}{v1:2.2}{'GPS aided', do  you mean GPS-navigated?}
 	Yes.
 
-	\lreviewer{Line 12}{}{'rival GPS' is a fairly bold statement when GPS is used as ground truth.}
+	\lreviewer{line 12}{v1:2.3}{'rival GPS' is a fairly bold statement when GPS is used as ground truth.}
 	{\color{blue} Accuracy comparable to conventional GPS; does not introduce decrease precision than is already documented by GPS puck precision; Effectively extends single GPS into the water column with comparable performance. Given more beacons, there is potential to reduce uncertainty in the same way that GPS / differential GPS works}
 
-	\lreviewer{Line 89}{}{Is the 'lens' the warm water? Or a combination of layers? What does 'lens' mean acoustically? Normally in ocean acoustics people refer to ducts and layers.}
+	\lreviewer{line 89}{v1:2.4}{Is the 'lens' the warm water? Or a combination of layers? What does 'lens' mean acoustically? Normally in ocean acoustics people refer to ducts and layers.}
 
-	\lreviewer{Line 94}{}{Ice Tethered profiler data shows fairly slow variability in space and time in the Beaufort, but changes in characteristics occur as the deep basin transitions to the Chukchi, so what is meant by 'high degree' exactly?}
+	\lreviewer{line 94}{v1:2.5}{Ice Tethered profiler data shows fairly slow variability in space and time in the Beaufort, but changes in characteristics occur as the deep basin transitions to the Chukchi, so what is meant by 'high degree' exactly?}
 
-	\lreviewer{Fig 4 and Line 216}{}{Fig 4 and 216 - where did the baseline come from (exactly)? What database, etc.}
+	\lreviewer{lig 4}{}{Fig 4 - where did the baseline come from (exactly)? What database, etc.}
+	Please see Comment \ref{1.14}.
 
-	\lreviewer{Line 224}{}{why did a human have to chose an optimal set of weights? Why not just use the measured SSP, or an average of a few?}
+	\lreviewer{line 224}{v1:2.7}{why did a human have to chose an optimal set of weights? Why not just use the measured SSP, or an average of a few?}
 
-	\lreviewer{Line 231}{}{'abundance'. Is there a more precise way to say this? Bellhop does what it is programmed to…}
+	\lreviewer{line 231}{v1:2.8}{'abundance'. Is there a more precise way to say this? Bellhop does what it is programmed to…}
 
-	\lreviewer{Line 241}{}{'modem triggering time', do you mean 'detected arrival time'?}
+	\lreviewer{line 241}{v1:2.9}{'modem triggering time', do you mean 'detected arrival time'?}
 
-	\lreviewer{Line 249}{}{Use of the word 'range' for the 'navy range' type of use is intermixed with range as in distance. Suggest not using 'range' and in 'navy range' and saying 'nav' or 'comms' system or network.}
+	\lreviewer{line 249}{v1:2.10}{Use of the word 'range' for the 'navy range' type of use is intermixed with range as in distance. Suggest not using 'range' and in 'navy range' and saying 'nav' or 'comms' system or network.}
 
-	\lreviewer{Line 261}{}{'bring'. Do you mean interpolate?}
+	\lreviewer{line 261}{v1:2.11}{'bring'. Do you mean interpolate?}
+	Yes. We have changed this accordingly.
 
-	\lreviewer{Line 281}{}{Awkward sentence, either unclear or extremely obvious. "...an acoustic arrival does not always take the direct path from source to the receiver,".}
+	\lreviewer{line 281}{v1:2.12}{Awkward sentence, either unclear or extremely obvious. "...an acoustic arrival does not always take the direct path from source to the receiver,".}
 
 	\lreviewer{}{}{for both criteria: a graphic that shows the method could be very useful.}
 
-	\lreviewer{Line 319}{}{"This is likely driven by the prominence of the duct." Do you mean: consistency of sound speed within the duct where the rays were trapped and thus traveled? Or something else?}
+	\lreviewer{line 319}{v1:2.14}{"This is likely driven by the prominence of the duct." Do you mean: consistency of sound speed within the duct where the rays were trapped and thus traveled? Or something else?}
 
-	\lreviewer{Line 410}{}{'anomalous' - does this section need to be included? Or just the issue summarized and noted? Delete the table?}
+	\lreviewer{line 410}{}{'anomalous' - does this section need to be included? Or just the issue summarized and noted? Delete the table?}
 	{\color{blue}Delete table, summarize issue.}
 
-	\lreviewer{Lines 585-591}{}{Suggest deleting, not very appropriate for an academic paper.}
+	\lreviewer{lines 585-591}{}{Suggest deleting, not very appropriate for an academic paper.}
 
-	\lreviewer{Fig 10}{}{Would be good to have some conclusions in addition to the description.}
+	\lreviewer{Fig 10}{v1:fig:gvelMore}{Would be good to have some conclusions in addition to the description.}
 
 %% ------- COMMENTS FROM EDITOR ------ %%
 \section{Comments from the Editor}
@@ -233,6 +239,8 @@ Dr. EeShan Bhatt \\
 	{Reviewer 1: I'd suggest condensing the section on GPS drift (Section III E).
 
 	Reviewer 2: The GPS section seems out of place. Can it be shortened to a few sentences and references?}
+
+	We have significantly condensed the background for this section and narrowed the discussion for this section about the pattern of psuedorange error and what it might mean for the precision of the GPS puck we used at high latitudes.
 
 	\reviewer{}{
 	Is the title appropriate and the abstract adequate for verbatim reproduction in abstract journals? IMPORTANT: The lead paragraph should advertise the main points of the article and must describe in terms accessible to the general reader the context and significance or the research problem studied and the importance of the results.}

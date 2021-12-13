@@ -93,7 +93,7 @@
 \usepackage{ifmtarg}% http://ctan.org/pkg/ifmtarg
 \makeatletter
 \newcommand{\formatLineTracking}[2]{%
-  \@ifmtarg{#2}{\subsubsection{#1}}{\subsubsection{#1 \textrightarrow ~\ref*{#2}, pg. \pageref*{#2}}}
+  \@ifmtarg{#2}{\subsubsection{#1}}{\subsubsection{#1 \textrightarrow ~\ref*{#2}~(pg. \pageref*{#2})}}
   }
 \makeatother
 
