@@ -1,16 +1,46 @@
 \documentclass{article}
-	\def\papertitle{Under-ice acoustic navigation using real-time model-aided range estimation}
+	\def\papertitle{Under-ice acoustic navigation using real time model-aided range estimation}
 	\def\authors{E. Bhatt, O. V\'{i}quez, H. Schmidt}
 	\def\journal{Journal of the Acoustical Society of America}
 	\def\doi{}
 
 \input{../p-rebuttal-letter.tex}
 
+% table of contents
+\renewcommand{\contentsname}{}
+\begingroup
+\let\pagebreak\relax
+\setcounter{tocdepth}{1}
+\tableofcontents
+\endgroup
+
+
+\section*{Cover Letter}
 Dear Editors,
 
-We thank the reviewers and editor for their thoughtful feedback and comments in improving this work. We have significantly restructured the manuscript along several suggestions to separate the real-time navigation methodology, the real-time positioning results (Mininum Bounce Criteria), and the post-processing re-positioning improvement (Nearest Bounce Criteria). We have also introduced that language (navigation, positioning, and re-positioning) more explicitly to avoid confusion and better contextualize our contribution.
+We thank the reviewers and editor for their thoughtful feedback and comments in improving this work.
+We have refashioned the abstract and introduction to better elucidate the motivation for this work as a model-aided component for LBL navigation in total under-ice conditions, which could be further generalized for any acoustic environment.
+Based on several suggestions, we have restructured the manuscript and separated the real-time navigation methodology, the real-time positioning results (Minimum Bounce Criteria), and the post-processing re-positioning improvement (Nearest Bounce Criteria). 
+Lastly, when evaluating our methodology, we have removed qualitative language like ``GPS-like'' or ``rivaling GPS'' in favor of quantitative descriptions of ranging error.
 
-We have also refashioned the abstract and introduction to better elucidate the motivation for this work as a model-aided component for LBL navigation in total under-ice conditions, which could be further generalized for any acoustic environment. The rebuttal letter is organized with sections delineated by the review, shown in the table of contents. 
+We also more prominently establish definitions for navigation, positioning, and re-positioning to better contextualize our results and contributions, based on this discussion in Howe et al (2019) \emph{Observing the Oceans Acoustically}:
+\begin{quote}
+PNT is a combination of three distinct, constituent capabilities:
+
+\begin{enumerate}
+	\item Positioning is the ability to accurately and precisely determine one’s location referenced to a standard geodetic system;
+	\item Navigation is the ability to determine current and desired position (relative or absolute) and apply corrections to course, orientation, and speed to attain a desired position anywhere in the domain of concern; 
+	\item Timing is the ability to acquire and maintain accurate and precise time anywhere in the domain of interest within user-defined timeliness parameters; it also includes time transfer.
+\end{enumerate}
+
+Navigation is real time and necessarily depends on positioning, and positioning depends on timing.
+\end{quote}
+
+Given the inescapability of not having GNSS ground truth for our AUV navigation data, and the tension of evaluating our travel time to range conversion on events between LBL beacons in real time and post-processing, we further delineate that positioning is in real time and re-positioning is post-processed; similarly, we interpret reviewer feedback using these definitions.
+
+The rebuttal letter is organized with sections delineated by the review document and email. We look forward to your comments and are happy to discuss any aspect of this rebuttal letter or the manuscript further. Thank you again for your time and consideration.
+
+Please note that the corresponding author is on parental leave for the month of January.
 
 Sincerely,
 
@@ -22,13 +52,7 @@ Dr. EeShan Bhatt \\
 
 % \formatLineTracking{test}{v1:test}
 
-% table of contents
-\renewcommand{\contentsname}{}
-\begingroup
-\let\pagebreak\relax
-\setcounter{tocdepth}{1}
-\tableofcontents
-\endgroup
+
 
 
 %% ------- COMMENTS FROM REVIEWER ONE ------ %%
@@ -36,15 +60,16 @@ Dr. EeShan Bhatt \\
 
 	\subsection*{Summary}
 
-	\ebline{This paper demonstrates how a positioning system over \~1.5-3 km of range achieves 11 m of positioning uncertainty. The work demonstrates how a single group velocity calculated from acoustic rays predicted by BELLHOP can be used to estimate ranges to be used in a LBL network for positioning. The data presented are from transceivers on fixed ice-tethered buoys but the system could also be implemented on an autonomous underwater vehicle.}
+	\ebline{This paper demonstrates how a positioning system over \texttt{\small $\sim$}1.5-3 km of range achieves 11 m of positioning uncertainty. The work demonstrates how a single group velocity calculated from acoustic rays predicted by BELLHOP can be used to estimate ranges to be used in a LBL network for positioning. The data presented are from transceivers on fixed ice-tethered buoys but the system could also be implemented on an autonomous underwater vehicle.}
 
-	This summary captures key results presented in the paper. However, we note that the system was successfully deployed on an underwater vehicle during ICEX20. The results from this work are specifically limited to the methodology behind calculating a single group velocity, which can be quantified through beacon-to-beacon communications.
+	This summary captures key results presented in the paper. However, we note that the system was successfully deployed on an underwater vehicle during ICEX20. The results from this work are specifically limited to the methodology behind calculating a single group velocity, which we attempt to quantify through beacon-to-beacon communications.
 
 	\subsection*{Overall Comments}
 
 	\reviewer{}{The claims made in the abstract need to be better supported by the data presented or else tempered a bit. What is demonstrated here is not real-time navigation on a vehicle, but calculation of a handful of short fixed ranges from ice-tethered buoys. The limited data presented here begs more discussion with regards to how applicable the algorithm would be in normal vehicle operation and to navigation of the vehicle, as there were limited ranges between the beacons. What depths does the vehicle typically operate at and what is the maximum range from the beacons?  The abstract stresses real-time results, but the real-time results are just 3 paragraphs, and the paper mostly concentrates on post-processing results.}
 
 	We have tempered the claims in the abstract to reflect the limitations of the dataset collected and the transferability of the analysis in this paper.
+	We have amended Figure \ref{v1:fig:vehicleRecovery} to include vehicle data and illustrate that this approach was successful in a real field environment.
 	We have also included a discussion of how these results might compare for various depths and ranges during vehicle operations (see \hl{XXX}).
 
 	With respect to the concentrating on real-time results versus post-processing results, we would point out that the AUV was deployed through a hydrohole from Topside and due to a disk error, stalled underneath the ice surface while transmitting its perceived location.
@@ -53,7 +78,7 @@ Dr. EeShan Bhatt \\
 
 	Given that our vehicle navigation data only has one GPS point to compare to, we use the beacon-to-beacon communications as a natural experiment to compare the effectiveness of the real-time NBC method.
 	The real-time section is small because only one modem at a time ran the vehicle behavior to calculate these acoustic pseudoranges.
-	A robust comparison is tainted by the mismatch of experimental conditions in estimated sound speed environment and source / receiver position.
+	A robust comparison is difficult given the mismatch of experimental conditions in estimated sound speed environment as well as source and receiver position.
 
 	We extended the dataset to all possible communication events through the same automated pipeline to decouple the effects of the sound speed environment from source and receiver position. This is in effect no different than running the computation during the field; the real-time NBC data is a subset of the post-processed NBC data.
 
@@ -68,12 +93,15 @@ Dr. EeShan Bhatt \\
 	We agree that a few short fixed ranges do not validate this hypothesis. With the overarching motivation and design of LBL navigation, we have recast this hypothesis as an assumption. We would note, again, that the vehicle navigation performance would better determine a continuously changing group velocity, but this data would have no way of being verified.
 
 	\reviewer{}{The introduction and conclusion sections should be tightened up to clarify the state of the art in various arenas of underwater vehicle navigation and how this work fits in.  The error metrics presented here should be specifically compared with other positioning systems or algorithms over similar spatial scales that do not integrate the ray propagation physics. Various ranging and positioning methods are referenced, but the narrative jumps between different types of AUVs and implementations and between scales of a few kilometers and hundreds of kilometers. This should be discussed in terms of range, vehicle, and propagation conditions.  Line 176 mentions that the SSP and the physics of ray refraction are often overlooked in positioning algorithms; this is, I presume, referring to real-time results or short-range results, but doesn’t specifically say this.}
+	{\color{blue} Suggestion to discuss by range, vehicle, and propagation conditions is sound. However, there are no other short range deployments in double ducted environments. That line says SSP and physics of ray refraction are often overlooked in *navigation* algorithms, which means only real-time results.}
 
 	\reviewer{}{Related to the point above, the introduction should make clear what type of vehicles the proposed method of navigation is applicable to and over what ranges. The authors do start to do this when they note that a shallow receiver depth enables the estimation method (line 274), but should more directly specify under what conditions the proposed algorithm is applicable.  In the Discussion section, there is an implication that this method of using a single group velocity could be applied to mesoscale operations but should acknowledge that propagation at these larger scales results in arrivals that are spread over several seconds including multiple modal arrivals with varying group velocities.  This method would presumably result in errors much higher than 11m….how might that scale?}
 
 	\reviewer{}{I understand what the authors are referencing when they use the term “group velocity” but I think this term should be used a bit more carefully.  Group velocities are often associated with modal propagation in which each mode has a distinct group velocity.  The goal in this work is to determine a single group velocity by taking a power weighted average of several different ray arrivals to derive range.  This is addressed somewhat in lines 395 and following, but I think it would be appropriate to expand on this discussion and move it up.  Lines 235 and following state “the variation of horizontal group velocity from any source-receiver pair is the fundamental challenge to implement GPS-like navigation in an LBL navigation paradigm…” this statement could use some clarification.  Also, perhaps change the axis on Figure 5 to read something like ‘implied group velocity.”}
 
 	\reviewer{}{As written, this manuscript seems more suited to an ocean engineering journal.  For a JASA audience, this should be more focused on the acoustics.  Perhaps I missed it, but I didn’t see that the manuscript even mentioned the frequencies or waveforms that were used in the experiment.  I’d suggest, for example, less emphasis on which options were toggled on/off or triggered (e.g. line 186, 196, 241, 254 ) and more on, for example, why specific depths were chosen and how they provide better coverage due to the acoustic shadow zone (e.g., Line 155), or how the specific rays were eliminated by the filtering (Line 232). Lines 370-372 state “The increased error for these reciprocal transmission paths is most likely driven by the computational artifacts encountered when propagating through the steep sound speed gradients of the lens and through the shadow zone.“ The authors might consider providing more information on these artifacts.}
+
+	{\color{blue}Thank you. The heart of this paper is injecting an acoustic model into a long baseline navigation.}
 
 	\reviewer{}{There seems to be a somewhat outsized discussion of GPS drift, but I didn’t see how the GPS uncertainty was directly applied to the uncertainty values presented in the paper.  I’d suggest condensing this section.}
 
@@ -113,6 +141,8 @@ Dr. EeShan Bhatt \\
 	\lreviewer{Figure 1}{}{Figure 1 is a nice picture showing the vehicle, which motivates the work presented here, but was not used for collection of any of the data presented.  As it’s not pertinent to the data presented here, I’d suggest removing this figure or at least combining this figure with Figure 2.}
 
 	\lreviewer{Figure 3}{}{Figure 3 tallies the number of successful events, and I think the use of the directional arrows communicates the data well.  How many events are successful in comparison with those that are considered unsuccessful and what generally causes an event to be deemed unsuccessful?}
+
+	{\color{blue} successful is if a single modem can decipher message. }
 
 	\lreviewer{Figure 5}{}{What is the point labeled u=751 m/s that appears to fall around 1424 m/s?}
 
@@ -189,6 +219,8 @@ Dr. EeShan Bhatt \\
 	\reviewer{}
 	{Both reviewers recommend that the manuscript be reconsidered after revision based on the reviews, and I concur. The key point of the manuscript seems to be to compare two different approaches to determining an effective sound speed for converting travel times to ranges for use in determining positions by trilateration in an Arctic environment (designated Minimal Bounce Criteria and Nearest Bounce Criteria). The goal is not evident in the abstract and is first more-or-less (but not entirely) clearly stated in Section II (Methods) (lines 174-176). While some discussion of the AUV operations is appropriate to motivate the analysis, the extensive discussion in the Introduction and elsewhere in the manuscript seems unnecessary and inappropriate. The use of jargon from the AUV application (e.g., physical layer, virtual layer) also seems unnecessary.}
 
+	Thank you. We politely 
+
 	\reviewer{}
 	{I agree with Reviewer 1 that the manuscript needs much more information on the acoustic parameters (frequencies, pulse lengths/modulation, ranges, expected travel-time measurement accuracy, etc.). In addition, the ray geometries are quite different for cases in which the source and receiver are both in the surface duct (i.e., 20 and 30 m), both in the Beaufort Duct (for the sound-speed profiles for which it is present) (i.e., 90 m) and one of the source or receiver is in the surface duct and the other is in the Beaufort Duct. The manuscript needs to include some discussion of these different cases.}
 
@@ -198,6 +230,7 @@ Dr. EeShan Bhatt \\
 	\item Section IV.F. Abstract page: “Personal pronouns and explicit claims as to novelty should be assiduously avoided.”
 	\item Section X.A. Introductory section: “Although some discussion of the background of the work may be advisable, a statement of the precise subject of the work must appear within the first two paragraphs.”
 	\end{itemize}}
+	Thank you for pointing this out. We have removed personal pronouns from the abstract and placed a precise subject of the work within the first two paragraphs before going into broader background material.
 
 	\reviewer{}
 	{As noted by Reviewer 1, the term “group velocity” has a precise definition. It seems that what the authors mean here is an effective sound speed used to convert travel times to ranges.}

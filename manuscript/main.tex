@@ -39,16 +39,6 @@ In post-processing, the dataset is extended to all possible beacon-to-beacon eve
 The localization performance is reevaluated with an operationally equivalent navigation stack using modeled, historical, and locally observed sound speed profiles for a Minimal Bounce Criteria (MBC), as deployed in real-time, and an improved algorithm, the Nearest Bounce Criteria (NBC).
 The best performing median re-positioning errors are roughly 10 and 2 meters, respectively.
 \llabel{2.3} Further investigation suggests that the GPS ground truth data have some noise that is not reciprocated in the travel time data.
-
-%% OLD ABSTRACT
-% Almost all underwater navigation paradigms rely on the conversion of recorded travel time into range to compute a trilateration solution.
-% For real-time navigation, this conversion is treated deterministically.
-% For positioning in post-processing, more computationally and/or labor intensive modeling methods are often employed to reduce the uncertainty driven by multipath arrivals.
-% \llabel{2.1} An autonomous underwater vehicle deployment in March 2020 in the Beaufort Sea faced significant operational challenges with a total ice-covered environment and complex acoustic propagation via the Beaufort Lens.
-% \llabel{2.2} We implement an embedded, stochastic, ray-based prediction of the horizontal group velocity and validate its performance with communication events between GPS-aided beacons, achieving a pseudorange mean absolute error of 11 m.
-% \llabel{2.3} In post-processing, we introduce a multipath criterion and achieve ranging performance that rivals GPS.
-% To our knowledge, these results are the first field experiment to demonstrate a real-time, physics-based data processing to minimize ranging error in underwater navigation.
-
 \end{abstract}
 
 %% pacs numbers not used
@@ -63,13 +53,10 @@ The best performing median re-positioning errors are roughly 10 and 2 meters, re
 
 Autonomous underwater vehicles (AUVs) are an increasingly capable platform to explore and sample the ocean, particularly for remote and/or dangerous environments.
 Lightweight, mobile, and inexpensive compared to crewed and ship-based systems, these vehicles can enable a safer, data-forward style of field oceanography \citep{bellingham_robotics_2007,petillot_underwater_2019}.
-\llabel{test}
-
 But navigation uncertainty is a major challenge in considering AUVs as reliable and standard tools for oceanographic research.
 While land and air-based robots utilize satellite-based global positioning system (GPS) to achieve stunning location accuracy and precision throughout the duration of their missions, AUVs cannot access GPS while underwater due to the rapid attenuation of electromagnetic waves \citep{preisig_acoustic_2007}.
 A vehicle can stall on the surface to receive a GPS fix, but this foolproof method of re-positioning is inaccessible in an ice-covered environment or other GPS-denied situations.
 A recent study tracking 22 floats under the ice in the Weddell Gyre near Antarctica showed that they were unable to surface for 8 months and position uncertainty grew to 116 $\pm$ 148 km in the lateral directions \citep{chamberlain_observing_2018}.
-\llabel{test2}
 
 Much progress has been made in underwater vehicle navigation, which relies on any combination of dead reckoning, hydrodynamic models, inertial navigation systems, doppler velocity logs, and/or acoustic baseline navigation systems \citep{paull_auv_2014}.
 In particular, the long baseline (LBL) navigation system is the most similar in scale and style to GPS, and most appropriate for mitigating drift in underwater vehicle localization without overburdening computation on the vehicle \citep{van_uffelen_global_2021}.
