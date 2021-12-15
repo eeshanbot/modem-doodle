@@ -1,4 +1,4 @@
-all: preprint reprint
+all: clean preprint
 
 # with bibliography:
 #
