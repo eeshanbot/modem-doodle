@@ -31,15 +31,16 @@ The long baseline (LBL) underwater navigation paradigm relies on the conversion 
 For real-time navigation, this conversion assumes an isovelocity sound speed.
 For re-navigation in post-processing, computationally and/or labor intensive acoustic modeling may be employed to reduce uncertainty driven by multipath arrivals.
 This work demonstrates an embedded, ray-based prediction method of the effective horizontal group speed to minimize vehicle position error.
-\llabel{2.1} This method, the Minimal Bounce Criteria (MBC), was implemented for a small scale AUV-LBL system in March 2020, in the Beaufort Sea, in total under-ice conditions and a double ducted acoustic propagation environment.
+\llabel{2.1} This method was implemented for a small scale AUV-LBL system in March 2020, in the Beaufort Sea, in total under-ice conditions and a double ducted acoustic propagation environment.
 The vehicle was successfully deployed and recovered.
 \llabel{2.2} Given the lack of GPS data throughout the vehicle's mission, however, the localization performance is quantified between GPS-linked beacon-to-beacon connections where a single beacon ran the vehicle's navigation stack.
 The real-time positioning error is roughly 11 meters at distances up to 3 km.
 In post-processing, the dataset is extended to all possible beacon-to-beacon events.
-The localization performance is reevaluated with an operationally equivalent navigation stack using modeled, historical, and data-based sound speed profiles for the MBC and for a new method, the Nearest Bounce Criteria (NBC).
+The localization performance is reevaluated with an operationally equivalent navigation stack using modeled, historical, and locally observed sound speed profiles for a Minimal Bounce Criteria (MBC), as deployed in real-time, and an improved algorithm, the Nearest Bounce Criteria (NBC).
 The best performing median re-positioning errors are roughly 10 and 2 meters, respectively.
-\llabel{2.3} Further investigation suggests that the GPS ground truth data have some noise that is not reciprocated in either acoustic localization method.
+\llabel{2.3} Further investigation suggests that the GPS ground truth data have some noise that is not reciprocated in the travel time data.
 
+%% OLD ABSTRACT
 % Almost all underwater navigation paradigms rely on the conversion of recorded travel time into range to compute a trilateration solution.
 % For real-time navigation, this conversion is treated deterministically.
 % For positioning in post-processing, more computationally and/or labor intensive modeling methods are often employed to reduce the uncertainty driven by multipath arrivals.
@@ -47,6 +48,7 @@ The best performing median re-positioning errors are roughly 10 and 2 meters, re
 % \llabel{2.2} We implement an embedded, stochastic, ray-based prediction of the horizontal group velocity and validate its performance with communication events between GPS-aided beacons, achieving a pseudorange mean absolute error of 11 m.
 % \llabel{2.3} In post-processing, we introduce a multipath criterion and achieve ranging performance that rivals GPS.
 % To our knowledge, these results are the first field experiment to demonstrate a real-time, physics-based data processing to minimize ranging error in underwater navigation.
+
 \end{abstract}
 
 %% pacs numbers not used
