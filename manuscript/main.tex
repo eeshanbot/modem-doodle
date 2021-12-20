@@ -50,13 +50,18 @@ The best performing median re-positioning errors are roughly 10 and 2 meters, re
 
 \section{Introduction}
 \label{sec:1}  
+Autonomous underwater vehicles (AUVs) are increasingly capable platforms to explore and samlpe the ocean, particularly for remote and/or dangerous environments.
+However, navigation uncertainty is a major challenge in considering AUVs as reliable and standard tools for oceanographic research.
+Compared to their land and air-based counterparts, underwater vehicles face a unique set of challenges brought on by the water column itself:  while land and air-based robots utilize the Global Navigation Satellite System (GNSS) to achieve stunning location accuracy and precision throughout the duration of their missions, AUVs cannot access GPS while underwater due to the rapid attenuation of electromagnetic waves \citep{preisig_acoustic_2007}.
+Typically, an AUV can stall on the surface to receive a GPS fix, but this foolproof method of re-positioning is inaccessible in an ice-covered environment or other GPS-denied situations.
 
-Autonomous underwater vehicles (AUVs) are an increasingly capable platform to explore and sample the ocean, particularly for remote and/or dangerous environments.
-Lightweight, mobile, and inexpensive compared to crewed and ship-based systems, these vehicles can enable a safer, data-forward style of field oceanography \citep{bellingham_robotics_2007,petillot_underwater_2019}.
-But navigation uncertainty is a major challenge in considering AUVs as reliable and standard tools for oceanographic research.
-While land and air-based robots utilize satellite-based global positioning system (GPS) to achieve stunning location accuracy and precision throughout the duration of their missions, AUVs cannot access GPS while underwater due to the rapid attenuation of electromagnetic waves \citep{preisig_acoustic_2007}.
-A vehicle can stall on the surface to receive a GPS fix, but this foolproof method of re-positioning is inaccessible in an ice-covered environment or other GPS-denied situations.
-A recent study tracking 22 floats under the ice in the Weddell Gyre near Antarctica showed that they were unable to surface for 8 months and position uncertainty grew to 116 $\pm$ 148 km in the lateral directions \citep{chamberlain_observing_2018}.
+% Long baseline navigation
+Though there many acoustic positioning methods, the long baseline (LBL) is closest in style
+
+
+
+
+% A recent study tracking 22 floats under the ice in the Weddell Gyre near Antarctica showed that they were unable to surface for 8 months and position uncertainty grew to 116 $\pm$ 148 km in the lateral directions \citep{chamberlain_observing_2018}.
 
 Much progress has been made in underwater vehicle navigation, which relies on any combination of dead reckoning, hydrodynamic models, inertial navigation systems, doppler velocity logs, and/or acoustic baseline navigation systems \citep{paull_auv_2014}.
 In particular, the long baseline (LBL) navigation system is the most similar in scale and style to GPS, and most appropriate for mitigating drift in underwater vehicle localization without overburdening computation on the vehicle \citep{van_uffelen_global_2021}.
