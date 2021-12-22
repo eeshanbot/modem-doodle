@@ -59,25 +59,55 @@ This foolproof method of self-positioning is undesirable for stealth, adverse we
 
 % introduce LBL and precise statement of work
 Of acoustic baseline positioning systems, long baseline (LBL) is the most GPS-like in style and scale, and most appropriate for mitigating drift in underwater vehicle localization without overburdening computation or payload size on the vehicle \citep{paull_auv_2014,van_uffelen_global_2021}.
-The state-of-the-art for LBL assumes an isovelocity, linear scaling between one way travel time (OWTT) and range \citep{eustice_recent_2006,eustice_experimental_2007,webster_preliminary_2009,webster_advances_2012}.
-This assumption is valid for short scale operations but introduces error in complex acoustic propagation environments.
+The state-of-the-art for LBL outsources depth to a pressure sensor and assumes an isovelocity, linear scaling between one way travel time (OWTT) and range \citep{eustice_recent_2006,eustice_experimental_2007,webster_preliminary_2009,webster_advances_2012}.
+This assumption is valid for small and short scale operations but introduces error in complex acoustic propagation environments.
 Thus, this paper demonstrates embedded acoustic model-aided data processing to convert recorded OWTTs into pseudoranges in real-time.
 This approach was necessitated by a low risk tolerance for navigation error, given total under-ice conditions and double ducted acoustic environment, in the Beaufort Sea, in March 2020, during the Ice Exercise 2020 (ICEX20).
 We quantify the success of the proposed acoustic ranging method on GPS-linked beacon-to-beacon communication events, not the AUV-LBL positioning itself, as the latter has no ground truth GPS to compare to.
 
-A 
-
-\subsection{Timing, Positioning, and Navigation}
-
 In the interest of clarity, we formally reiterate definitions of timing, positioning, and navigation (CITE).
 Timing is the ability to maintain accurate and precise time synchronized across multiple nodes.
-Positioning is the ability to accurately determine one's location referenced to a standard geodetic system. It can be done via trilateration or triangulation.
-Navigation, implying a degree of autonomy, is the ability to distinguish between current and desired position, and apply necessary corrections to course, orientation, and/or speed to attain that desired position.
+Positioning is the ability to accurately determine one's location referenced to a standard geodetic system.
+It can be done via trilateration or triangulation.
+Navigation, implying a degree of autonomy, is the ability to distinguish between current and desired position, and apply necessary corrections to course, orientation, and/or speed to attain a future desired position.
 Thus, navigation is also intrinsically real-time and is predicated on positioning, which is predicated on timing.
 
-Given the computational and physical barriers of assessing underwater position in real-time, we define post-processing counterparts\textemdash re-navigation and re-positioning\textemdash which may be supplemented by additional data, model output, and computationally or labor intensive algorithms.
+Given the computational and physical barriers of assessing underwater position in real-time, we define post-processing counterparts\textemdash re-navigation and re-positioning\textemdash which may also be supplemented by additional data, model output, and bespoke algorithms.
 
-\subsection{Background on underwater navigation, re-navigation, and re-positioning}
+\subsection{Long baseline navigation}
+LBL navigation was first introduced ...
+
+significantly revamped by ... 
+
+key assumptions are ... 
+
+papers by x,y,z show this much error. generally reserved for small and short scale deployments.
+
+\subsection{Acoustic methods for re-navigation and re-positioning}
+
+The LBL navigation methodology simplifies the acoustic propagation to an isovelocity ocean.
+Post-processing methods can take advantage of additional information 
+recording acoustic information but not using it onboard.
+
+It is important to note that post-processing localization efforts (re-navigation for a self-determinedly moving object or re-positioning for a passively moving one), are often applied for large-scale deployments to better account for spatial variability in the ocean state.
+
+Recently, buoyancy gliders have been re-navigated by considering a temporally averaged depth dependent SSP and CTD observations of...
+
+A well known example of long range re-positioning are RAFOS drifters that record the timestamps of the four strongest pings; transmit all data after mission completion; and are manually localized with uncertainties of 1.5 to 4.5 km (CITE ROSSBY, DUDA).
+
+Other re-positioning methods employ four-dimensional ocean models.
+\citet{wu_deep_2019} compares acoustic records with synthetic acoustic records computed through HYCOM \cite{chassignet_hycom_2007}.
+\citet{mikhalevsky_deep_2020} introduces an impressive ``cold start'' algorithm that isolates a specific ray path to find a representative group speed, re-positioning a floating hydrophone array with an error of 85 m and a standard deviation of 32 m relative to ground truth GPS data.
+Implementing these algorithms for navigation remains to be seen.
+
+\subsection{Underwater navigation in the Arctic}
+
+\subsection{The New Arctic}
+
+Of particular note are previous AUV deployments in the Arctic that used an LBL navigation system.
+A more comprehensive review of AUV deployments with a myriad of applications can be found in xx, yy.
+
+Because model-based acoustic arrival methods have generally been deemed too computationally and/or labor intensive for real-time, 
 
 Underwater navigation research is broadly motivated by acquiring GPS-like navigation accuracy (on the order of meters) in GPS-denied conditions.
 
@@ -91,20 +121,8 @@ At larger scales on the order of hundreds of kilometers, a deterministic \citep{
 
 The LBL system provides navigation aiding as position updates to correct for localization drift and error.
 
-It is important to note that post-processing localization efforts (re-navigation for a self-determinedly moving object or re-positioning for a passively moving one), are often applied for large-scale deployments to better account for spatial variability in the ocean state.
-
-Recently, buoyancy gliders have been re-navigated by considering a temporally averaged depth dependent SSP and CTD observations of...
-
-A well known example of long range re-positioning are RAFOS drifters that record the timestamps of the four strongest pings; transmit all data after mission completion; and are manually localized with uncertainties of 1.5 to 4.5 km (CITE ROSSBY, DUDA).
-
-Other re-positioning methods employ four-dimensional ocean models.
-\citet{wu_deep_2019} compares acoustic records with synthetic acoustic records computed through HYCOM \cite{chassignet_hycom_2007}.
-\citet{mikhalevsky_deep_2020} introduces an impressive ``cold start'' algorithm that isolates a specific ray path to find a representative group speed, re-positioning a floating hydrophone array with an error of 85 m and a standard deviation of 32 m relative to ground truth GPS data.
-Implementing these algorithms for navigation remains to be seen.
-
 \subsection{Underwater positioning and navigation in the Arctic}
 
-U
 We refer the reader to excellent reviews of vehicle operations in the Arctic by \citet{norgren_unmanned_2014} and \citet{barker_scientific_2020}.
 Previous AUV deployments in the Arctic \cite{bellingham_auv_1993}
 Literature and historical reviews of underwater navigation approaches in under-ice conditions highlight the emerging technology learning curve for vehicle operations in the Arctic, the hostile conditions brought on by a semi-permanent moving ice cover, and the need for both absolute and relative navigation with little to no tolerance for error \citep{norgren_unmanned_2014,mcfarlane_autonomous_2015,barker_scientific_2020}.
@@ -400,6 +418,9 @@ However, that data are too small to draw significant conclusions.
 
 \FloatBarrier
 \subsection{Pseudorange error versus one way travel time}
+
+% The results presented herein are from post- processed analysis, however they use only the data that was available in real-time—raw navigation data and only the acoustic transmissions that were successfully decoded by the AUG in real time.
+% The reasons for the difference in performance are most likely due to propagation conditions in and out of the duct. Receivers in the duct hear the source at any range, while those outside the duct are in a range-dependent environment where signals come and go depending on the ray paths.
 
 Fig. \ref{fig:rangeError} shows the directional range error footprints for all three sound speed inputs with respect to OWTT, separated by source and receiver depth configurations.
 The weighted SSP range error generally has the smallest and most zero-centered footprint.
