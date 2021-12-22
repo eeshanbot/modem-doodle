@@ -23,8 +23,9 @@ We have refashioned the abstract and introduction to better elucidate the motiva
 Based on several suggestions, we have restructured the manuscript and separated the real-time navigation methodology, the real-time positioning results (Minimum Bounce Criteria), and the post-processing re-positioning improvement (Nearest Bounce Criteria). 
 Lastly, when evaluating our methodology, we have removed qualitative language like ``GPS-like'' or ``rivaling GPS'' in favor of quantitative descriptions of ranging error.
 
-We also more prominently establish definitions for navigation, positioning, and re-positioning to better contextualize our results and contributions, based on this discussion in Howe et al (2019) \emph{Observing the Oceans Acoustically}:
-\begin{quote}
+We also more prominently establish definitions for navigation, positioning, and re-positioning to better contextualize our results and contributions, based on this discussion in Howe et al (2019) \emph{Observing the Oceans Acoustically} (and many others):
+
+\begin{quote} 
 PNT is a combination of three distinct, constituent capabilities:
 
 \begin{enumerate}
@@ -88,8 +89,23 @@ Dr. EeShan Bhatt \\
 	\reviewer{}{The hypothesis is stated in the discussion section lines 515 and following: “We hypothesize and validate that the embedded stochastic prediction of a single group velocity is a smoothly varying function of range, source, and receiver depth pairings as well as multipath structure.”  I am not convinced that the few short fixed ranges presented here validate this hypothesis.  Lines 248 and following indicate how the system should track a continuously changing group velocity, but this is not demonstrated with the few fixed ranges presented here.  Also, it would be good to state this hypothesis more clearly earlier in the manuscript.}
 	We agree that a few short fixed ranges do not validate this hypothesis. With the overarching motivation and design of LBL navigation, we have recast this hypothesis as an assumption. We would note, again, that the vehicle navigation performance would better determine a continuously changing group velocity, but this data would have no way of being verified.
 
-	\reviewer{}{The introduction and conclusion sections should be tightened up to clarify the state of the art in various arenas of underwater vehicle navigation and how this work fits in.  The error metrics presented here should be specifically compared with other positioning systems or algorithms over similar spatial scales that do not integrate the ray propagation physics. Various ranging and positioning methods are referenced, but the narrative jumps between different types of AUVs and implementations and between scales of a few kilometers and hundreds of kilometers. This should be discussed in terms of range, vehicle, and propagation conditions.  Line 176 mentions that the SSP and the physics of ray refraction are often overlooked in positioning algorithms; this is, I presume, referring to real-time results or short-range results, but doesn’t specifically say this.}
-	{\color{blue} Suggestion to discuss by range, vehicle, and propagation conditions is sound. However, there are no other short range deployments in double ducted environments. That line says SSP and physics of ray refraction are often overlooked in *navigation* algorithms, which means only real-time results.}
+	\reviewer{}{The introduction and conclusion sections should be tightened up to clarify the state of the art in various arenas of underwater vehicle navigation and how this work fits in.
+
+	The error metrics presented here should be specifically compared with other positioning systems or algorithms over similar spatial scales that do not integrate the ray propagation physics.
+
+	Various ranging and positioning methods are referenced, but the narrative jumps between different types of AUVs and implementations and between scales of a few kilometers and hundreds of kilometers. This should be discussed in terms of range, vehicle, and propagation conditions. 
+
+	Line 176 mentions that the SSP and the physics of ray refraction are often overlooked in positioning algorithms; this is, I presume, referring to real-time results or short-range results, but doesn’t specifically say this.}
+
+	We have re-written the introduction and conclusion to clarify that our work adds a necessary model-aided component for ranging in LBL networks for complex acoustic environments, and that it could be extended for long range propagation as well.
+
+	Present error metrics in reference to ... 
+
+	The suggestion to discuss in terms of range, vehicle, and propagation conditions is helpful, and we have included that framing explicitly in the manuscript (LINE LINE). However, considering a union of all those operational variables, there are no comparable deployments.
+	Previous Arctic deployments are either in the Marginal Ice Zone at late summer, with little to no ice, or recorded the classical Arctic upward refracting profile, where isovelocity scaling could be good enough.
+	The few Arctic deployments that have seen a double ducted environment were on gliders, with little to no sea ice, and only one study navigated and re-navigated the gliders acoustically; other studies navigated them with dynamic flight models and GPS and re-navigated them acoustically.
+	
+	Lastly, we have removed the line in question, but would point out it was originally written as ``navigation'', not ``positioning''.
 
 	\reviewer{}{Related to the point above, the introduction should make clear what type of vehicles the proposed method of navigation is applicable to and over what ranges. The authors do start to do this when they note that a shallow receiver depth enables the estimation method (line 274), but should more directly specify under what conditions the proposed algorithm is applicable.  In the Discussion section, there is an implication that this method of using a single group velocity could be applied to mesoscale operations but should acknowledge that propagation at these larger scales results in arrivals that are spread over several seconds including multiple modal arrivals with varying group velocities.  This method would presumably result in errors much higher than 11m….how might that scale?}
 

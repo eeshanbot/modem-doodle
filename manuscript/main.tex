@@ -50,44 +50,63 @@ The best performing median re-positioning errors are roughly 10 and 2 meters, re
 
 \section{Introduction}
 \label{sec:1}  
-Autonomous underwater vehicles (AUVs) are increasingly capable platforms to explore and samlpe the ocean, particularly for remote and/or dangerous environments.
-However, navigation uncertainty is a major challenge in considering AUVs as reliable and standard tools for oceanographic research.
-Compared to their land and air-based counterparts, underwater vehicles face a unique set of challenges brought on by the water column itself:  while land and air-based robots utilize the Global Navigation Satellite System (GNSS) to achieve stunning location accuracy and precision throughout the duration of their missions, AUVs cannot access GPS while underwater due to the rapid attenuation of electromagnetic waves \citep{preisig_acoustic_2007}.
-Typically, an AUV can stall on the surface to receive a GPS fix, but this foolproof method of re-positioning is inaccessible in an ice-covered environment or other GPS-denied situations.
+Autonomous underwater vehicles (AUVs) are increasingly capable platforms to explore and sample the ocean, particularly for remote and/or dangerous regions.
+However, navigation uncertainty is a major challenge in considering AUVs as standard tools for oceanographic research.
+While land and air-based robots utilize information from  Global Positioning System (GPS) updates\textemdash or more broadly, any Global Navigation Satellite System (GNSS)\textemdash to achieve stunning location accuracy and precision throughout the duration of their missions, AUVs cannot access GPS while underwater due to the rapid attenuation of electromagnetic waves.
+Therefore, underwater vehicle navigation has relied on any combination of dead reckoning, hydrodynamic models, inertial navigation systems, doppler velocity logs, and acoustic baseline positioning systems \citep{paull_auv_2014}.
+Limiting navigation error and drift requires an AUV to periodically stall on the surface and obtain a GPS fix to reset its position error.
+This foolproof method of self-positioning is undesirable for stealth, adverse weather conditions, and mission efficiency, and inaccessible in a GPS-denied situation like an ice-covered environment.
 
-% Long baseline navigation
-Though there many acoustic positioning methods, the long baseline (LBL) is closest in style
+% introduce LBL and precise statement of work
+Of acoustic baseline positioning systems, long baseline (LBL) is the most GPS-like in style and scale, and most appropriate for mitigating drift in underwater vehicle localization without overburdening computation or payload size on the vehicle \citep{paull_auv_2014,van_uffelen_global_2021}.
+The state-of-the-art for LBL assumes an isovelocity, linear scaling between one way travel time (OWTT) and range \citep{eustice_recent_2006,eustice_experimental_2007,webster_preliminary_2009,webster_advances_2012}.
+This assumption is valid for short scale operations but introduces error in complex acoustic propagation environments.
+Thus, this paper demonstrates embedded acoustic model-aided data processing to convert recorded OWTTs into pseudoranges in real-time.
+This approach was necessitated by a low risk tolerance for navigation error, given total under-ice conditions and double ducted acoustic environment, in the Beaufort Sea, in March 2020, during the Ice Exercise 2020 (ICEX20).
+We quantify the success of the proposed acoustic ranging method on GPS-linked beacon-to-beacon communication events, not the AUV-LBL positioning itself, as the latter has no ground truth GPS to compare to.
 
-
-
-
-% A recent study tracking 22 floats under the ice in the Weddell Gyre near Antarctica showed that they were unable to surface for 8 months and position uncertainty grew to 116 $\pm$ 148 km in the lateral directions \citep{chamberlain_observing_2018}.
-
-Much progress has been made in underwater vehicle navigation, which relies on any combination of dead reckoning, hydrodynamic models, inertial navigation systems, doppler velocity logs, and/or acoustic baseline navigation systems \citep{paull_auv_2014}.
-In particular, the long baseline (LBL) navigation system is the most similar in scale and style to GPS, and most appropriate for mitigating drift in underwater vehicle localization without overburdening computation on the vehicle \citep{van_uffelen_global_2021}.
+A 
 
 \subsection{Timing, Positioning, and Navigation}
 
-Underwater acoustic navigation (and GPS) is predicated on timing and positioning.
-Timing is the ability to maintain accurate and precise time, sometimes synchronized across multiple nodes.
-\llabel{1.11} The advent of the WHOI micro-modem \citep{singh_underwater_2006} and synchronized chip scale atomic clocks \citep{gardner_second_2016} enabled ranging via one-way travel time (OWTT).
+In the interest of clarity, we formally reiterate definitions of timing, positioning, and navigation (CITE).
+Timing is the ability to maintain accurate and precise time synchronized across multiple nodes.
+Positioning is the ability to accurately determine one's location referenced to a standard geodetic system. It can be done via trilateration or triangulation.
+Navigation, implying a degree of autonomy, is the ability to distinguish between current and desired position, and apply necessary corrections to course, orientation, and/or speed to attain that desired position.
+Thus, navigation is also intrinsically real-time and is predicated on positioning, which is predicated on timing.
 
-Positioning is the ability to accurately determine one's location and is generally done via trilateration.
-Navigation assumes a degree of autonomy to move from a current position to a desired one.
-The standard for real-time navigation efforts assume a locally homogeneous sound speed profile (SSP) that enables a linear, deterministic scaling between travel time and range \citep{eustice_recent_2006,eustice_experimental_2007,webster_preliminary_2009,webster_advances_2012}.
-Short range (less than ten kilometers) navigation efforts achieve minimal navigation error with a nominal sound speed value \citep{eustice_experimental_2007,webster_preliminary_2009,kepper_mems_2017}.
-For mesoscale (tens to hundreds of kilometers) navigation efforts, a deterministic \citep{graupe_preliminary_2019} or through-the-sensor \citep{webster_towards_2015} value for sound speed is used, but error remains in the hundreds of meters.
+Given the computational and physical barriers of assessing underwater position in real-time, we define post-processing counterparts\textemdash re-navigation and re-positioning\textemdash which may be supplemented by additional data, model output, and computationally or labor intensive algorithms.
 
-Post-processing localization efforts (re-navigation for a self-determinedly moving object or re-positioning for a passively moving one), without computational or time constraints, can indulge more complex acoustic methods and/or ocean representations.
-There are many different approaches, from considering a temporally averaged mean depth dependent SSP \citep{van_uffelen_localization_2016}, including spatio-temporal variability in the sound speed profile to minimize error \citep{graupe_preliminary_2019, mikhalevsky_deep_2020}, comparing acoustic records with synthetic acoustic records computed through an ocean model \citep{wu_deep_2019}. 
-The ``cold start'' algorithm developed by \citet{mikhalevsky_deep_2020} isolates a specific ray path to find a representative group velocity and re-positioned a floating hydrophone array with an error of 85 m and a standard deviation of 32 m relative to ground truth GPS data, but implementing this algorithm for navigation remains to be seen.
-These post-processing efforts have generally been deemed too computationally intensive and/or labor intensive for real-time efforts, where automation of identifying time arrivals is further complicated by multipath. 
+\subsection{Background on underwater navigation, re-navigation, and re-positioning}
+
+Underwater navigation research is broadly motivated by acquiring GPS-like navigation accuracy (on the order of meters) in GPS-denied conditions.
+
+Navigation efforts are currently limited to small-scale deployments, and take advantage of 
+\llabel{1.11} the advent of the WHOI micro-modem \citep{singh_underwater_2006} and synchronized chip scale atomic clocks \citep{gardner_second_2016}.
+Short range (less than ten kilometers) navigation efforts achieve minimal error with a nominal sound speed value \citep{eustice_experimental_2007,webster_preliminary_2009,kepper_mems_2017}.
+However, these efforts were all conducted with X sound speed conditions...
+
+Of particular note are previous efforts in the Arctic's Beaufort Lens.
+At larger scales on the order of hundreds of kilometers, a deterministic \citep{graupe_preliminary_2019} or through-the-sensor \citep{webster_towards_2015} value for sound speed was used, but error remained in the hundreds of meters.
+
+The LBL system provides navigation aiding as position updates to correct for localization drift and error.
+
+It is important to note that post-processing localization efforts (re-navigation for a self-determinedly moving object or re-positioning for a passively moving one), are often applied for large-scale deployments to better account for spatial variability in the ocean state.
+
+Recently, buoyancy gliders have been re-navigated by considering a temporally averaged depth dependent SSP and CTD observations of...
+
+A well known example of long range re-positioning are RAFOS drifters that record the timestamps of the four strongest pings; transmit all data after mission completion; and are manually localized with uncertainties of 1.5 to 4.5 km (CITE ROSSBY, DUDA).
+
+Other re-positioning methods employ four-dimensional ocean models.
+\citet{wu_deep_2019} compares acoustic records with synthetic acoustic records computed through HYCOM \cite{chassignet_hycom_2007}.
+\citet{mikhalevsky_deep_2020} introduces an impressive ``cold start'' algorithm that isolates a specific ray path to find a representative group speed, re-positioning a floating hydrophone array with an error of 85 m and a standard deviation of 32 m relative to ground truth GPS data.
+Implementing these algorithms for navigation remains to be seen.
 
 \subsection{Underwater positioning and navigation in the Arctic}
 
-Underwater navigation research is broadly motivated by GPS-like navigation in GPS-denied conditions.
-The Arctic, while remote, is the perfect place to test mature navigation technologies in real GPS-denied conditions.
-
+U
+We refer the reader to excellent reviews of vehicle operations in the Arctic by \citet{norgren_unmanned_2014} and \citet{barker_scientific_2020}.
+Previous AUV deployments in the Arctic \cite{bellingham_auv_1993}
 Literature and historical reviews of underwater navigation approaches in under-ice conditions highlight the emerging technology learning curve for vehicle operations in the Arctic, the hostile conditions brought on by a semi-permanent moving ice cover, and the need for both absolute and relative navigation with little to no tolerance for error \citep{norgren_unmanned_2014,mcfarlane_autonomous_2015,barker_scientific_2020}.
 
 One of the first successful AUV launches and recoveries involved equipping the vehicle with barbs which became entangled into a homing net underneath the ice \citep{bellingham_auv_1993}.
@@ -109,6 +128,10 @@ When gliders were deployed again in 2017, their navigation error was on the orde
 Navigation error is referenced to intermittent GPS fixes, as all of these glider deployments occurred in the Marginal Ice Zone with little to no ice at the time.
 
 \subsection{Ice Exercise 2020}
+
+During ICEX20, we deployed AUV \emph{Macrura}, a custom Bluefin-21, in complete under-ice conditions and a complex double ducted environment brought upon by a persistent warm water intrusion in the Pacific Summer Water layer, which we call the Beaufort Lens.
+The majority of the navigation updates were below 11 m and were small enough to enable an emergency recovery. 
+When considering operational variables such as range, vehicle class, and propagation conditions, there are no comparable deployments.
 
 The Beaufort Lens is equally important for shorter ranges as well, where a shadow zone over vehicle operational ranges is created by a drastic change in the reliable acoustic path \citep{schmidt_acoustic_2016}.
 Thus the key simplifying assumption for OWTT ranging\textemdash a locally homogeneous sound speed profile that enables a linear, deterministic scaling between travel time and range\textemdash becomes more inaccurate due to increased multipath in the upper duct of the Beaufort Lens.
@@ -535,6 +558,9 @@ The GPS at camp is the least accurate due to the human activity and infrastructu
 % =========================================================================== %
 % =========================================================================== %
 \section{\label{sec:discussion} Discussion}
+
+Underwater navigation research is broadly motivated by acquiring GPS-like navigation accuracy in GPS-denied conditions.
+The Arctic, while remote, is the perfect place to test mature navigation technologies in real GPS-denied conditions.
 
 Range estimation is an essential step of acoustic localization and navigation.
 Current approaches in real-time underwater acoustic navigation simplify the non-linear relationship between a sound speed profile and acoustic propagation with a deterministic sound speed.
