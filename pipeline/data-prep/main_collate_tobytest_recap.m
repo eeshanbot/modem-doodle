@@ -111,6 +111,9 @@ for k = 1:num_events
         
         bad_events(end+1) = k;
     end
+    
+    % event that is 11 seconds?
+    if owtt > 4
 end
 
 event(bad_events) = [];

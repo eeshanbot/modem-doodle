@@ -1,11 +1,13 @@
-%% main_plot_ice_drift.m
-% plots ice drift from ../data/tobytest-recap-clean.mat
+%% main_plot_experiment_overview
 
 %% prep workspace
 clear; clc; close all;
 
 lg_font_size = 14;
 alpha_color  = .035;
+
+% add src path
+addpath('../../src/');
 
 % easily distinguishable colors to link modems
 load p_modemMarkerDetails
@@ -15,120 +17,131 @@ markerSize = 145;
 load p_legendDetails
 
 %% load toby test data recap all
-load '../data/tobytest-recap-clean.mat'
-RECAP = h_unpack_experiment(event);
+A = load('../../data/tobytest-recap-clean.mat'); % loads "event"
+RECAP = h_unpack_experiment(A.event);
 
 eof_bool = RECAP.eof_bool;
 eof_time = RECAP.data_time;
 
 %% figure 1 : txrx timeline chart
 
-figure('Name','txrx-timeline','Renderer', 'painters', 'Position', [0 0 1280 720]); clf;
-
-% mapping for depth
-plotval = -[27 18 9];
-plotZMap = containers.Map([90 30 20],plotval);
-
-for rmd = modem_rx_depth
-    
-    % rx nodes
-    index = RECAP.rx_z == rmd;
-    rxnodes = RECAP.tag_rx(index);
-    uniqueRxNodes = intersect(modem_labels,unique(rxnodes),'stable');
-    plotSpread = linspace(0,numel(uniqueRxNodes),numel(uniqueRxNodes));
-    plotSpread = plotSpread - mean(plotSpread);
-    RX_offsetMap = containers.Map(uniqueRxNodes,plotSpread);
-    
-    % tx nodes
-    index = RECAP.tx_z == rmd;
-    txnodes = RECAP.tag_tx(index);
-    uniqueTxNodes = intersect(modem_labels,unique(txnodes),'stable');
-    plotSpread = linspace(0,numel(uniqueTxNodes),numel(uniqueTxNodes));
-    plotSpread = plotSpread - mean(plotSpread);
-    TX_offsetMap = containers.Map(uniqueTxNodes,plotSpread);
-    
-    for node = modem_labels
-        node = node{1}; % cell array to character
-        
-        % RX DEPTHS
-        if any(strcmp(uniqueRxNodes,node))
-            rx_index = find(strcmp(RECAP.tag_rx,node));
-            rx_t = RECAP.data_time(rx_index);
-            rx_z = RECAP.rx_z(rx_index);
-            
-            subplot(2,1,2);
-            title('RX depth throughout modem experiment')
-            hold on
-            
-            clear yrx;
-            for tNode = 1:numel(rx_z)
-                yrx(tNode) = plotZMap(rx_z(tNode)) - RX_offsetMap(node);
-            end
-            
-            unique_rx_z = unique(rx_z);
-            
-            for rDepth = unique_rx_z
-                index = find(rx_z == rDepth);
-                scatter(rx_t(index),yrx(index),markerSize,markerModemMap(node),markerShape(rDepth),'filled','MarkerFaceAlpha',0.2);
-            end
-        end
-        
-        % TX DEPTHS
-        if any(strcmp(uniqueTxNodes,node))
-            tx_index = find(strcmp(RECAP.tag_tx,node));
-            tx_z = RECAP.tx_z(tx_index);
-            tx_t = RECAP.data_time(tx_index);
-            
-            subplot(2,1,1);
-            title('TX depth throughout modem experiment');
-            hold on
-            
-            clear trx;
-            for tNode = 1:numel(tx_z)
-                trx(tNode) = plotZMap(tx_z(tNode)) - TX_offsetMap(node);
-            end
-            
-            unique_tx_z = unique(tx_z);
-            
-            for utz = unique_tx_z
-                index = find(tx_z == utz);
-                scatter(tx_t(index),trx(index),markerSize,markerModemMap(node),markerShape(utz),'filled','MarkerFaceAlpha',0.2);
-            end
-        end
-        
-        
-    end
-end
-
-% common subplot fix
-for tNode = 1:2
-    subplot(2,1,tNode);
-    grid on
-    datetick('x');
-    axis tight
-    ylim([-32 -5])
-    h_plot_patch(eof_bool,eof_time,[.025 .015]);
-    ylabel('depth [m]');
-    yticks(plotval);
-    yticklabels({'90','30','20'});
-end
-
-xlabel('time [hr:mm]');
-
-% legend
-subplot(2,1,1);
-hold on
-for node = modem_labels
-    ixlgd = ixlgd + 1;
-    Lgd(ixlgd) = plot(NaN,NaN,'color',markerModemMap(node{1}),'LineWidth',4);
-    LgdStr{ixlgd} = node{1};
-end
-%legend(Lgd,LgdStr,'location','BestOutside');
-legend(Lgd,LgdStr,'Position',[0.9135 0.7945 0.0632 0.1292]);
+% figure('Name','txrx-timeline','Renderer', 'painters', 'Position', [0 0 1280 720]); clf;
+% 
+% % mapping for depth
+% plotval = -[27 18 9];
+% plotZMap = containers.Map([90 30 20],plotval);
+% 
+% for rmd = modem_rx_depth
+%     
+%     % rx nodes
+%     index = RECAP.rx_z == rmd;
+%     rxnodes = RECAP.tag_rx(index);
+%     uniqueRxNodes = intersect(modem_labels,unique(rxnodes),'stable');
+%     plotSpread = linspace(0,numel(uniqueRxNodes),numel(uniqueRxNodes));
+%     plotSpread = plotSpread - mean(plotSpread);
+%     RX_offsetMap = containers.Map(uniqueRxNodes,plotSpread);
+%     
+%     % tx nodes
+%     index = RECAP.tx_z == rmd;
+%     txnodes = RECAP.tag_tx(index);
+%     uniqueTxNodes = intersect(modem_labels,unique(txnodes),'stable');
+%     plotSpread = linspace(0,numel(uniqueTxNodes),numel(uniqueTxNodes));
+%     plotSpread = plotSpread - mean(plotSpread);
+%     TX_offsetMap = containers.Map(uniqueTxNodes,plotSpread);
+%     
+%     for node = modem_labels
+%         node = node{1}; % cell array to character
+%         
+%         % RX DEPTHS
+%         if any(strcmp(uniqueRxNodes,node))
+%             rx_index = find(strcmp(RECAP.tag_rx,node));
+%             rx_t = RECAP.data_time(rx_index);
+%             rx_z = RECAP.rx_z(rx_index);
+%             
+%             subplot(2,1,2);
+%             title('RX depth throughout modem experiment')
+%             hold on
+%             
+%             clear yrx;
+%             for tNode = 1:numel(rx_z)
+%                 yrx(tNode) = plotZMap(rx_z(tNode)) - RX_offsetMap(node);
+%             end
+%             
+%             unique_rx_z = unique(rx_z);
+%             
+%             for rDepth = unique_rx_z
+%                 index = find(rx_z == rDepth);
+%                 scatter(rx_t(index),yrx(index),markerSize,markerModemMap(node),markerShape(rDepth),'filled','MarkerFaceAlpha',0.2);
+%             end
+%         end
+%         
+%         % TX DEPTHS
+%         if any(strcmp(uniqueTxNodes,node))
+%             tx_index = find(strcmp(RECAP.tag_tx,node));
+%             tx_z = RECAP.tx_z(tx_index);
+%             tx_t = RECAP.data_time(tx_index);
+%             
+%             subplot(2,1,1);
+%             title('TX depth throughout modem experiment');
+%             hold on
+%             
+%             clear trx;
+%             for tNode = 1:numel(tx_z)
+%                 trx(tNode) = plotZMap(tx_z(tNode)) - TX_offsetMap(node);
+%             end
+%             
+%             unique_tx_z = unique(tx_z);
+%             
+%             for utz = unique_tx_z
+%                 index = find(tx_z == utz);
+%                 scatter(tx_t(index),trx(index),markerSize,markerModemMap(node),markerShape(utz),'filled','MarkerFaceAlpha',0.2);
+%             end
+%         end
+%         
+%         
+%     end
+% end
+% 
+% % common subplot fix
+% for tNode = 1:2
+%     subplot(2,1,tNode);
+%     grid on
+%     datetick('x');
+%     axis tight
+%     ylim([-32 -5])
+%     h_plot_patch(eof_bool,eof_time,[.025 .015]);
+%     ylabel('depth [m]');
+%     yticks(plotval);
+%     yticklabels({'90','30','20'});
+% end
+% 
+% xlabel('time [hr:mm]');
+% 
+% % legend
+% subplot(2,1,1);
+% hold on
+% for node = modem_labels
+%     ixlgd = ixlgd + 1;
+%     Lgd(ixlgd) = plot(NaN,NaN,'color',markerModemMap(node{1}),'LineWidth',4);
+%     LgdStr{ixlgd} = node{1};
+% end
+% %legend(Lgd,LgdStr,'location','BestOutside');
+% legend(Lgd,LgdStr,'Position',[0.9135 0.7945 0.0632 0.1292]);
 
 % h_printThesisPNG('tx-rx-depth');
 
 %% figure 2 : tx rx chart
+
+% revision asked for probability -- raw counts from Oscar
+% for each tx depth (if multiple, bottom first)
+% for each rx depth
+% in order of valid data in modem labels -- North, South, East, West, Camp
+countOscar = [44 110 18 82 61 28 137 74 ...
+              71 74 121 160 76 ...
+              32 10 28 34 ...
+              12 43 45 34 ...
+              91 55 150 155 38];
+c0 = 0;
 
 markerSize = 220;
 
@@ -178,6 +191,8 @@ x2OffsetMap = containers.Map([20 30 90],[0 0 .3]);
 z2OffsetMap = containers.Map([20 30 90],[-.1 -.1  .2]);
 textOffsetMap = containers.Map(modem_labels,1.1.*[-1 1 -1 1 -1]);
 
+
+
 for txDepth = modem_rx_depth
     
     % tx
@@ -215,6 +230,9 @@ for txDepth = modem_rx_depth
                 index = index1.*index2.*index3.*index4;
                 
                 if sum(index)>=1
+                    
+                    c0 = c0 + 1;
+                    storeGood(c0) = sum(index); 
                     
                     xval = xRX+xOffsetMap(rNode{1})+x2OffsetMap(rDepth);
                     yval = ZMap(txDepth) + zOffsetMap(tNode{1}) + z2OffsetMap(rDepth);

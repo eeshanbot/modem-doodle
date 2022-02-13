@@ -7,11 +7,11 @@ clear; clc; close all;
 %% load in situ data
 % DATA = readtable('./bellhop-gvel-gridded-simRange/gveltable.csv');
 
-DATA = readtable('../pipeline/bellhop-gvel-gridded-simRange/gveltable.csv');
+DATA = readtable('../bellhop-gvel-gridded-simRange/gveltable.csv');
 indValid1 = ~isnan(DATA.recRange) | ~isnan(DATA.simGvel);
 DATA = DATA(indValid1,:);
 
-A = load('../data/tobytest-recap-clean.mat'); % loads "event"
+A = load('../../data/tobytest-recap-clean.mat'); % loads "event"
 RECAP = h_unpack_experiment(A.event);
 indValid2 = ~isnan(RECAP.sim_gvel) | ~isnan(RECAP.sim_range);
 
@@ -34,7 +34,7 @@ EOF_BOOL(indBad) = NaN;
 DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - GPS_RANGE;
 
 %% range error for "sim" aka post processing nearest bounce criterion
-listing = dir('../pipeline/bellhop-gvel-gridded-simRange/csv_arr/*gridded.csv');
+listing = dir('../bellhop-gvel-gridded-simRange/csv_arr/*gridded.csv');
 
 for f = 1:numel(listing)
     T0 = readtable([listing(f).folder '/' listing(f).name]);
