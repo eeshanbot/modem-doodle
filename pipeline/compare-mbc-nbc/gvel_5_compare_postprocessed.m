@@ -8,7 +8,7 @@ clear; clc; close all;
 DATA = readtable('../bellhop-gvel-gridded/gveltable.csv');
 A = load('../../data/tobytest-recap-clean.mat'); % loads "event"
 RECAP = h_unpack_experiment(A.event);
-
+%% 
 DATA.simGvel(isnan(DATA.simGvel)) = 0;
 
 % remove crazy 11 second event, event that is nominally 1.58* seconds

@@ -64,7 +64,7 @@ if mode(toby_test_eof_bool) == mean(toby_test_eof_bool)
     eof_bool = toby_test_eof_bool(1);
     
     % Bradli's chosen weights
-    OBJ_EOF = eb_read_eeof('../data/eeof-itp-fix-2013.nc',true);
+    OBJ_EOF = eb_read_eeof('../../data/eeof-itp-mar2013.nc',true);
     weights = [-6.112 15.368 -1.441 2.219 0.138 -0.322 -1.994].'; % chosen by Bradli for CTD at 2020 Mar 09 1202
     
     OBJ.ssp_estimate = OBJ_EOF.baseval + (OBJ_EOF.eofs * weights).*eof_bool;
