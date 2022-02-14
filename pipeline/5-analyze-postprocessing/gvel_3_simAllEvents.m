@@ -4,7 +4,7 @@
 clear; clc; close all;
 
 % load data
-DATA = readtable('../pipeline/bellhop-gvel-gridded/gveltable.csv');
+DATA = readtable('../bellhop-gvel-gridded/gveltable.csv');
 % only simGvel
 DATA.gvel = DATA.recRange ./ DATA.owtt;
 
@@ -26,7 +26,7 @@ indValid = ~isnan(DATA.simGvel);
 % calculate RangeAnomaly
 DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - DATA.recRange;
 %% load simulation
-listing = dir('../pipeline/bellhop-gvel-gridded/csv_arr/*gridded.csv');
+listing = dir('../bellhop-gvel-gridded/csv_arr/*gridded.csv');
 
 for k = 1:numel(listing)
     T0 = readtable([listing(k).folder '/' listing(k).name]);
