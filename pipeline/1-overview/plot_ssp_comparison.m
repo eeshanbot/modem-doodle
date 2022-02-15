@@ -48,6 +48,16 @@ xlabel('c [m/s]');
 legend('ICEX20: Baseline','ICEX20: Chosen Weights','ICEX20: HYCOM','',...
        'ICEX16: Historical', 'ICEX16: Data','ICEX16: HYCOM',...
        'location','southwest','fontsize',13);
+   
+%% export "isovelocity" assumption
+
+T = readtable([path file{2}]);
+ssp = T.Var2;
+z = T.Var1;
+
+ind200m = find(z>=200,1,'first');
+meanSSP = mean(ssp(1:ind200m));
+
 
 %% export
-h_printThesisPNG('ssp-gvel-icex20-icex16');
+% h_printThesisPNG('ssp-gvel-icex20-icex16');
