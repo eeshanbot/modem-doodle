@@ -1,79 +1,17 @@
-%% gvel_5_compare_inSitu_postProcessed
-% compares range anomaly performance between post processing of old and new
-% algorithms
-
+%% prep workspace
 clear; clc; close all;
 
 %% load in situ data
-DATA = readtable('../bellhop-gvel-gridded/gveltable.csv');
-A = load('../../data/tobytest-recap-clean.mat'); % loads "event"
-RECAP = h_unpack_experiment(A.event);
-%% 
-DATA.simGvel(isnan(DATA.simGvel)) = 0;
+[DATA,INDEX] = h_unpack_bellhop('../bellhop-gvel-gridded/gveltable.csv');
+indValid = INDEX.valid;
 
-% remove crazy 11 second event, event that is nominally 1.58* seconds
-indBad1 = find(DATA.owtt > 4);
-indBad2 = find(strcmp(DATA.rxNode,'East') & DATA.owtt > 1.55);
-indBad3 = find(strcmp(DATA.rxNode,'Camp'));
-indBad = union(indBad1,indBad2);
-indBad = union(indBad,indBad3);
+%% calculate minimal bounce critera
+listingOld = dir('../bellhop-gvel-gridded/csv_arr/*old.csv');
+SIM_OLD = h_get_mbc(listingOld,DATA);
 
-% 1.587 events, had clock errors + Bellhop can't resolve these
-DATA.simGvel(indBad) = NaN;
-% only simGvel
-
-indValid = ~isnan(DATA.simGvel);
-
-% calculate RangeAnomaly
-DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - DATA.recRange;
-
-%% load post-processing, new algorithm
-listing = dir('../bellhop-gvel-gridded/csv_arr/*gridded.csv');
-
-for f = 1:numel(listing)
-    T0 = readtable([listing(f).folder '/' listing(f).name]);
-    T0.index = T0.index + 1;
-    b = split(listing(f).name,'.');
-    tName{f} = b{1};
-    
-    % assign gvel for each index by closest time comparison
-    for k = 1:numel(T0.index)
-        delay = DATA.owtt(k);
-        tableDelay = table2array(T0(k,2:6));
-        [~,here] = min(abs(tableDelay - delay));
-        T0.gvel(k) = DATA.recRange(k)./tableDelay(here);
-        T0.owtt(k) = tableDelay(here);
-        T0.numBounces(k) = here-1;
-    end
-    
-    T0.rangeAnomaly = DATA.owtt .* T0.gvel - DATA.recRange;
-    SIM_NEW{f} = T0;
-end
-
-%% load post-processing, old algorithm
-listing = dir('../bellhop-gvel-gridded/csv_arr/*old.csv');
-
-for f = 1:numel(listing)
-    T0 = readtable([listing(f).folder '/' listing(f).name]);
-    T0.index = T0.index + 1;
-    b = split(listing(f).name,'.');
-    tName{f} = b{1};
-    
-    % assign gvel by minimum bounce
-    for k = 1:numel(T0.index)
-        T0.gvel(k) = DATA.recRange(k)./T0.owtt(k);
-    end
-    
-    T0.rangeAnomaly = DATA.owtt .* T0.gvel - DATA.recRange;
-    SIM_OLD{f} = T0;
-end
-
-%% file encoding
-% 1 = artifact-baseval
-% 2 = artifact-eeof
-% 3 = fixed-baseval
-% 4 = fixed-eeof
-% 5 = hycom
+%% calculate nearest bounce criteria
+listingNew = dir('../bellhop-gvel-gridded/csv_arr/*gridded.csv');
+SIM_NEW = h_get_nbc(listingNew,DATA,INDEX);
 
 %% plot things
 

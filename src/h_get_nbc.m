@@ -27,8 +27,12 @@ for k = 1:numel(listing)
             T0.gvel(j) = NaN;
         end
     end
+    
+    T0.rangeAnomaly = DATA.owtt .* T0.gvel - DATA.recRange;
+
     T{k} = T0;
 end
+
 
 load p_sspColorDetails;
 colorSet = {[0 0 0],[0 0 0],colorSet{:}};
