@@ -1,22 +1,12 @@
-%% plot_data_range_error_v2.m
-
+%% prep workspace
 clear; clc; close all;
 
 %% load data
-A = load('../data/tobytest-recap-clean.mat'); % loads "event"
+A = load('../../data/tobytest-recap-clean.mat'); % loads "event"
 A = h_unpack_experiment(A.event);
+A = h_clean_simgvel(A);
 
-% remove crazy 11 second event, event that is nominally 1.58* seconds
-indBad1 = A.data_owtt > 3;
-indBad2 = strcmp(A.tag_rx,'East') & A.data_owtt > 1.55;
-indBad = indBad1 | indBad2;
-
-% 1.587 events, had clock errors + Bellhop can't resolve these
-A.sim_gvel(indBad) = NaN;
-
-colorSet = {[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./256};
-
-
+load p_sspColorDetails
 %% figure 1 -- all events in 3x2 grid
 
 figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1100 900]);
@@ -120,7 +110,7 @@ legend(l2,'Baseline','Chosen Weights','location','northwest');
 
 % title
 sgtitle('In situ range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-h_printThesisPNG('range-error-owtt-data-v2');
+% h_printThesisPNG('range-error-owtt-data-v2');
 
 %% find mean, median, etc for baseval vs eof
 

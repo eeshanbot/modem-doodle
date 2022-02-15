@@ -1,19 +1,16 @@
-%% gvel_1_data
-% makes plots to explore *data* from ICEX20
-
 %% prep workspace
 clear; clc; close all;
 
 % load data
-A = readtable('../pipeline/bellhop-gvel-gridded/gveltable.csv');
+DATA = readtable('../bellhop-gvel-gridded/gveltable.csv');
 
 % remove crazy 11 second event, event that is nominally 1.58* seconds
-indBad1 = find(A.owtt > 4);
-indBad2 = find(strcmp(A.rxNode,'East') & A.owtt > 1.55);
+indBad1 = find(DATA.owtt > 4);
+indBad2 = find(strcmp(DATA.rxNode,'East') & DATA.owtt > 1.55);
 indBad = union(indBad1,indBad2);
 
-% 1.587 events, had clock errors + Bellhop can't resolve these
-A.simGvel(indBad) = NaN;
+% 1.587 events, had clock errors
+DATA.simGvel(indBad) = NaN;
 
 % load modem marker information
 load p_modemMarkerDetails
@@ -23,13 +20,13 @@ load p_modemMarkerDetails
 figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1300 800]);
 t = tiledlayout(2,3,'TileSpacing','none','Padding','compact');
 
-index3 = ~isnan(A.simGvel);
+index3 = ~isnan(DATA.simGvel);
 count = 0;
 for zr = [30 90]
-    index2 = A.recDepth == zr;
+    index2 = DATA.recDepth == zr;
     
     for zs = [20 30 90]
-        index1 = A.sourceDepth == zs;
+        index1 = DATA.sourceDepth == zs;
         
         count = count + 1;
         nexttile;
@@ -41,8 +38,8 @@ for zr = [30 90]
             hold on
             plot([0 4],[0 0],'--','linewidth',3,'color',[0 0 0 0.6],'handlevisibility','off');
             
-            xval = A.owtt(index);
-            yval = A.simGvel(index) .* A.owtt(index) - A.recRange(index);
+            xval = DATA.owtt(index);
+            yval = DATA.simGvel(index) .* DATA.owtt(index) - DATA.recRange(index);
             
             % remove nans
             xval = xval(~isnan(yval));
@@ -61,8 +58,8 @@ for zr = [30 90]
             
             plotIndex = find(index == 1);
             for k = plotIndex.'
-                scatter(A.owtt(k),A.simGvel(k) .* A.owtt(k) - A.recRange(k),...
-                    150,markerModemMap(A.rxNode{k}),markerShape(A.recDepth(k)),...
+                scatter(DATA.owtt(k),DATA.simGvel(k) .* DATA.owtt(k) - DATA.recRange(k),...
+                    150,markerModemMap(DATA.rxNode{k}),markerShape(DATA.recDepth(k)),...
                     'filled','MarkerFaceAlpha',0.4,'handlevisibility','off');
             end
             
