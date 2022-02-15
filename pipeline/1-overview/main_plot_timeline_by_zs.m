@@ -14,7 +14,7 @@ markerSize = 145;
 load p_legendDetails
 
 %% load toby test data recap all
-load '../data/tobytest-recap-clean.mat'
+load '../../data/tobytest-recap-clean.mat'
 RECAP = h_unpack_experiment(event);
 
 figure('Name','timeline-by-zs','Renderer', 'painters', 'Position', [10 10 1200 650]); clf;

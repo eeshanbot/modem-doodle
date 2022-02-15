@@ -3,7 +3,7 @@
 
 %close all; clc; clear all;
 
-path = '../pipeline/bellhop-gvel-gridded/';
+path = '../bellhop-gvel-gridded/';
 
 file{3} = 'ssp-hycom.csv';
 file{2} = 'ssp-fixed-eeof.csv';

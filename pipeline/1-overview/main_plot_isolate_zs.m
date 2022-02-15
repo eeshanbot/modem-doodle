@@ -2,7 +2,7 @@
 % eeshan bhatt
 
 %% prep workspace
-clear; clc; close all
+clear; clc; close all; addpath('../../src');
 
 lg_font_size = 14;
 
@@ -16,11 +16,11 @@ zs = 90;
 load p_modemMarkerDetails
 
 %% load bathymetry data
-bathyfile = '../data/etopo1_bedrock.nc';
+bathyfile = '../../data/etopo1_bedrock.nc';
 plotBathy = h_unpack_bathy(bathyfile);
 
 %% load toby test data by experiment design
-A = load('../data/tobytest-recap-clean.mat'); % loads "event"
+A = load('../../data/tobytest-recap-clean.mat'); % loads "event"
 RECAP = h_unpack_experiment(A.event);
 
 %% figure : timeline
