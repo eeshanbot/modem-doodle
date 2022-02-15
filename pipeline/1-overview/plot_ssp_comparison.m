@@ -1,7 +1,13 @@
 %% main_plot_ssp_comparison.m
 % plots the EOF, baseval, and HYCOM comparison for the gvel calcluations
 
-%close all; clc; clear all;
+%% prep workspace
+close all; clc; clear all;
+
+%% load ICEX16
+load ../../data/icex16Comparison.mat
+
+%% load ICEX20
 
 path = '../bellhop-gvel-gridded/';
 
@@ -10,9 +16,10 @@ file{2} = 'ssp-fixed-eeof.csv';
 file{1} = 'ssp-fixed-baseval.csv';
 
 lineStyleSet = {'-','-','-'};
-lineWidthSet = [4 3 4];
+lineWidthSet = [4 4 4];
 colorSet = {[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./256};
 
+%% plot
 figure('name','ssp-for-gvel','renderer','painters','position',[108 108 900 1000]);
 
 for k = 1:3
@@ -22,7 +29,14 @@ for k = 1:3
     hold off
 end
 
-% beautify plot
+hold on
+plot(NaN,NaN,'w');
+plot(historical.sspVal,historical.sspDepth,':','color',colorSet{1},'linewidth',4);
+plot(data.sspVal,data.sspDepth,':','color',colorSet{2},'linewidth',4);
+plot(hycom.sspVal,hycom.sspDepth,':','color',colorSet{3},'linewidth',4);
+hold off
+
+%% beautify plot
 grid on
 set(gca,'ydir','reverse');
 title('Sound speed estimates');
@@ -31,6 +45,9 @@ xlim([1431 1462])
 ylabel('depth [m]');
 xlabel('c [m/s]');
 
-legend('Baseline','Chosen Weights','HYCOM','location','southwest','fontsize',13);
+legend('ICEX20: Baseline','ICEX20: Chosen Weights','ICEX20: HYCOM','',...
+       'ICEX16: Historical', 'ICEX16: Data','ICEX16: HYCOM',...
+       'location','southwest','fontsize',13);
 
-% h_printThesisPNG('ssp-gvel-large');
+%% export
+h_printThesisPNG('ssp-gvel-icex20-icex16');
