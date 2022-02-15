@@ -57,6 +57,9 @@ z = T.Var1;
 
 ind200m = find(z>=200,1,'first');
 meanSSP = mean(ssp(1:ind200m));
+stdSSP = std(ssp(1:ind200m));
+
+fprintf('Isovelocity SSP = %4.1f +/- %4.1f m/s \n',meanSSP,stdSSP)
 
 
 %% export
