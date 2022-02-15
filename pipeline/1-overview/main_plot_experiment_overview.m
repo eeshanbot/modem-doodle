@@ -139,13 +139,13 @@ eof_time = RECAP.data_time;
 countOscar = [44 110 18 82 61 28 137 74 ...
               71 74 121 160 76 ...
               32 10 28 34 ...
-              12 43 45 34 ...
-              91 55 150 155 38];
+              91 55 150 155 38 ...
+              12 43 45 34];
 c0 = 0;
 
 markerSize = 220;
 
-figure('Name','txrx-chart','Renderer', 'painters', 'Position', [0 0 950 650]); clf;
+figure('Name','txrx-chart','Renderer', 'painters', 'Position', [0 0 1200 600]); clf;
 plot(NaN,NaN,'w');
 
 % txrx chart maps
@@ -166,7 +166,8 @@ ylim([y1 y2]);
 yticks(plotval)
 yticklabels([]);
 hold on
-grid on
+ax = gca;
+ax.YGrid = 'on';
 
 patchxval = [xTX-1 xTX+1];
 patchyval = ylim();
@@ -179,8 +180,8 @@ p.EdgeColor = 'none';
 
 % add depth label
 for txDepth = modem_rx_depth
-    text(xTX-1,ZMap(txDepth)-.2,['   z_s = ' num2str(txDepth) ' m'],...
-        'color','w','HorizontalAlignment','left','VerticalAlignment','middle','fontsize',12,'fontweight','bold')
+    text(xTX-0.8,ZMap(txDepth)-.2,['   z_s = ' num2str(txDepth) ' m'],...
+        'color','w','HorizontalAlignment','left','VerticalAlignment','middle','fontsize',13,'fontweight','bold')
 end
 
 % mapping for offset
@@ -190,8 +191,6 @@ xOffsetMap = containers.Map(modem_labels,plotspread);
 x2OffsetMap = containers.Map([20 30 90],[0 0 .3]);
 z2OffsetMap = containers.Map([20 30 90],[-.1 -.1  .2]);
 textOffsetMap = containers.Map(modem_labels,1.1.*[-1 1 -1 1 -1]);
-
-
 
 for txDepth = modem_rx_depth
     
@@ -242,7 +241,12 @@ for txDepth = modem_rx_depth
                     
                     % add text for amount
                     text(xval,yval - z2OffsetMap(rDepth) + textOffsetMap(tNode{1}),num2str(sum(index)),... 
-                        'VerticalAlignment','middle','HorizontalAlignment','center','color',markerModemMap(rNode{1}));
+                       'VerticalAlignment','middle','HorizontalAlignment','center','color',markerModemMap(rNode{1}),'fontweight','bold');
+                     
+                   percentGood = round(sum(index)./countOscar(c0)*100);
+                   percentGoodStr = sprintf('%2d%%',percentGood);
+                     text(xval,yval - z2OffsetMap(rDepth) + 2.*textOffsetMap(tNode{1}),percentGoodStr,... 
+                       'VerticalAlignment','middle','HorizontalAlignment','center','color',[0.4 0.4 0.4]);
                     
                 end
             end
@@ -270,4 +274,4 @@ end
     
 legend(Lgd,LgdStr,'location','WestOutside','fontsize',14);
 
-% h_printThesisPNG('modem-chart');
+h_printThesisPNG('modem-chart');
