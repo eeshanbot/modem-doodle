@@ -1,6 +1,9 @@
 %% prep workspace
 clear; clc; close all;
 
+% load modem marker information
+load p_modemMarkerDetails
+
 %% load data
 
 [DATA,INDEX] = h_unpack_bellhop('../bellhop-gvel-gridded/gveltable.csv');
@@ -8,38 +11,6 @@ clear; clc; close all;
 %% load simulation
 listing = dir('../bellhop-gvel-gridded/csv_arr/*gridded.csv');
 [T,colorSet] = h_get_nbc(listing,DATA,INDEX);
-
-% for k = 1:numel(listing)
-%     T0 = readtable([listing(k).folder '/' listing(k).name]);
-%     T0.index = T0.index + 1;
-%     b = split(listing(k).name,'.');
-%     tName{k} = b{1};
-%     
-%     % assign gvel for each index by closest time comparison
-%     for j = 1:numel(T0.index)
-%         delay = DATA.owtt(j);
-%         tableDelay = table2array(T0(j,2:6));
-%         [~,here] = min(abs(tableDelay - delay));
-%         T0.gvel(j) = DATA.recRange(j)./tableDelay(here);
-%         T0.owtt(j) = tableDelay(here);
-%         T0.numBounces(j) = here-1;
-%         if sum(j == INDEX.bad) == 1
-%             T0.gvel(j) = NaN;
-%         end
-%     end
-%     T{k} = T0;
-% end
-% 
-% % 1 = artifact-baseval
-% % 2 = artifact-eeof
-% % 3 = fixed-baseval
-% % 4 = fixed-eeof
-% % 5 = hycom
-
-% load modem marker information
-load p_modemMarkerDetails
-
- % colorSet = {[0 0 0],[0 0 0],[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./256};
 
 %% plot all data group velocity
 
@@ -237,7 +208,7 @@ edges = [-14:2:22];
 count = 0;
 for s = [5 3 4]
     count = count + 1;
-    T{s}.rangeAnomaly = T{s}.gvel .* DATA.owtt - DATA.recRange;
+    %T{s}.rangeAnomaly = T{s}.gvel .* DATA.owtt - DATA.recRange;
     
     h(count,:) = histcounts(T{s}.rangeAnomaly,edges,'normalization','count');
 end
@@ -301,9 +272,9 @@ count = 0;
 for s = [5 3 4]
     count = count + 1;
     ind = T{s}.numBounces == nb;
-    rangeAnomaly = T{s}.gvel(ind) .* DATA.owtt(ind) - DATA.recRange(ind);
+    rangeAnomalyBounce = T{s}.rangeAnomaly(ind);
     
-    h(count,:) = histcounts(rangeAnomaly,edges,'normalization','count');
+    h(count,:) = histcounts(rangeAnomalyBounce,edges,'normalization','count');
 end
 hold off
 
