@@ -3,85 +3,21 @@
 % predictions
 
 %% prep workspace
-clear; clc; close all;
+clear; clc; close all; addpath('../../src/');
 
-% load data
-DATA = readtable('../bellhop-gvel-gridded/gveltable.csv');
-% only simGvel
-DATA.gvel = DATA.recRange ./ DATA.owtt;
-
-DATA.simGvel(isnan(DATA.simGvel)) = 0;
-
-% remove crazy 11 second event, event that is nominally 1.58* seconds
-indBad1 = find(DATA.owtt > 4);
-indBad2 = find(strcmp(DATA.rxNode,'East') & DATA.owtt > 1.55);
-indBad3 = find(strcmp(DATA.rxNode,'Camp'));
-indBad = union(indBad1,indBad2);
-indBad = union(indBad,indBad3);
-
-% 1.587 events, had clock errors + Bellhop can't resolve these
-DATA.simGvel(indBad) = NaN;
-% only simGvel
-
-indValid = ~isnan(DATA.simGvel);
-
-% calculate RangeAnomaly
-DATA.rangeAnomaly = DATA.owtt .* DATA.simGvel - DATA.recRange;
+% unpack Bellhop gvel table
+[DATA,INDEX] = h_unpack_bellhop('../bellhop-gvel-gridded/gveltable.csv');
 
 % DEPTH
 ZS = 90;
 
-%% load post-processing sim for v2
-listing = dir('../bellhop-gvel-gridded/csv_arr/*gridded.csv');
+%% load post-processing sim for NBC
+listing2 = dir('../bellhop-gvel-gridded/csv_arr/*gridded.csv');
+[T2,colorSet] = h_get_nbc(listing2,DATA,INDEX);
 
-for k = 1:numel(listing)
-    T0 = readtable([listing(k).folder '/' listing(k).name]);
-    T0.index = T0.index + 1;
-    b = split(listing(k).name,'.');
-    tName{k} = b{1};
-    
-    % assign gvel for each index by closest time comparison
-    for j = 1:numel(T0.index)
-        delay = DATA.owtt(j);
-        tableDelay = table2array(T0(j,2:6));
-        [~,here] = min(abs(tableDelay - delay));
-        T0.gvel(j) = DATA.recRange(j)./tableDelay(here);
-        T0.owtt(j) = tableDelay(here);
-        T0.numBounces(j) = here-1;
-        if sum(j == indBad) == 1
-            T0.gvel(j) = NaN;
-        end
-    end
-    T2{k} = T0;
-end
-
-%% load post-processing sim, v1
-listing = dir('../bellhop-gvel-gridded/csv_arr/*old.csv');
-
-for f = 1:numel(listing)
-    T0 = readtable([listing(f).folder '/' listing(f).name]);
-    T0.index = T0.index + 1;
-    b = split(listing(f).name,'.');
-    tName{f} = b{1};
-    
-    % assign gvel by minimum bounce
-    for k = 1:numel(T0.index)
-        T0.gvel(k) = DATA.recRange(k)./T0.owtt(k);
-    end
-    
-    T0.rangeAnomaly = DATA.owtt .* T0.gvel - DATA.recRange;
-    T1{f} = T0;
-end
-
-%% set up
-
-% 1 = artifact-baseval
-% 2 = artifact-eeof
-% 3 = fixed-baseval
-% 4 = fixed-eeof
-% 5 = hycom
-
-colorSet = {[0 0 0],[0 0 0],[232, 153, 35]./256,[0 85 135]./256,[152 134 117]./256};
+%% load post-processing sim for MBC
+listing1 = dir('../bellhop-gvel-gridded/csv_arr/*old.csv');
+T1 = h_get_mbc(listing1,DATA);
 
 %% plot all data group velocity
 
@@ -100,7 +36,7 @@ for zs = ZS
         count = count + 1;
         nexttile;
         
-        index = boolean(index1.*index2.*indValid);
+        index = boolean(index1.*index2.*INDEX.valid);
         
         if sum(index)>=1
             % plot
