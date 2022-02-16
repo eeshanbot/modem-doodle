@@ -86,9 +86,7 @@ for zs = ZS
             text(xx(2),1449,sprintf('n = %u event',sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',12);
         end
         grid on
-        
 
-        
         % add in manual indicator for bottom bounce events for panel 1
         if ZS == 30 && zr == 30
             indManual = find(T1{4}.gvel < 1000);
@@ -134,13 +132,13 @@ end
 % legend for data
 plot(NaN,NaN,'w');
 plot(NaN,NaN,'w');
-plot(NaN,NaN,'.','color',[200, 78, 0]./256,'markersize',15);
+plot(NaN,NaN,'.','color',,'markersize',15);
 
 lgdstr = {'\bf{SOUND SPEED SOURCE}','HYCOM','Baseline','Chosen Weights','','\bf{MINIMAL BOUNCE CRITERIA}',...
     'Minimal bounce','','\bf{NEAREST BOUNCE CRITERIA}',...
     'Direct path','1 bounce','2 bounces','3 bounces','4 bounces',...
-    '','\bf{NAIVE CALCULATION}','From GPS and modem data'};
-lgd = legend(lgdstr,'fontsize',12,'location','NorthWestOutside');
+    '','\bf{IMPLIED SPEED}','GPS range divided by OWTT'};
+lgd = legend(lgdstr,'fontsize',12,'location','WestOutside');
 hold off
 legend boxoff
 

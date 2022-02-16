@@ -31,7 +31,7 @@ for zr = [30 90]
             % plot
             hold on
             plot([0 4],[0 0],'--','linewidth',3,'color',[0 0 0 0.6],'handlevisibility','off');
-
+            
             for s = [0 5 3 4]
                 xval = DATA.owtt(index);
                 
@@ -40,7 +40,7 @@ for zr = [30 90]
                 else
                     yval = T{s}.gvel(index) .* DATA.owtt(index) - DATA.recRange(index);
                 end
-                                
+                
                 % remove nans
                 xval = xval(~isnan(yval));
                 yval = yval(~isnan(yval));
@@ -68,13 +68,9 @@ for zr = [30 90]
         end
         set(gca,'fontsize',13)
         
-        % for all grids
-        %if count <= 3
-            % title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','bold');
-        %end
         text(0.94,28.1,sprintf('receiver depth = %u m',zr),'HorizontalAlignment','left','VerticalAlignment','top','fontsize',12,'fontweight','bold');
         text(0.94,28.1,sprintf('source depth = %u m',zs),'HorizontalAlignment','left','VerticalAlignment','bottom','fontsize',12,'fontweight','bold');
-
+        
         if sum(index)>1
             text(2.25,28.1,sprintf('n = %u events',sum(index)),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
         else
@@ -87,15 +83,22 @@ for zr = [30 90]
         yticks(-10:5:30);
         xticks(1:0.2:2.2);
         
-        if mod(count,3)~=1
-            yticklabels([])
-        else
-            ylabel('range error [m]');
-        end
-        
-        if count >=4
+        %         if mod(count,3)~=1
+        %             yticklabels([])
+        %         else
+        %             ylabel('range error [m]');
+        %         end
+        %
+        %         if count >=4
+        %             xlabel('one way travel time [s]');
+        %         else
+        %             xticklabels([]);
+        %         end
+        if count == 4
             xlabel('one way travel time [s]');
+            ylabel('sound speed [m/s]');
         else
+            yticklabels([]);
             xticklabels([]);
         end
     end
