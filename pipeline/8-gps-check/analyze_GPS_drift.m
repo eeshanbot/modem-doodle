@@ -18,96 +18,96 @@ sspGVEL = 1440/1000; % meters / millisecond
 
 %% 5x5 grid
 
-figure('name','gps-and-time-drift','renderer','painters','position',[108 108 1300 1100]); clf;
-tiledlayout(5,5,'TileSpacing','compact','Padding','compact');
+% figure('name','gps-and-time-drift','renderer','painters','position',[108 108 1300 1100]); clf;
+% tiledlayout(5,5,'TileSpacing','compact','Padding','compact');
 
-for r = 1:5
-    for c = 1:5
-        
-        % tileNum
-        tileNum = (r-1).*5 + c;
-        
-        % tx and rx nodes
-        txNode = modem_labels{r};
-        rxNode = modem_labels{c};
-        
-        % if r == c, do nothing
-        if r == c
+% for r = 1:5
+%     for c = 1:5
+%         
+%         % tileNum
+%         tileNum = (r-1).*5 + c;
+%         
+%         % tx and rx nodes
+%         txNode = modem_labels{r};
+%         rxNode = modem_labels{c};
+%         
+%         % if r == c, do nothing
+%         if r == c
+% 
+%         % if r <c, do dx/dy 
+%         elseif r < c
+%             nexttile(tileNum);
+%             h_dtdR(txNode,rxNode,100);
+%             
+%             if c - r == 1
+%                 %xlabel('GPS \deltaR [m]')
+%                 %ylabel('algorithm \deltaR [m]')
+%                 
+%                 xlabel('\deltat [ms]');
+%                 ylabel('GPS \deltaR [m]');
+%             end
+%             
+%         % if r > c, do dt/dR    
+%         elseif r > c   
+%             nexttile(tileNum);
+%             h_dxdy(txNode,rxNode,100);
+%             
+%             if c == 1
+%                 ylabel('GPS \deltay [m]');
+%                 yticklabels auto
+%             end
+%             
+%             if r == 5
+%                 xlabel('GPS \deltax [m]');
+%                 xticklabels auto
+%             end
+%             
+%             % add label for when tileNum == 21
+%             if tileNum == 21
+%                 xlabel('GPS \deltax [m]');
+%                 xticklabels auto
+%             end
+%             
+%             if tileNum == 24
+%                 cb = colorbar;
+%                 cb.Ticks = 0:4:12;
+%                 cb.TickLabels = num2cell(0:4:12);
+%                 cb.Label.String = 'time past [hours]';
+%                 cb.Label.FontSize = 10;
+%             end
+%         end
+%     end
+% end
+% 
+% %% legend -- 1
+% nexttile(1);
+% 
+% % legend
+% % add legend
+% hold on
+% for s = [20 30 90]
+%     plot(NaN,NaN,'color',colorDepth(s),'linewidth',6);
+% end
+% 
+% for r = [20 30 90]
+%     plot(NaN,NaN,sourceDepth(r),'color','k')
+% end
+% hold off
+% lgdstr = {' 20 m',' 30 m',' 90 m',' 20 m',' 30 m',' 90 m'};
+% 
+% lg1 = legend(lgdstr,'location','south','NumColumns',2,'fontsize',11);
+% title(lg1,'   source depth & receiver depth');
+% 
+% set(gca,'XColor','white');
+% set(gca,'YColor','white');
+% 
+% % export
+% % h_printThesisPNG('gps-drift');
 
-        % if r <c, do dx/dy 
-        elseif r < c
-            nexttile(tileNum);
-            h_dtdR(txNode,rxNode,100);
-            
-            if c - r == 1
-                %xlabel('GPS \deltaR [m]')
-                %ylabel('algorithm \deltaR [m]')
-                
-                xlabel('\deltat [ms]');
-                ylabel('GPS \deltaR [m]');
-            end
-            
-        % if r > c, do dt/dR    
-        elseif r > c   
-            nexttile(tileNum);
-            h_dxdy(txNode,rxNode,100);
-            
-            if c == 1
-                ylabel('GPS \deltay [m]');
-                yticklabels auto
-            end
-            
-            if r == 5
-                xlabel('GPS \deltax [m]');
-                xticklabels auto
-            end
-            
-            % add label for when tileNum == 21
-            if tileNum == 21
-                xlabel('GPS \deltax [m]');
-                xticklabels auto
-            end
-            
-            if tileNum == 24
-                cb = colorbar;
-                cb.Ticks = 0:4:12;
-                cb.TickLabels = num2cell(0:4:12);
-                cb.Label.String = 'time past [hours]';
-                cb.Label.FontSize = 10;
-            end
-        end
-    end
-end
+%% secondary figure
 
-%% legend -- 1
-nexttile(1);
-
-% legend
-% add legend
-hold on
-for s = [20 30 90]
-    plot(NaN,NaN,'color',colorDepth(s),'linewidth',6);
-end
-
-for r = [20 30 90]
-    plot(NaN,NaN,sourceDepth(r),'color','k')
-end
-hold off
-lgdstr = {' 20 m',' 30 m',' 90 m',' 20 m',' 30 m',' 90 m'};
-
-lg1 = legend(lgdstr,'location','south','NumColumns',2,'fontsize',11);
-title(lg1,'   source depth & receiver depth');
-
-set(gca,'XColor','white');
-set(gca,'YColor','white');
-
-% export
-% h_printThesisPNG('gps-drift');
-
-%% sub-figure
-
-figure('name','gps-drift-example','renderer','painters','position',[108 108 500 1200]); clf;
-t = tiledlayout(2,1,'TileSpacing','compact');
+figure('name','gps-drift-example','renderer','painters','position',[108 108 1200 600]); clf;
+t = tiledlayout(1,2,'TileSpacing','compact');
 
 rbounds1 = [-2.6 2.6];
 rticks1 = [-2:2];
@@ -154,9 +154,9 @@ xlim(xbounds2);
 xticks(xticks2);
 ylim(xbounds2.*sspGVEL);
 yticks(xticks2.*sspGVEL);
-title({'GPS drift vs OWTT drift','','North and East buoys'},'fontsize',15);
+title('GPS noise between North and East buoys','fontsize',15);
 ylabel('GPS \deltaR [m]');
-%xlabel('\deltat [ms]');
+xlabel('\deltat [ms]');
 
 % panel 4
 nexttile;
@@ -166,11 +166,11 @@ xlim(xbounds2);
 xticks(xticks2);
 ylim(xbounds2.*sspGVEL);
 yticks(xticks2.*sspGVEL);
-title('South and West buoys','fontsize',15);
-ylabel('GPS \deltaR [m]');
+title('GPS noise between South and West buoys','fontsize',15);
+%ylabel('GPS \deltaR [m]');
 xlabel('\deltat [ms]');
 
-% legend
+%% legend
 % add legend
 hold on
 for s = [20 30 90]
@@ -183,11 +183,11 @@ end
 hold off
 lgdstr = {' 20 m',' 30 m',' 90 m',' 20 m',' 30 m',' 90 m'};
 
-lg1 = legend(lgdstr,'location','southeast','NumColumns',1,'fontsize',10);
+lg1 = legend(lgdstr,'location','eastOutside','NumColumns',1,'fontsize',10);
 title(lg1,{'tx depth (color)','rx depth (shape)'});
 
-% export
-% h_printThesisPNG('gps-drift-example');
+%% export
+h_printThesisPNG('gps-drift-example');
 
 %% helper function
 function [] = h_dxdy(txNode,rxNode,scatterSize)

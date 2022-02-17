@@ -132,7 +132,7 @@ end
 % legend for data
 plot(NaN,NaN,'w');
 plot(NaN,NaN,'w');
-plot(NaN,NaN,'.','color',,'markersize',15);
+plot(NaN,NaN,'.','color','markersize',15);
 
 lgdstr = {'\bf{SOUND SPEED SOURCE}','HYCOM','Baseline','Chosen Weights','','\bf{MINIMAL BOUNCE CRITERIA}',...
     'Minimal bounce','','\bf{NEAREST BOUNCE CRITERIA}',...
@@ -147,4 +147,4 @@ titlestr = sprintf('Group velocity predictions for a source depth = %u m',zs);
 sgtitle(titlestr,'fontsize',17,'fontweight','bold')
 
 %%
-% h_printThesisPNG(sprintf('SLIDES-gvel-comparison-wdata-%u',ZS));
+% h_printThesisPNG(sprintf(SLIDES-gvel-comparison-wdata-%u',ZS));

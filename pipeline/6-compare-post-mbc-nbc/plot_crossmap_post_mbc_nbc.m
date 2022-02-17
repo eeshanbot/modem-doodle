@@ -50,7 +50,7 @@ eeof.F = h_cross_plot(eeof.xVal,eeof.yVal,eeof.zs,eeof.numBounces);
 
 nexttile;
 h_view_plot(eeof.xVal,eeof.yVal,eeof.zs,eeof.numBounces);
-title({sprintf('\\fontsize{16} Post-processed range estimation comparison for all %u beacon to beacon events',sum(indValid)),'\fontsize{13} SSP = Chosen Weights'})
+title({sprintf('\\fontsize{16} Pseudorange error comparison for all %u beacon to beacon events',sum(indValid)),'\fontsize{13} SSP = Chosen Weights'})
 yticklabels([]);
 xlabel({'minimal bounce criterion error [m]'});
 
@@ -87,12 +87,12 @@ end
 hold off
 lgdstr = {' 20 m',' 30 m',' 90 m','','','direct path','1 bounce','2 bounces','3 bounces','4 bounces'};
 
-lg1 = legend(lgdstr,'location','southwest','NumColumns',2,'fontsize',10);
+lg1 = legend(lgdstr,'location','south','NumColumns',2,'fontsize',10);
 title(lg1,'   source depth & multipath structure');
 
 %% export
 
-% h_printThesisPNG('compare-methods-postv1v2');
+h_printThesisPNG('compare-methods-postv1v2');
 
 %% figure helper function
 function [F] = h_cross_plot(xVal,yVal,zs,numBounces)

@@ -173,4 +173,4 @@ legend boxoff
 sgtitle({'Effective sound speed estimates by source and receiver depths'},'fontsize',17,'fontweight','bold')
 
 %% save plot
-% h_printThesisPNG('gvel-owtt-newalgorithm');
+h_printThesisPNG('gvel-txrxdepth-wIso-wGPS');

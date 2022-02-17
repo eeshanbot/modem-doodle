@@ -8,7 +8,6 @@ A = h_clean_simgvel(A);
 
 load p_sspColorDetails
 %% figure 1 -- all events in 3x2 grid
-
 figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1100 900]);
 t = tiledlayout(3,2,'TileSpacing','none','Padding','compact');
 
@@ -110,7 +109,7 @@ legend(l2,'Baseline','Chosen Weights','location','northwest');
 
 % title
 sgtitle('In situ range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
-% h_printThesisPNG('range-error-owtt-data-v2');
+h_printThesisPNG('range-error-insitu');
 
 %% find mean, median, etc for baseval vs eof
 
