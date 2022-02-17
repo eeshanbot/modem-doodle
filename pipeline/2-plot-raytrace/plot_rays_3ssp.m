@@ -16,26 +16,17 @@ zs = 90;
 load p_modemMarkerDetails
 
 %% load all events
-load('../data/tobytest-recap-clean.mat'); % loads "event
+load('../../data/tobytest-recap-clean.mat'); % loads "event
 A = h_unpack_experiment(event);
-DATA = readtable('../pipeline/bellhop-gvel-gridded/gveltable.csv');
-%DATA.simGvel(isnan(DATA.simGvel)) = 0;
 
-% remove crazy 11 second event, event that is nominally 1.58* seconds
-indBad1 = find(DATA.owtt > 3);
-indBad2 = find(strcmp(DATA.rxNode,'East') & DATA.owtt > 1.55);
-indBad = union(indBad1,indBad2);
+[DATA,INDEX] = h_unpack_bellhop('../bellhop-gvel-gridded/gveltable.csv');
 
-% 1.587 events, had clock errors + Bellhop can't resolve these
-DATA.simGvel(indBad) = NaN;
-% only simGvel
-
-load ../pipeline/bellhop-eigenrays-3ssp/eigentable_flat.mat
-load ../pipeline/bellhop-eigenrays-3ssp/eig_reruns_jun21.mat
+load ../bellhop-eigenrays-3ssp/eigentable_flat.mat
+load ../bellhop-eigenrays-3ssp/eig_reruns_jun21.mat
 arCell = struct2cell(all_rays);
 
 %% load all sound speeds
-path = '../pipeline/bellhop-gvel-gridded/';
+path = '../bellhop-gvel-gridded/';
 
 file{1} = 'ssp-hycom.csv';
 file{2} = 'ssp-fixed-baseval.csv';

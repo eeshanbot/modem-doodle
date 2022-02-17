@@ -15,13 +15,13 @@ depth_switch = [20 30 90];
 load p_modemMarkerDetails
 
 %% load all events
-load('../data/tobytest-recap-clean.mat');
+load('../../data/tobytest-recap-clean.mat');
 A = h_unpack_experiment(event);
 
-load bellhop-eigenrays-3ssp/eigentable_flat.mat
+load ../bellhop-eigenrays-3ssp/eigentable_flat.mat
 
 %% load all sound speeds
-path = './bellhop-gvel-gridded/';
+path = '../bellhop-gvel-gridded/';
 file{1} = 'ssp-fixed-eeof.csv';
 
 fileNames = {'HYCOM','Mean of EOF set','Chosen Weights'};
@@ -121,6 +121,6 @@ for k = 1:3
     hold off
 end
 
-h_printThesisPNG(sprintf('raytrace-3depth'));
+% h_printThesisPNG(sprintf('raytrace-3depth'));
 
 
