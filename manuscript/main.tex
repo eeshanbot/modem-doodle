@@ -98,7 +98,7 @@ Such post-processing efforts can utilize additional information or computation t
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=\reprintcolumnwidth]{figs/ssp-gvel-large.pdf}
+	\includegraphics[width=\reprintcolumnwidth]{figs/ssp-gvel-icex20-icex16.pdf}
 	\caption{Anticipated sound speed conditions: finish this using stuff from ICEX16, HYCOM, ITP}
 	\label{fig:sspExpectation}
 \end{figure}
@@ -124,18 +124,35 @@ Such post-processing efforts can utilize additional information or computation t
 
 \subsection{Pseudorange error metrics}
 
-\subsection{Discussion}
-
-\clearpage
-\section{\label{sec:post} Post-processed pseudorange analysis}
-
 \subsection{Inherent overestimation from the minimal bounce criteria}
+
+\subsubsection{Source depth of 20 m}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\reprintcolumnwidth]{figs/Fig4.pdf}
+  \caption{Eigenrays for beacon to beacon events for each sound speed with a nominal source depth of 30 m. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}. The eigenrays are curated from BELLHOP by travel time proximity and are traced in the representative receiver colors over a total ray fan in gray.}
+  \label{fig:raytrace-zs20}
+\end{figure}
+
+
+\subsubsection{Source depth of 30 m}
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\reprintcolumnwidth]{figs/Fig4.pdf}
   \caption{Eigenrays for beacon to beacon events for each sound speed with a nominal source depth of 30 m. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}. The eigenrays are curated from BELLHOP by travel time proximity and are traced in the representative receiver colors over a total ray fan in gray.}
   \label{fig:raytrace-zs30}
-  \end{figure}
+\end{figure}
+
+\subsubsection{Source depth of 90 m}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\reprintcolumnwidth]{figs/Fig4.pdf}
+  \caption{Eigenrays for beacon to beacon events for each sound speed with a nominal source depth of 30 m. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}. The eigenrays are curated from BELLHOP by travel time proximity and are traced in the representative receiver colors over a total ray fan in gray.}
+  \label{fig:raytrace-zs90}
+\end{figure}
+
+\clearpage
+\section{\label{sec:post} Post-processed pseudorange analysis}
 
 \subsection{Nearest bounce criteria (NBC)}
 
@@ -155,8 +172,6 @@ Such post-processing efforts can utilize additional information or computation t
 \label{fig:rangeError}
 \end{figure}
 
-\subsection{Discussion}
-
 \section{Re-positioning using the nearest bounce criteria}
 
 \begin{figure}[h!]
@@ -165,10 +180,17 @@ Such post-processing efforts can utilize additional information or computation t
 \end{figure}
 
 \begin{figure}[!ht]
-\includegraphics[width=\textwidth]{figs/trilateration-3-ways.pdf}
-\caption{WRITE THIS. Needs font change, legend change, x-axis change, new color palette.}
+\includegraphics[width=\textwidth]{figs/trilat-stat.pdf}
+\caption{WRITE THIS.}
 \label{fig:trilat}
 \end{figure}
+
+\clearpage
+\section{Re-navigating AUV data}
+
+FIG A -- error for MBC/NBC (Oscar Fig 6.17). Think about whether to include separate in situ column. Explain why this section uses error whereas previous section uses correction.
+
+I think if we go down this route, we can take out the GNSS noise section entirely. The POMA paper would go over GNSS noise at high latitudes, crossmap, and look at individual drifts. I do not think the crossmap needs to stay in this publication; given small numerical value of the re-positioning trilateration, I think the same point is made (in a better way, actually).
 
 \clearpage
 \section{Investigating potential GNSS noise}
@@ -187,17 +209,6 @@ Such post-processing efforts can utilize additional information or computation t
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{figs/Fig9.pdf}
 \caption{\label{fig:iceFloeDrift}{The ICNN accounts for ice drift throughout the mission duration. This is the magnitude of the ice drift recorded, at each buoy, throughout the modem experiment. The shaded regions reference which sound speed estimate was used.}}
-\end{figure}
-
-\clearpage
-\FloatBarrier
-\subsection*{Group velocity prediction by source depth}
-\begin{figure}[h!]
-\includegraphics[width=0.8\textwidth]{figs/Fig10a.pdf} \\
-\vspace{2em}
-\includegraphics[width=0.8\textwidth]{figs/Fig10b.pdf}
-\caption{A comparison of group velocity predictions for all beacon to beacon events in post-processing. The top panel shows a source depth of 20 m; the bottom panel shows a source depth of 90 m. The sound speed source is indicated by color. The minimal and nearest bounce criterion are distinguished by different marker shapes, compared to the separately colored orange dots showing the naive, data-driven group velocity calculation.}
-\label{fig:gvelMore}
 \end{figure}
 
 % ================================================== %
