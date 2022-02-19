@@ -31,9 +31,9 @@ end
 
 hold on
 plot(NaN,NaN,'w');
-plot(historical.sspVal,historical.sspDepth,':','color',colorSet{1},'linewidth',4);
-plot(data.sspVal,data.sspDepth,':','color',colorSet{2},'linewidth',4);
-plot(hycom.sspVal,hycom.sspDepth,':','color',colorSet{3},'linewidth',4);
+plot(historical.sspVal,historical.sspDepth,':','color',[colorSet{1} 0.8],'linewidth',4);
+plot(data.sspVal,data.sspDepth,':','color',[colorSet{2} 0.8],'linewidth',4);
+plot(hycom.sspVal,hycom.sspDepth,':','color',[colorSet{3} 0.8],'linewidth',4);
 hold off
 
 %% beautify plot
@@ -63,4 +63,4 @@ fprintf('Isovelocity SSP = %4.1f +/- %4.1f m/s \n',meanSSP,stdSSP)
 
 
 %% export
-% h_printThesisPNG('ssp-gvel-icex20-icex16');
+h_printThesisPNG('ssp-gvel-icex20-icex16');
