@@ -37,7 +37,7 @@ The real-time ranging error between beacons is roughly 11 meters at distances up
 But a consistent overestimation in the real-time method, the Minimum Bounce Criteria (MBC), provides insights for improved eigenray filtering, which we call the Nearest Bounce Criteria (NBC).
 An operationally equivalent pipeline is used to re-position the LBL beacons and re-navigate the AUV, using a modeled, historical, and a locally observed sound speed profile.
 The median re-positioning errors for the MBC and NBC are roughly 10 and 3 meters, respectively.
-The improved trilateration performance for re-positioning and re-navigation suggests that this approach effectively extends the single meter accuracy of the deployed GNSS units into the water column.
+The improved trilateration performance for re-positioning and re-navigation suggests that this approach effectively extends the single meter accuracy of the deployed GNSS units into the water column. \llabel{2.3}
 
 \end{abstract}
 
@@ -68,7 +68,7 @@ A physics-driven methodology that received an \textit{in situ} sound speed profi
 %% rest of the background, JASA style
 
 % PNT
-For clarity, we delineate specific definitions for timing, positioning, and navigation from \citep{howe_observing_2019}.
+For clarity, we delineate specific definitions for timing, positioning, and navigation from \citet{howe_observing_2019}.
 \begin{enumerate}
 	\item Timing is the ability to acquire and maintain accurate and precise time anywhere in the domain of interest within user-defined timeliness parameters
 	\item Positioning is the ability to accurately and precisely determine one's location referenced to a standard geodetic system
@@ -78,35 +78,34 @@ Thus, navigation is inherently in real time and depends on positioning; position
 We also suggest re-navigation and re-positioning as post-processed corollaries, which may include knowledge or processing capabilities not available \textit{in situ}.
 
 % More about LBL navigation
-While RAFOS floats championed one way ranging for re-positioning \citep{rossby_rafos_1986,duda_evaluation_2006}, the ability to do so for navigation was facilitated by \llabel{1.11} the advent of the WHOI micro-modem \citep{singh_underwater_2006} and synchronized chip scale atomic clocks \citep{gardner_second_2016}.
-AUV navigation efforts have achieved root mean square (RMS) localization error on the order of tens of meters relative to GNSS surface position over less than ten kilometers in shallow \citep{eustice_experimental_2007,kepper_mems_2017,claus_closed-loop_2018} and deep water \citep{,kunz2008deep,jakuba2008long,webster_preliminary_2009}.
-However, these efforts all used a nominal sound speed for travel time conversion and the vehicles were limited to shallower isovelocity regimes. 
+While RAFOS floats championed one way ranging for re-positioning \citep{rossby_rafos_1986,duda_evaluation_2006}, the ability to do so for navigation was facilitated by \llabel{1.11} the advent of the WHOI Micro-Modem \citep{singh_underwater_2006} and synchronized chip scale atomic clocks \citep{gardner_second_2016}.
+AUV navigation efforts have achieved root mean square (RMS) localization error on the order of tens of meters relative to GNSS surface position over less than ten kilometers in shallow \citep{eustice_experimental_2007,kepper_mems_2017,claus_closed-loop_2018} and deep water \citep{kunz2008deep,jakuba2008long,webster_preliminary_2009}.
+However, these efforts all used a nominal sound speed for travel time conversion and the vehicles were limited to shallower isovelocity regimes.
+
 Localization algorithms that do consider environmental or acoustic uncertainty tend to focus on longer and larger experiments, where spatio-temporal variability cannot be ignored.
 These methods have been reserved for post-processing as they can be labor intensive, computationally heavy, and/or require additional information like contemporaneous data.
 For example, gliders navigating with kinematic flight models and equipped with acoustic modems were later unambiguously associated with predicted ray arrivals, resulting in roughly a kilometer error and hundred meters uncertainty over basin scale propagation \cite{van_uffelen_estimating_2013}.
 A follow up study investigated how a single temporally and spatially averaged SSP could mitigate position error for a four month glider mission \cite{van_uffelen_localization_2016}.
 \citet{wu_assessment_2018} cross correlate three days of real acoustic records with synthetic ones generated through ocean model snapshots from HYCOM \cite{chassignet_hycom_2007}.
 While potentially applicable for various ocean states, this is reliant on model realism and impractical for real-time operations.
-\cite{mikhalevsky_deep_2020} introduces a ``cold start'' algorithm that does not require prior knowledge of track, position, or sound speed information.
+\citet{mikhalevsky_deep_2020} introduces a ``cold start'' algorithm that does not require prior knowledge of track, position, or sound speed information.
 The algorithm inputs a four-dimensional ocean model, constrained by tomography data, into a range dependent ray code to isolate the last path detected in a full multipath pattern.
 Then, a representative group speed is solved for alongside position in a least squares fashion. 
-Their results re-position a floating hydrophone array with an error of 58 m and a standard deviation of 32 m based on six sources 129--450 km away.
-This approach remains to be realized for real-time navigation.
+This approach is able to re-position a floating hydrophone array with an error of 58 m and a standard deviation of 32 m based on six sources 129--450 km away but remains to seen for real-time navigation.
 
-Compared to the previous work mentioned, the approach in this paper integrates real-time model-aided data processing to estimate a representative sound speed along a path from source to receiver for small scale navigation, taking advantage of climatology, \textit{in situ} data, and fast acoustic modeling.
-An environmentally- and physically-driven relationship between recorded travel time and estimated range is necessary because of the multipath uncertainty brought upon by the increasingly observed double ducted environment in the Beaufort Sea, which some refer to as the ``Beaufort Lens'' \citep{litvak2015acoustics,chen_spectral_2019,chen2020temporal}.
+The ICEX20 AUV deployment necessitated an environmentally- and physically-driven relationship between recorded travel time and estimated range due to the multipath uncertainty brought upon by an increasingly observed double ducted environment in the Beaufort Sea, which some refer to as the ``Beaufort Lens'' \citep{litvak2015acoustics,chen_spectral_2019,chen2020temporal}.
 
-Given that a lens introduces significant ray refraction, the Beaufort Lens is a convenient shorthand for the spatio-temporal variability of the local temperature and sound speed maxima driven by Pacific Summer Water, generally around 50 to 60 m in depth.
-From top to bottom, there is less saline surface water via ice melt; warm saline Pacific Summer Water; cold Pacific Winter Water; warm saline Atlantic water, and then Arctic Deep Water \citep{duda_acoustic_2017,ballard_temporal_2020}.
-With this intense stratification, the lens creates a unique double ducted environment that has drastic consequences for acoustic communication and navigation compared to historically observed monotonically increasing sound speed profile \citep{schmidt2016acoustic}.
+Given that a lens introduces significant ray refraction, the Beaufort Lens is a convenient shorthand for the spatio-temporal variability of the local temperature and sound speed maxima generally around 50 to 60 m in depth.
+A neutrally buoyant layer of warm Pacific Summer Water creates a unique double ducted environment \textemdash the upper duct degrades signal coherence due to intensified ice interaction and the lower duct effectively traps sound for long range propagation \citep{poulsen_acoustic_2016}. 
+\llabel{2.5} Modeling output \citep{duda_long-range_2019,duda_effects_2021} and experimental observations \citep{ballard_temporal_2020,Bhatt2021} suggest the duct is persistent and widespread but not necessarily continuous; it and its acoustic effects can be non-existent, minimal, or drastic.
 Transmissions in the upper duct, between the surface ice and the lens, experience minimal attenuation but degrade in signal coherence with repeated reflections under the ice.
-In lower duct, between the lens and its conjugate depth in the Atlantic water, sound above 350 Hz is trapped effectively for long range propagation \citep{poulsen2016acoustic}.
+In lower duct, between the lens and its conjugate depth in the Atlantic water, roughly 200 m, sound above 350 Hz is trapped effectively for long range propagation \citep{poulsen2016acoustic}.
 
 Thorough reviews of uncrewed vehicle operations in polar environments can be found in \citep{norgren_unmanned_2014} and \citep{barker_scientific_2020}; there is no comparable work in the Arctic for a short range AUV deployment in the Beaufort Lens.
 Seminal \citep{brooke1981arcs,jackson1983autonomous,light1989autonomous,bellingham1995auv,hayes2002determining} and more recent AUV deployments \citep{jakuba2008long,kunz_deep_2008,kukulya2010under,plueddemann_autonomous_2012,timmermans2013scales,fossum2021adaptive} witnessed the classical upward refracting sound speed profile that is amenable to an isovelocity assumption.
 
 Of note, despite different platforms and scales, are recent glider deployments in the Canada Basin.
-In 2014, in partially ice-covered conditions, a long range LBL system with WHOI micro-modems at 100 m exploited the lower duct for long range communication with two gliders \citep{freitag_long_2015,webster2015towards}.
+In 2014, in partially ice-covered conditions, a long range LBL system with WHOI Micro-Modems at 100 m exploited the lower duct for long range communication with two gliders \citep{freitag_long_2015,webster2015towards}.
 The sound speed value measured at the time of reception was used to estimate range in post-processing.
 The beacon-to-beacon performance was excellent, achieving contact at ranges greater than 200 km with a position uncertainty of 40 m.
 The beacon-to-glider performance, however, deteriorated due to missed contacts outside the duct.
@@ -117,13 +116,56 @@ Both cases exploit the lower duct for high fidelity communication at long ranges
 Unintuitively, the smaller nature of our deployment during ICEX20 is not a simplifying factor.
 For source depths typical to vehicle operations, 30 to 200 m, a shadow zone spans from 2 to 6 kilometers in range \citep{schmidt2016acoustic}.
 
-The paper is organized as follows. Section \ref{sec:icex20} details the experimental conditions during ICEX20.
+Compared to the previous small scale navigation efforts, the approach in this paper integrates real-time model-aided data processing to estimate a representative sound speed along a path from source to receiver, leveraging climatology, \textit{in situ} data, and fast acoustic modeling.
+The paper is organized as follows.
+Section \ref{sec:icex20} details the experimental conditions during ICEX20.
 Given that there is no GNSS ground truth for the vehicle position while underway, we first evaluate the real-time ranging performance of GPS-linked beacon-to-beacon communication events in section \ref{sec:realtime}.
 Section \ref{sec:post} uses insights from field data to introduce a new ray filtering algorithm to improve range estimation.
-Section \ref{sec:trilat} emulates the real-time processing pipeline to re-position beacon-to-beacon events and re-navigate AUV Macrura.
+Section \ref{sec:trilat} emulates the real-time processing pipeline to re-position beacon-to-beacon events and re-navigate AUV \emph{Macrura}.
 
 \clearpage
-\section{ICEX20 conditions and experiment design}\label{sec:icex20}
+\section{Overview of the ICEX20 experiment}\label{sec:icex20}
+
+The results from this paper derive from data taken while deploying the AUV \emph{Macrura}, a custom Bluefin-21, during the Ice Exercise 2020 (ICEX20), in the Beaufort Sea, from March 8 to 11, in double-ducted and ice-covered conditions.
+The AUV deployment was supported by the Integrated Communication and Navigation Network (ICNN) \citep{schneider_self-adapting_2020,randeni_construction_2020,randeni_high-resolution_2021}.
+The ICNN was initially developed via numerous virtual experiments to push the boundaries of algorithms and interfaces between different hardware components.
+The simulation approach serves as a testbed for robustness to produce better results than post-processing previous field data.
+The simulation capabilities are largely physics-driven with a modular system of systems approach\textemdash an environmental simulator with sub-components for the ocean, including Arctic ice drift and ocean acoustic propagation; a vehicle simulator with sub-components for vehicle dynamics and navigation; a topside hardware simulator and acoustic communications simulator, both with a software-only configuration and a hardware-in-the-loop version \citep{schneider_netsim_2018}.
+The virtual environment similarly emulates the interfaces between the real components to test the entire software pipeline.
+Both simulation capabilities are integral to mission success.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\reprintcolumnwidth]{figs/Fig2.pdf}
+	\caption{A schematic overview of the Integrated Communication and Navigation Network (ICNN), which provides joint data-transfer and tracking between AUV and a human decision maker at Topside.}
+	\label{fig:icnnOverview}
+\end{figure}
+
+The ICNN is comprised of four ice buoys, in a loose rectangle, roughly 2 km away from a central ice camp with a topside computer, as shown in Fig.~\ref{fig:icnnOverview}.
+The AUV and each ice buoy are outfitted with a WHOI Micro-Modem \citep{singh_underwater_2006}, with a four-element receiver array and a single transmitter, one-tenth of a millisecond resolution.
+Acoustic messages were sent with a 10 kHz carrier frequency, 5 kHz bandwidth, and phase-shift keying modulation on a thirty-second cycle, giving room for two-way communication throughout the mission volume.
+The receive and transmit elements were split between shallow and deeper depths (30 and 90 m, respectively) to provide better coverage across the shadow zone.
+While each buoy only has one transmit depth, all buoys have both receive depths but the active receive layer is consistent across all buoys. \llabel{1.12}
+The design of the ICNN enables a self-adapting network to transmit and receive at the optimal depth to maintain contact with the AUV \citep{schneider_self-adapting_2020}.
+The buoys do not encompass the full horizontal range of the vehicle but are positioned to minimize overlap in trilateration for spherical positioning \citep{deffenbaugh_relationship_1996}.
+
+To balance competing uses of the acoustic channel, the network uses a single synchronized digital communication packet to provide both tracking and data to the operator.
+\begin{enumerate}
+\item The AUV, running an ice-tracking DVL and an onboard hydrodynamic model, broadcasts its perceived location on a scheduled, time-synchronized message via WHOI Micro-Modem
+\item Four ice buoys, each outfitted with a WHOI Micro-Modem, receive messages from the AUV and send that information over freewave radio to a Topside computer
+\item The topside computer converts travel times into range estimates using a stochastic embedded prediction of the horizontal group velocity via BELLHOP ray tracing code \citep{porter_bellhop_2011} coupled with an updatable Virtual Ocean \citep{schneider_netsim_2018,bhatt_embedded_2021}
+\item The topside computer calculates a new position by trilaterating the range estimates
+\item The position differential, not the absolute position, is broadcast to the vehicle to update its navigation solution and be robust to latency and intermittency
+\end{enumerate}
+
+In the face of GNSS-denied navigation, this approach was anecdotally successful, as shown in \ref{fig:vehicleRecovery}.
+The AUV \emph{Macrura} was deployed through a hydrohole from an ice camp but recovered through an emergency hydrohole.
+A random disk error stalled the AUV underneath the ice but did not prevent it from transmitting its location.
+Due to an incoming storm, a team placed a physical marker on the ice at the location.
+Three days later, \emph{Macrura} was found within a meter of the marker.
+We view the emergency recovery as qualitative proof of the robustness of this navigation approach.
+Nonetheless, this paper specifically addresses the third and fourth steps\textemdash the conversion of travel time into range and its effect on trilateration.
+By focusing on range estimates between GPS-tracked beacons, and re-running the trilateration pipeline, the results are decoupled from all other mechanisms in the ICNN.
 
 \begin{figure}[h!]
 	\centering
@@ -132,59 +174,134 @@ Section \ref{sec:trilat} emulates the real-time processing pipeline to re-positi
 	\caption{The under-ice mission track for AUV Macrura, including the position updates as it stalled underneath the ice overnight. A marker was placed on the ice at the vehicle's estimated self-location. It was recovered after a three day storm within a meter of the marker.}
 	\label{fig:vehicleRecovery}
 \end{figure}
-% include story later on and cite this figure?
+
+An important component to our navigation solution is an accurate estimation of the sound speed profile.
+Previous field experience, during the Ice Exercise 2016 (ICEX16), demonstrated the negative effects of the Beaufort Lens on tracking and communication \citep{schmidt2016acoustic}.
+Fig. \ref{fig:sspExpectation} shows historical, modeled, and \textit{in situ} data for both ICEX16 and ICEX20.
+These three input streams were selected to mirror the information available on a submarine (personal conversation with LT B. Howard and LT CDR D. Goodwin). \llabel{1.8}
+The SSP information was compressed with a basis representation and sent via lightweight digital acoustic message to the AUV \citep{bhatt_embedded_2021}. \llabel{2.7}
+All modeled data comes from HYCOM \cite{chassignet_hycom_2007}, which does not seem to capture the forcing mechanisms that cause the Beaufort Lens.
+For ICEX16, the data-driven profile was sourced from nearby Ice Tethered Profilers (ITP) after the field experiment \cite{krishfield2008automated,toole2011ice} and exhibits a fairly low lens; the historical profile is from the World Ocean Atlas.
+For ICEX20, the chosen weights (data-driven) profile derives from a basis representation estimation of initial CTD casts taken on site, showing an intense warm water intrusion; the baseline (historical) profile, showing moderate ducted conditions, comes from the average of March 2013 data.
+This month best matched sea ice and sound speed conditions at the beginning of ICEX20 \citep{bhatt_embedded_2021}.
+It is important to note that all profiles that do show the Beaufort Lens do so with different local sound speed maxima at different depths, reflective of the wide range of lens properties observed for all ITP data in the region.
+The variability of the lens height and prominence is the main reason an updatable SSP was integrated into the ICNN solution.
+
+During ICEX20, the HYCOM profile was available but never deployed. \llabel{1.14}
+For post-processing comparison, we introduce both the HYCOM profile and an isovelocity case, 1441.8 $\pm$ 3.7 m/s, as the mean and standard deviation of the observed sound speed profile over the first 200 m.
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\reprintcolumnwidth]{figs/ssp-gvel-icex20-icex16.pdf}
-	\caption{Anticipated sound speed conditions: finish this using stuff from ICEX16, HYCOM, ITP}
+	\caption{Sound speed conditions for historical (baseline), data (chosen weights), and HYCOM model for both ICEX16 and ICEX20.}
 	\label{fig:sspExpectation}
 \end{figure}
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=\textwidth]{figs/Fig2.pdf}
-	\caption{A schematic overview of the Integrated Communication and Navigation Network (ICNN), which provides joint data-transfer and tracking between AUV and a human decision maker at Topside.}
-	\label{fig:icnnOverview}
-\end{figure}
-
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=\textwidth]{figs/modem-chart.pdf}
-  \caption{An overview of the modem experiment by source and receiver depth and position. The black column on the left, $tx$, shows the source depth, $z_s$. The column on the right, $rx$, shows the receivers with the amount of good contacts. The orientation of the triangles\textemdash sideways, upwards, and downwards\textemdash corresponds to depths of 20, 30, and 90 m.}
-  \label{fig:overview}
-  \end{figure}
 
 \clearpage
 \section{\label{sec:realtime} Real-time pseudorange analysis}
 
+Because the vehicle's navigation solution during a mission can only be evaluated on the basis of the error estimates sent, a sister experiment for validating the real-time ranging approach was implemented.
+Ice buoy modems were run as ``virtual vehicles'' at a fixed depth, receiving position updates from the other beacons as well as a camp site modem lowered to 20 m. \llabel{1.13}
+Figure \ref{fig:overview} shows successful events sorted by source depth.
+In this analysis, we assume there is insignificant displacement between the GNSS puck surface expression and subsurface modem; this is supported by unusually low ice drift rates, on average, just 0.7 cm/s.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth]{figs/modem-chart.pdf}
+  \caption{An overview of the modem experiment by source and receiver depth and position with the number of successful decodings and the percent success rate, defined as the ratio of decoded to detected. The black column on the left, $tx$, shows the source depth, $z_s$. The column on the right, $rx$, shows the receivers with the amount of good contacts. The orientation of the triangles\textemdash sideways, upwards, and downwards\textemdash corresponds to depths of 20, 30, and 90 m.}
+  \label{fig:overview}
+  \end{figure}
+
 \subsection{Minimal bounce criteria (MBC)}
+
+The fundamental challenge to implement GNSS-like navigation, especially in an acoustically complex propagation environment, is characterizing a single sound speed to compensate for the effects of ray refraction and reflection.
+The use of the acoustic modem network for tracking relies on the accurate estimates of travel times between the submerged platform and LBL beacons, supported by clock synchronization and a pre-determined scheduling of acoustic events.
+\llabel{2.9} For the Beaufort Lens in particular, the strong multipath effects make it virtually impossible to deterministically predict the modem's detected arrival time.
+
+Instead, for each individual node $i$, an embedded stochastic tracking framework is used to provide a running estimate of the horizontal group velocity $u_{i,j}$ for the conversion from travel time to range from modem $j$, with the ultimate goal of matching the naive group velocity, i.e. the GPS-recorded distance between two nodes divided by the modem-recorded one way travel time between them. 
+
+\llabel{2.10} In the ICEX20 configuration, the acoustic tracking is running on the topside computer, which controls the ICNN.
+Here we assume that the group velocities $u_{i,j}$ are smoothly varying over the course of a vehicle mission, i.e., with respect to range, mission time, and the frequency of updates relative to vehicle motion. 
+The group velocity is tracked on a thirty-second cycle using predictions from the \textit{Virtual Ocean} infrastructure.
+
+\llabel{1.15} When the topside tracking framework receives a modem message, with a time delay, $\Delta t$, from one of the range modems, it will request a new estimate of the group velocity and its associated uncertainty.
+The group velocity estimate is found using the vehicle's reported depth and the extrapolated navigation solution for range, $\hat{r}$, as inputs for the ray tracing program.
+The latter returns an impulse response estimate in the form of ray travel times $dt_{j}$ and amplitudes $a_{j}$ for that range and depth.
+
+\llabel{2.11} The initial call to BELLHOP is over a local grid centered at the range and depth posited by the onboard tracking solution.
+The grid is initialized as 11$\times$11 points spanning 10 m horizontally and 20 m vertically.
+The horizontal dimension reflects the accumulated position error given a thirty-second communication cycle; the vertical dimension reflects how, computationally, eigenrays of the same timefront seem to stack vertically in the water column. \llabel{1.17}
+For each grid point, BELLHOP produces a number of arrivals resulting from multiple propagation paths for any source-receiver pair.
+Using only the $N_0$ rays with neither surface nor bottom bounces, it will then estimate the current group velocity $u$ from a power weighted average of the ray travel times,
+\begin{equation}
+u = \frac{\hat{r} \sum_{n=1}^{N_{0}} a_{n}^{2}}{\sum_{n=1}^{N_{0}} dt_{n}a_{n}^{2}} ~, 
+\end{equation}
+and the associated weighted standard deviation,
+\begin{equation}
+\sigma_{u} \simeq \sqrt{\frac {\sum_{n=1}^{N_{0}} (dt_{n}-\hat{r}/u)^{2}a_{n}^{2}}{ \sum_{n=1}^{N_{0}} a_{n}^{2}} } \frac{u^{2}}{\hat{r}}
+\end{equation}
+If no direct paths exist, i.e. $N_{0}=0$, then the group velocity is computed using the same algorithm for the ray arrivals with one bounce, and so on.
+
+Finally, the pseudorange is calculated simply as
+\begin{equation}
+r_{i,j} = u_{i,j} \Delta t_{i,j} 
+\end{equation}
+
+This stochastic, ensemble method for group velocity calculation can run in real-time, appearing to be orders of magnitude faster than other post-processing methods which seek to determine the specific ray itself that best matches a prominent indicator from the arrival structure.
+The BELLHOP simulation that runs this calculation uses 3600 rays with launch angle fan of -60 to 60 degrees, a depth dependent sound speed profile, and a range dependent bathymetry. \llabel{1.13}
+Even though the NBC looks for just the least complex multipath, the high density of launch angles almost always guarantees a direct path.
+The MBC improves upon a deterministic estimate in that it considers the source and receiver depth to predict a more realistic group velocity.
 
 \subsection{Pseudorange error metrics}
 
-\subsection{Inherent overestimation from the minimal bounce criteria}
+The sister modem experiment generated 811 beacon to beacon communication events with their own real-time MBC group velocity predictions.
+Given the complexity of the ICNN system, this experiment did not collect an exhaustive set of data across all buoy, source depth, receive depth, and sound speed combinations.
+\llabel{1.18} The algorithm generally overestimates pseudoranges because it resolves the effective sound speed for the most direct path.
 
-\subsubsection{Source depth of 20 m}
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=\reprintcolumnwidth]{figs/Fig4.pdf}
+  \includegraphics[width=\reprintcolumnwidth]{figs/range-error-insitu.pdf}
+  \caption{The real-time range error by source (20, 30, and 90 m) and receiver (30 and 90 m) pairings for both sound speed estimates used during ICEX20. The amount of communication events is notated in the top right of each panel. The dashed line indicates no range error, and the boundary drawn indicates scope of the range error as a function of one way travel time.}
+  \label{fig:range-error-insitu}
+\end{figure}
+
+Figure \ref{fig:range-error-insitu} shows the range error boundary for both SSP inputs used in ICEX20.
+A promising sign that the MBC method adapts sound speed realistically is no obvious error growth as travel time increases.
+The baseline SSP (n=243 events) has an absolute pseudorange error of 11.38 $\pm$ 4.23 m; the weighted SSP (n=568), 11.36 $\pm$ 8.12 m.
+The discrepancy between these two is largely due to outlier events only contained in the weighted SSP set.
+Where there is overlap between sound speed conditions used for the real-time MBC, the pseudorange error difference is no more than a few meters.
+The overarching results show that sound speed estimates derived from eigenrays for a local grid, as opposed to a singular point, are accurate enough to support vehicle navigation.
+Nonetheless, the consistent overestimation of pseudorange invites further analysis into acoustic arrival matching.
+
+\subsection{Eigenray identification for beacon-to-beacon events}
+
+Fig. \ref{fig:raytrace-zs30} shows eigenrays in a range independent coordinate system for all three sound speed environments, for a source depth of 30 m.
+\llabel{1.16} It is important to note that BELLHOP produces an \llabel{2.8}abundance of eigenrays; the ones displayed here are chosen by travel time proximity to the recorded data.
+With this filter, the chosen eigenrays show a greater amount of surface interactions as the SSP duct conditions increase.
+
+\llabel{2.14} This is likely driven by the prominence of the duct.
+
+
+\subsubsection{Source depth of 20 m}
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[width=\reprintcolumnwidth]{figs/raytrace-3env-zs-20.pdf}
   \caption{Eigenrays for beacon to beacon events for each sound speed with a nominal source depth of 20 m. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}. The eigenrays are curated from BELLHOP by travel time proximity and are traced in the representative receiver colors over a total ray fan in gray.}
   \label{fig:raytrace-zs20}
 \end{figure}
 
-
 \subsubsection{Source depth of 30 m}
-\begin{figure}[h!]
+\begin{figure}[ht!]
   \centering
-  \includegraphics[width=\reprintcolumnwidth]{figs/Fig4.pdf}
+  \includegraphics[width=\reprintcolumnwidth]{figs/raytrace-3env-zs-30.pdf}
   \caption{Eigenrays for beacon to beacon events for each sound speed with a nominal source depth of 30 m. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}. The eigenrays are curated from BELLHOP by travel time proximity and are traced in the representative receiver colors over a total ray fan in gray.}
   \label{fig:raytrace-zs30}
 \end{figure}
 
 \subsubsection{Source depth of 90 m}
-\begin{figure}[h!]
+\begin{figure}[ht!]
   \centering
-  \includegraphics[width=\reprintcolumnwidth]{figs/Fig4.pdf}
+  \includegraphics[width=\reprintcolumnwidth]{figs/raytrace-3env-zs-90.pdf}
   \caption{Eigenrays for beacon to beacon events for each sound speed with a nominal source depth of 90 m. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}. The eigenrays are curated from BELLHOP by travel time proximity and are traced in the representative receiver colors over a total ray fan in gray.}
   \label{fig:raytrace-zs90}
 \end{figure}
@@ -192,23 +309,111 @@ Section \ref{sec:trilat} emulates the real-time processing pipeline to re-positi
 \clearpage
 \section{\label{sec:post} Post-processed pseudorange analysis}
 
+There are 1242 total beacon-to-beacon events in the modem experiment if real-time ranging can be substituted for post-processed ranging.
+Thus, a post-processing analysis that emulates the real-time navigation engine was run to overcome the unequal distribution of communication events with respect to depth, range, and sound speed status.
+
+It is important to note that the value for the extrapolated range, $\hat{r}$, is only tracked when the modem runs the vehicle behavior; thus we replace $\hat{r}$ with the GPS-tracked range for all modem events.
+Because $\hat{r}$ converges to the correct solution, a comparison of $\hat{r}$ with the GPS-tracked range shows a normal, zero-centered distribution within the bounds of GPS drift.
+The present analysis therefore seeds realistic but ``omniscient'' knowledge of the extrapolated range and leverages the post-processing pipeline to more thoroughly evaluate the acoustic range estimate for all modem events, with three relevant sound speed sources, and both group velocity criterion.
+Accordingly, the results in this section evaluate the utility of the algorithms and sound speed sources, divorced from their role in the ICNN while maintaining real-time relevance.
+
 \subsection{Nearest bounce criteria (NBC)}
+
+\llabel{2.12} As shown in the eigenray traces of Fig. \ref{fig:raytrace-zs30}, the extent of ray bending and repeated reflections is extremely dependent on the sound speed profile.
+An isovelocity approach would completely miss this nuance; our field-tested approach that only resolved the simplest path is unlikely to resolve the one that triggers modem detection.
+Based on this insight, a new algorithm, the nearest bounce criteria (NBC), is a slight modification from the MBC and includes multipath as a new dimension of information to exploit.
+This metric, while run in post-processing, adds a negligible amount of computation for real-time efficacy.
+
+Given a running estimate for the horizontal group velocity $u_{i,j}$ between nodes $i$ and $j$, the navigation system has an extrapolated value for range, $\hat{r}$, in the virtual layer, and a recorded travel time, $\Delta t_{i,j}$, in the physical layer.
+Instead of using only the $N_0$ rays with neither surface nor bottom bounces to estimate group velocity and subsequently moving to incremental number of bounces only when no valid direct path solutions exist, we solve for the power weighted average of the ray travel time for the $N_k$ rays with $k$ bounces,
+\begin{equation}
+t_k = \frac{\sum_{n=1}^{N_{k}} dt_{n}a_{n}^{2}}{\sum_{n=1}^{N_{k}} a_{n}^{2}} ~, 
+\end{equation}
+find the nearest matching power weighted average to recorded travel time,
+\begin{equation}
+t_{i,j,k} = \min_{k=0,1,2,...} \left| t_k - \Delta t_{i,j} \right|
+\end{equation}
+predict a group velocity,
+\begin{equation}
+u_{i,j} = \dfrac{\hat{r}}{t_{i,j,k}}
+\end{equation}
+and estimate the range as was done previously.
+\begin{equation}
+r_{i,j} = u_{i,j}\Delta t_{i,j}
+\end{equation}
+
+This method selects a different group velocity based on the multipath arrival structure, as the detected arrival is not always the first arrival or the direct path and could even be masked by noise or blocked temporarily \citep{deffenbaugh_acoustic_1996}.
+We manually cap the number of bounces to 4 because of the smaller operational scale and the attenuation accrued with many surface interactions.
+Bottom bounces are not encoded separately because of ray's tendency to refract upward, not due to information limitations.
 
 \subsection{Effective sound speed predictions}
 
+The minimal and nearest bounce algorithms are applied with the three sound speed inputs shown in Fig.~\ref{fig:raytrace-zs30}.
+The resulting predicted group velocities for all source depths are shown in Fig~\ref{fig:gvel-post}.
+
 \begin{figure}[h!]
-\includegraphics[width=\columnwidth]{figs/Fig5.pdf}
+\includegraphics[width=\columnwidth]{figs/gvel-txrxdepth-wIso-wGPS.pdf}
 \caption{A comparison of group velocity predictions for all beacon to beacon events in post-processing with a source depth of 30 m, with group velocity on the y-axis and recorded travel time on the x-axis. The left panel is for a receiver depth of 30 m; the right panel for 90 m. The sound speed source is indicated by color. The minimal and nearest bounce criterion are distinguished by different marker shapes, compared to the separately colored red dots showing the naive, data-driven group velocity calculation.}
-\label{fig:gvel30}
+\label{fig:gvel-post}
 \end{figure}
+
+The goal of the group velocity estimation is to converge towards the implied sound speed, i.e. the GNSS-derived range divided by the recorded travel time.
+For a 30 m receiver depth, the NBC shows more overlap with data-derived values as it classifies multipath more correctly.
+For a 90 m receiver depth, the overlap is less accurate due to computational constraints of a limited fan of rays entering the shadow zone rendering a less reliable simulated times of arrival packet.
+
+Overall, analysis shows that the higher multipath classification produces more accurate sound speed predictions, likely driven by a tighter and/or sparser bundle of rays.
+However, that data are too small to draw significant conclusions.
+\llabel{1.19} Discontinuities in multipath classification verify our hypothesis for its importance to a smoothly varying group velocity, as shown in the cluster for a receiver depth of 30 m, where HYCOM jumps from one to two bounces amidst the baseline SSP and weighted SSP smoothly increasing while consistently seeing two and three bounces, respectively.
 
 \subsection{Pseudorange error metrics}
 
 \begin{figure}[!ht]
-\includegraphics[width=\textwidth]{figs/Fig6.pdf}
+\includegraphics[width=\textwidth]{figs/range-error-allMethods.pdf}
 \caption{The post-processed range error for source depths of 20, 30, and 90 m, and receiver depths of 30 and 90 m. The dashed gray line shows no error. The shaded region connects the range performance across all events.}
 \label{fig:rangeError}
 \end{figure}
+
+Fig. \ref{fig:rangeError} shows the directional range error footprints for all three sound speed inputs with respect to OWTT, separated by source and receiver depth configurations.
+The weighted SSP range error generally has the smallest and most zero-centered footprint.
+The one case it does not is for the source-receiver pairings between 30 and 90 m in depth.
+The increased error for these reciprocal transmission paths is most likely driven by the computational artifacts encountered when propagating through the steep sound speed gradients of the lens and through the shadow zone.
+All other source depth pairings are significantly improved using the chosen weights compared to HYCOM or the baseline.
+
+When using a linear scaling to convert travel time into range, any offset between the assumed sound speed and the horizontal group velocity produces unconstrained error with increasing receiver distance.
+Most importantly, we see the consequences of the adaptive group velocity in that range error does not strictly increase with OWTT.
+
+
+The improvement from MBC to NBC is most evident for the realistic sound speed; while the HYCOM SSP improves from a median absolute range error of 6.41 to 4.61 m, the baseline SSP improves from 10.30 to 2.27 m, and the weighted SSP improves from 13.28 to 2.12 m.
+Table \ref{tab:rangeErrorV1V2} shows further statistics on the absolute range error by SSP and group velocity algorithm.
+The order of magnitude improvement in the ducted SSPs demonstrate the effectiveness of the algorithm exploiting the multipath conditions.
+
+\begin{table}[h!]
+\renewcommand{\arraystretch}{1.5}
+\centering
+\begin{tabular}{r|cc|cc|cc}\toprule
+ & \multicolumn{2}{c|}{\textbf{Baseline} } & \multicolumn{2}{c|}{\textbf{Chosen Weights} } & \multicolumn{2}{c}{\textbf{HYCOM}} \\
+  & \cellcolor[HTML]{EFEFEF}MBC & NBC & \cellcolor[HTML]{EFEFEF} MBC& NBC & \cellcolor[HTML]{EFEFEF}MBC & NBC \\ \hline
+ minimum [m] 	& \cellcolor[HTML]{EFEFEF}0.01 & 0.00	& \cellcolor[HTML]{EFEFEF}0.00 	& 0.00 	& \cellcolor[HTML]{EFEFEF}0.11 & 0.01 \\
+ 25th \% [m]   & \cellcolor[HTML]{EFEFEF}4.96 & 0.99	& \cellcolor[HTML]{EFEFEF}6.26 	& 0.95 	& \cellcolor[HTML]{EFEFEF}3.30 & 2.25 \\   
+ median [m]		& \cellcolor[HTML]{EFEFEF}10.30 & 2.27 	& \cellcolor[HTML]{EFEFEF}13.28 & 2.12 	& \cellcolor[HTML]{EFEFEF}6.41 & 4.61 \\
+ 75th \% [m]   & \cellcolor[HTML]{EFEFEF}15.81 & 5.51 	& \cellcolor[HTML]{EFEFEF}19.75 & 4.11 	& \cellcolor[HTML]{EFEFEF}10.92 & 7.46 \\
+ maximum [m]    & \cellcolor[HTML]{EFEFEF}22.52 & 14.96 & \cellcolor[HTML]{EFEFEF}1491  & 20.21 & \cellcolor[HTML]{EFEFEF}19.55 & 15.81 \\
+ \toprule
+\end{tabular}
+\caption[Comparison of post-processing range estimation algorithms across all events]{A comparison of range estimation metrics for each sound speed source and group velocity estimation algorithm for all 1283 beacon to beacon events via post-processing. The 0th (minimum), 25th, 50th (median), 75th, and 100th (maximum) percentiles are shown to the range resolution afforded by the WHOI Micro-Modem. There are a few outliers that drive the mean to be higher than the median.}
+\label{tab:rangeErrorV1V2}
+\end{table}
+
+As shown in table \ref{tab:rangeErrorV1V2}, there is a striking maximum range error of 1491 m for the weighted SSP in the minimal bounce criteria.
+There are 10 events from South transmitting at 30 m depth to North receiving at 30 m depth.
+The OWTT spread is from 2.1958 to 2.1963 s; the naive group velocity is 1429.3 to 1430.1 m/s; and the GPS-tracked range is from 3138.54 m to 3140.87 m.
+This example ends up being an excellent case study for how sound speed and multipath fidelity work in concert to minimize range error.
+The large error in this instance is driven by the MBC unexpectedly defaulting to a bottom bounce with a much greater OWTT.
+The NBC classifies the multipath as 4 bounces, reducing the range error from greater than a kilometer to less than a meter.
+While there is no actual way of knowing if this is the correct multipath structure, the range error is remarkably small, at 0.025\%. 
+This pattern of not choosing the minimal observed bounce structure is consistent across all SSPs; the baseline goes from 1 to 3 bounces and HYCOM goes from 0 to 2 bounces.
+Notably, the baseline and HYCOM range errors are never egregiously large, but are nonetheless improved with the NBC algorithm.
+Thus, for acoustically complex environments, the NBC has a disproportionately positive impact as the estimated SSP approaches the desired SSP.
 
 \clearpage
 \section{Trilateration for ICEX20 field data}\label{sec:trilat}
@@ -232,12 +437,94 @@ Section \ref{sec:trilat} emulates the real-time processing pipeline to re-positi
 
 \subsection{Investigating potential GNSS noise}
 
+The fact that the bulk of the re-localization error exists within the precision of the GNSS unit deployed invites a further look into GNSS noise.
+In the Arctic, GNSS performance worsens due to poor constellation coverage, larger ionospheric effects, and multipath interference.
+The National Security Implications of Climate Change for U.S. Naval Forces \citep{NAP12914} details some of the limitations of the Global Positioning System (GPS) at polar latitudes.
+Radio infrastructure that provides position corrections and references does not regularly extend to polar regions.
+The effect is minor for surface platform navigation \textemdash roughly 15 m of horizontal precision has been displayed at the North Pole\textemdash but is significant enough to register against the modem's detected travel times.
+Figure \ref{fig:gps-drift-example} zooms in on the GNSS and OWTT noise relative to the ice movement for two pairs of modem buoy connections.
+The two panels indicate the GPS drift as $\delta R = \sqrt{\delta x^2 + \delta y^2}$ and temporal drift, $\delta t$, relative to the median OWTT recorded between the two modems.
+The dashed line is scaled by a group velocity of 1440 m/s, such that if there were ideal sensor measurements with no drift, all events should exist on or near the line.
+
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\reprintcolumnwidth]{figs/gps-drift-example.pdf} 
 	\caption{A comparison of GPS drift (y-axis) versus OWTT drift (x-axis), colored by source and receiver depth. The physical link between North and East are shown on the top; South and West is on the bottom.}
 	\label{fig:gps-drift-example}
 \end{figure}
+
+The top panel shows the connections between the North and East buoys.
+There is relative, i.e. non-rigid, ice movement between the North and East buoys, evidenced by events spanning the dashed line.
+But the height of the scatter plot is indicative of the precision of the GPS signal, as it remains consistent across many arrival time bands.
+Naturally, some minor offsets between these vertical bands relate to different operational configurations of source and receiver depth.
+However, the large majority of events show vertical banding for the same nominal $\delta t$, indicating the amount of GPS drift.
+
+This idea of GPS drift relative to the same OWTT measurements is further indicated by events between the other two buoys, South and West, in the bottom panel.
+These buoys are moving in a more rigid ice floe and there is minimal impact by source and receiver depth on the spread of OWTT.
+The GPS drift is much larger relative to the OWTT drift, which is sensitive to acoustic scattering, multipath, and/or environmental microstructure.
+
+These are just two subsets of the physical links that cover all four GPS modem buoys.
+The GPS at camp is the least accurate due to the human activity and infrastructure occluding the physical puck.
+
+\section{Discussion}
+
+Given the computational constraints of real-time modeling, the gridded approach facilitates enough multipath classification to build in a ``ray ensemble'' of characteristic group velocities.
+This result is not always possible when aiming to find eigenrays to just an individual point, even with a higher density of launch angles.
+An important takeaway for those interested in ray-based localization is leveraging a local grid to give BELLHOP tolerance for finding solutions that otherwise may not be found in a center or single point solution.
+The limitations of numerical computation, particularly for a complex environment, are more adeptly addressed by accepting some uncertainty in position than by prescribing an exact solution.
+Even though BELLHOP is a greedy estimator for eigenrays, the additional data created is a negligible burden. 
+
+Underwater navigation research is broadly motivated by acquiring GPS-like navigation accuracy in GPS-denied conditions.
+The Arctic, while remote, is the perfect place to test mature navigation technologies in real GPS-denied conditions.
+
+Range estimation is an essential step of acoustic localization and navigation.
+Current approaches in real-time underwater acoustic navigation simplify the non-linear relationship between a sound speed profile and acoustic propagation with a deterministic sound speed.
+Some post-processing approaches attempt to leverage the acoustic arrival structure via various ray methods, but often use a singular SSP for simplicity, even over long term missions or dynamic conditions.
+Thus, the conversion from travel time to range, particularly for real-time vehicle deployments, can be pre-conditioned for error growth as the OWTT/range increases.
+
+For GPS-denied navigation, especially in hostile environments like the Arctic, tolerance for error is close to none.
+This work addresses a critical need in acoustic navigation by retooling acoustic arrival methods generally deemed too complex or labor intensive for real-time, ray-based range estimation to achieve GPS-like positioning.
+
+We hypothesize and validate that the embedded stochastic prediction of a single group velocity is a smoothly varying function of range, source and receiver depth pairings, as well as multipath structure.
+We employ a GPS-tracked experiment to have a ground truth comparison for real-time localization algorithms.
+The real-time system achieves GPS-like navigation for an AUV without taking into account multipath structure; the ranging error improves by an order of magnitude with the suggested multipath adaptability, minimizing range error to single meters.
+Post-processing analysis shows that this method of ranging is sensitive to GPS drift itself; thus embedding a stochastic prediction of the horizontal group velocity has an outsized benefit to minimizing trilateration error.
+
+There are many avenues through which this approach can be further refined and tested for field operations.
+Amongst them is defining the uncertainty grid for BELLHOP via stochastic or data-driven measures such as the distance traveled by the AUV between ICNN updates or the magnitude of the position corrections by the ICNN.
+Another is to entirely remove the seeded range and instead rely on the submerged asset's depth and recorded OWTT to find high probability fields in range.
+
+The literature in underwater acoustic navigation and positioning is either real-time or physics-based.
+In this paper we demonstrate a field-tested approach that is both real-time and physics-based; this is achieved by coupling data streams with fast acoustic modeling.
+The methods exploit the upward refracting nature and the total ice cover of the Arctic environment to achieve remarkable ranging accuracy and precision.
+It transforms multipath, widely considered as an obstacle for acoustic ranging, into a new information content to refine ranging accuracy.
+We believe that this work enables more accurate range estimation, localization, and/or navigation for any field experiment given known source and receiver depths.
+
+\subsection{Broader relevance \& future work}
+
+Performance in other acoustic environments may require introducing a different thresholded metric to sort time of arrivals.
+Given the NBC algorithm's improvement with increased multipath, its effectiveness is likely only challenged by the valid operational scales of a range independent propagation environment.
+For mesoscale operations, like that of many gliders, the group velocity criteria may need to be modified to better account for variability driven by range dependent propagation through internal waves, eddies, or even bathymetric changes like underwater volcanoes.
+BELLHOP simulations provide other relevant eigenray information, like time and angle of arrival, that is ripe for statistical and machine learning methods to classify a representative group velocity.
+A bespoke and fast ray tracing method, which was used during ICEX20 to evaluate the acoustic fit of sound speed profile parameterization \citep{bhatt_embedded_2021}, can easily report back the number of turning points instead of the number of bounces for multipath classification.
+
+This approach will start to break down in extremely dynamic environments.
+Fast moving fronts, as seen in estuaries like the Connecticut River into the Long Island Sound, present an entirely new set of challenges not seen by internal waves or eddies.
+Buoyancy fluctuations in these regions threaten even simple AUV tasks like following a trackline.
+Acoustic communications are further complicated given a shallow environment with significant scattering \citep{lavery_measurements_2010,ross_acoustic_2012,lavery_broadband_2013}, where fast acoustic modeling may only be coherent for trivial probabilities of the ocean state.
+Realistic \textit{in situ} considerations of the acoustic environment may not be possible in such environments without complete through-the-sensor integration of echosounder data and/or a hyper-realistic onboard ocean model.
+
+\llabel{1.20} Many approaches to underwater navigation combine it with acoustic tomography, i.e., a joint estimation of both source and receiver locations and the ocean volume between them.
+There has been considerable success at this effort in post-processing methods, which utilize intensive\textemdash and due to the non-linearity of sound propagation, often brute force\textemdash computational methods. 
+For vehicle operations, fast tomography is the ideal implementation, in that one can fully consider how sound speed structure, horizontally and vertically, influences sound propagation.
+AUVs can serve as moving sources to better image the ocean volume \citep{deffenbaugh_optimal_1997,elisseeff_ocean_2002}, where mobile tomography and navigation converge on the same set of component technologies: position estimation, sound speed parameterization estimation, ray path identification, and vehicle path optimization.
+
+But there are overwhelming challenges, operationally and computationally, for fast, mobile tomography to become a realistic endeavor.
+Addressing the spatial and temporal scales of what can be solved deterministically and what must be solved stochastically imposes a resolution constraint on the utility of gridded models\textemdash resolving fine features inaccurately (or with a false sense of confidence) could be more harmful than assuming range independence.
+Given that AUV operations are often on small spatial and temporal scales, the added benefit of a gridded model is quite small, and in cases like the Arctic, may actually mischaracterize the ocean volume. 
+For gliders, with longer and larger operational scales, an ocean model may provide more useful information.
+Currently gliders are low power and do not have the storage or computational power to run a full-scale, realistic ocean model.
+A lightweight representation of the key environmental and acoustic features, passed through the same manner of acoustic message from the modem experiment, may drastically improve glider navigation.
 
 % ================================================== %
 % \begin{figure}[ht]
