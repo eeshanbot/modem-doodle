@@ -3,7 +3,7 @@
 clear; clc; close all;
 
 %% load trilat mat from Oscar
-load ../../data/trilat_plus_hists.mat
+load ../../data/modem_trilat_plus_hists.mat
 trilat = trilateration_results;
 clear trilateration_results
 
