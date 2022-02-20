@@ -1,5 +1,6 @@
 %% prep workspace
 clear; clc; close all;
+addpath('../../src');
 
 %% load data
 A = load('../../data/tobytest-recap-clean.mat'); % loads "event"
@@ -70,13 +71,15 @@ for zs = [20 30 90]
             set(gca,'fontsize',13)
             
             % for all grids
-            title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','bold');
-            text(2.2,25,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
+            %title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','bold');
+            title('  ','fontsize',8);
+            text(2.2,24,sprintf('tx depth = %u m',zs),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
+            text(2.2,24,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
             
             if sum(index)~=1
-                text(2.2,25-3.*eof_status,sprintf('%s = %u events',eof_str,sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+                text(2.2,21-3.*eof_status,sprintf('%s = %u events',eof_str,sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
             else
-                text(2.2,25,sprintf('%s = %u event',eof_str,sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+                text(2.2,21,sprintf('%s = %u event',eof_str,sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
             end
             grid on
             
@@ -108,7 +111,7 @@ hold off
 legend(l2,'Baseline','Chosen Weights','location','northwest');
 
 % title
-sgtitle('In situ range error by source (20,30,90 m) and receiver (30,90 m) depths','fontsize',17,'fontweight','bold')
+sgtitle('Real-time pseudorange error by source and receiver depths','fontsize',17,'fontweight','bold')
 h_printThesisPNG('range-error-insitu');
 
 %% find mean, median, etc for baseval vs eof

@@ -179,9 +179,6 @@ This month best matched sea ice and sound speed conditions at the beginning of I
 It is important to note that all profiles that do show the Beaufort Lens do so with different local sound speed maxima at different depths, reflective of the wide range of lens properties observed for all ITP data in the region. \llabel{2.5}
 The variability of the lens height and prominence is the main reason an updatable SSP was integrated into the ICNN solution.
 
-During ICEX20, the HYCOM profile was available but never deployed. \llabel{1.14}
-For post-processing comparison, we introduce both the HYCOM profile and an isovelocity case, 1441.8 $\pm$ 3.7 m/s, as the mean and standard deviation of the observed sound speed profile over the first 200 m.
-
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\reprintcolumnwidth]{figs/ssp-gvel-icex20-icex16.pdf}
@@ -189,18 +186,21 @@ For post-processing comparison, we introduce both the HYCOM profile and an isove
 	\label{fig:sspExpectation}
 \end{figure}
 
+During ICEX20, the HYCOM profile was available but never deployed. \llabel{1.14}
+For post-processing comparison, we introduce both the HYCOM profile and an isovelocity case, 1441.8 $\pm$ 3.7 m/s, as the mean and standard deviation of the observed sound speed profile over the first 200 m.
+
 \clearpage
 \section{\label{sec:realtime} Real-time pseudorange analysis}
 
 Because the vehicle's navigation solution during a mission can only be evaluated on the basis of the error estimates sent, a sister experiment for validating the real-time ranging approach was implemented.
 Ice buoy modems were run as ``virtual vehicles'' at a fixed depth, receiving position updates from the other beacons as well as a camp site modem lowered to 20 m. \llabel{1.13}
 Figure \ref{fig:overview} shows successful events sorted by source depth.
-In this analysis, we assume there is insignificant displacement between the GNSS puck surface expression and subsurface modem; this is supported by unusually low observed ice drift rates, on average, just 0.7 cm/s.
+In this analysis, we assume there is insignificant displacement between the GNSS puck surface expression and subsurface modem; this is supported by unusually low observed ice drift rates, just 0.7 cm/s on average throughout the mission.
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{figs/modem-chart.pdf}
-  \caption{An overview of the modem experiment by source and receiver depth and position with the number of successful decodings and the percent success rate, defined as the ratio of decoded to detected. The black column on the left, $tx$, shows the source depth, $z_s$. The column on the right, $rx$, shows the receivers with the amount of good contacts. The orientation of the triangles\textemdash sideways, upwards, and downwards\textemdash corresponds to depths of 20, 30, and 90 m.}
+  \caption{An overview of the modem experiment by source and receiver depth and position. The black column on the left, $tx$, shows the source depth, $z_s$, with the total number of transmissions. The column on the right, $rx$, shows the receivers with the number of successful decodings and the percent success rate, defined as the ratio of decoded to detected. The orientation of the triangles\textemdash sideways, upwards, and downwards\textemdash corresponds to depths of 20, 30, and 90 m.}
   \label{fig:overview}
   \end{figure}
 
@@ -210,37 +210,35 @@ The fundamental challenge to implement GNSS-like navigation, especially in an ac
 The use of the acoustic modem network for tracking relies on the accurate estimates of travel times between the submerged platform and LBL beacons, supported by clock synchronization and a pre-determined scheduling of acoustic events.
 \llabel{2.9} For the Beaufort Lens in particular, the strong multipath effects make it virtually impossible to deterministically predict the modem's detected arrival time.
 
-Instead, for each individual modem $i$, an embedded stochastic tracking framework is used to provide a running estimate of the horizontal group velocity $u_{i,j}$ for the conversion from travel time to range from modem $j$, with the ultimate goal of matching the naive group velocity, i.e. the GPS-recorded distance between two nodes divided by the modem-recorded one way travel time between them. 
+Instead, for each individual modem $i$, an embedded stochastic tracking framework is used to provide a running estimate of the effective sound speed $c_{i,j}$ for the conversion from travel time to range from modem $j$, with the ultimate goal of matching the implied horizontal effective sound speed, i.e., the GPS-recorded distance between two nodes divided by the modem-recorded one way travel time between them. 
 
 \llabel{2.10} In the ICEX20 configuration, the acoustic tracking is running on the topside computer, which controls the ICNN.
-Here we assume that the group velocities $u_{i,j}$ are smoothly varying over the course of a vehicle mission, i.e., with respect to range, mission time, and the frequency of updates relative to vehicle motion. 
-The group velocity is tracked on a thirty-second cycle using predictions from the \textit{Virtual Ocean} infrastructure.
+Here we assume that the effective sound speeds $c_{i,j}$ are smoothly varying over the course of a vehicle mission, i.e., with respect to range, mission time, and the thirty-second frequency.
 
-\llabel{1.15} When the topside tracking framework receives a modem message, with a time delay, $\Delta t$, from one of the range modems, it will request a new estimate of the group velocity and its associated uncertainty.
-The group velocity estimate is found using the vehicle's reported depth and the extrapolated navigation solution for range, $\hat{r}$, as inputs for the ray tracing program.
-The latter returns an impulse response estimate in the form of ray travel times $dt_{j}$ and amplitudes $a_{j}$ for that range and depth.
+\llabel{1.15} When the topside tracking framework receives a message, with a time delay, $\Delta t$, it will request a new estimate for $c_{i,j}$ along with its standard deviation.
+The effective sound speed is predicted using the vehicle's reported depth and the extrapolated navigation solution for range, $\hat{r}$, as inputs to the ray tracing program, which returns an impulse response estimate in the form of ray travel times $dt_{j}$ and amplitudes $a_{j}$.
 
 \llabel{2.11} The initial call to BELLHOP is over a local grid centered at the range and depth posited by the onboard tracking solution.
-The grid, compared to a point solver, adds redundancy in resolving the actual multipath structure for a reliable acoustic path without taxing onboard computational time and memory.
-It is initialized as 11$\times$11 points spanning 10 m horizontally and 20 m vertically.
-The horizontal dimension reflects the accumulated position error given a thirty-second communication cycle; the vertical dimension reflects how, computationally, eigenrays of the same timefront seem to stack vertically in the water column. \llabel{1.17}
-For each grid point, BELLHOP produces a number of arrivals resulting from multiple propagation paths for any source-receiver pair.
-Using only the $N_0$ rays with neither surface nor bottom bounces, it will then estimate the current group velocity $u$ from a power weighted average of the ray travel times,
+The grid, compared to a point solver, adds redundancy in resolving the actual multipath structure for a reliable acoustic path without overtaxing onboard computational time and memory.
+It is initialized as 11 $\times$ 11 points spanning 10 m horizontally and 20 m vertically.
+The horizontal dimension reflects the accumulated vehicle position error given a thirty-second communication cycle; the vertical dimension reflects how, computationally, eigenrays of the same timefront seem to stack vertically in the water column. \llabel{1.17}
+For each grid point, BELLHOP produces a number of arrivals resulting from multiple propagation paths.
+Using only the $N_0$ rays with neither surface nor bottom bounces, it will then estimate the current effective sound speed $c$ from a power weighted average of the ray travel times,
 \begin{equation}
-u = \frac{\hat{r} \sum_{n=1}^{N_{0}} a_{n}^{2}}{\sum_{n=1}^{N_{0}} dt_{n}a_{n}^{2}} ~, 
+c = \frac{\hat{r} \sum_{n=1}^{N_{0}} a_{n}^{2}}{\sum_{n=1}^{N_{0}} dt_{n}a_{n}^{2}} ~, 
 \end{equation}
 and the associated weighted standard deviation,
 \begin{equation}
-\sigma_{u} \simeq \sqrt{\frac {\sum_{n=1}^{N_{0}} (dt_{n}-\hat{r}/u)^{2}a_{n}^{2}}{ \sum_{n=1}^{N_{0}} a_{n}^{2}} } \frac{u^{2}}{\hat{r}}
+\sigma_{c} \simeq \sqrt{\frac {\sum_{n=1}^{N_{0}} (dt_{n}-\hat{r}/u)^{2}a_{n}^{2}}{ \sum_{n=1}^{N_{0}} a_{n}^{2}} } \frac{u^{2}}{\hat{r}}
 \end{equation}
-If no direct paths exist, i.e. $N_{0}=0$, then the group velocity is computed using the same algorithm for the ray arrivals with one bounce, and so on.
+If no direct paths exist, i.e. $N_{0}=0$, then the effective speed is computed using the same algorithm for the ray arrivals with one bounce, and so on.
 
 Finally, the pseudorange is calculated simply as
 \begin{equation}
-r_{i,j} = u_{i,j} \Delta t_{i,j} 
+r_{i,j} = c_{i,j} \Delta t_{i,j} 
 \end{equation}
 
-Thus the NBC method assumes the signal detected by the modem will be dominated set of paths with the least number of boundary interactions.
+Thus the MBC method assumes the signal detected by the modem will be dominated by a set of paths with the least number of boundary interactions.
 Importantly, this stochastic, ensemble method for group velocity calculation can run in real-time, appearing to be orders of magnitude faster than other post-processing methods which seek to determine the specific ray itself that best matches a prominent indicator from the arrival structure.
 The BELLHOP simulation that runs this calculation uses 3600 rays with launch angle fan of -60 to 60 degrees, a representative depth dependent sound speed profile, and a range dependent bathymetry. \llabel{1.13}
 
@@ -253,12 +251,12 @@ Given the complexity of the ICNN system, this experiment did not collect an exha
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\reprintcolumnwidth]{figs/range-error-insitu.pdf}
-  \caption{The real-time range error by source (20, 30, and 90 m) and receiver (30 and 90 m) pairings for both sound speed estimates used during ICEX20. The amount of communication events is notated in the top right of each panel. The dashed line indicates no range error, and the boundary drawn indicates scope of the range error as a function of one way travel time.}
+  \caption{The real-time range error by source (rows: 20, 30, and 90 m) and receiver (columns: 30 and 90 m) pairings for both sound speed estimates used during ICEX20. The amount of communication events is notated in the top right of each panel. The dashed line indicates no range error, and the boundary drawn indicates scope of the range error as a function of one way travel time.}
   \label{fig:range-error-insitu}
 \end{figure}
 
-Figure \ref{fig:range-error-insitu} shows the range error boundary for both SSP inputs used in ICEX20.
-A promising sign that the MBC method adapts sound speed realistically is no obvious error growth as travel time increases.
+Fig. \ref{fig:range-error-insitu} shows the range error boundary for both SSP inputs used in ICEX20.
+A promising sign that the MBC method adapts sound speed somewhat intelligently is the lack of error growth as travel time increases.
 The baseline SSP (n=243 events) has an absolute pseudorange error of 11.38 $\pm$ 4.23 m; the weighted SSP (n=568), 11.36 $\pm$ 8.12 m.
 The discrepancy between these two is largely due to outlier events only contained in the weighted SSP set.
 Where there is overlap between sound speed conditions used for the real-time MBC, the pseudorange error difference is no more than a few meters.
@@ -269,18 +267,18 @@ Nonetheless, the consistent overestimation of pseudorange invites further analys
 \subsection{Eigenray identification for beacon-to-beacon events}
 
 Accounting for ice movement between beacons creates nominal ranges with small variability.
-Figs. \ref{fig:raytrace-zs20,fig:raytrace-zs30,fig:raytrace-zs90} each show eigenrays for three sound speed environments for source depths of 20, 30, and 90 m, respectively.
-Eigenrays were initially found using the built-in BELLHOP protocol with a launch angle step of 0.05 degrees from -60 to 60 degrees.
+Figs. \ref{fig:raytrace-zs20}, \ref{fig:raytrace-zs30}, and \ref{fig:raytrace-zs90} show eigenrays for three sound speed environments for source depths of 20, 30, and 90 m, respectively.
+Eigenrays were initially found using the built-in BELLHOP protocol with a launch angle fan of 2400 rays between -60 and 60 degrees.
 Separately, recorded travel times between beacons were clustered with 1 millisecond boundaries such that some source-receiver pairs had multiple, distinct travel times to approximate.
 The BELLHOP eigenray returns\llabel{2.8} were then filtered such that one was selected per travel time cluster, in the hopes that the eigenray will converge to the receiver locations for the most realistic sound speed input. \llabel{1.16}
 It should be noted that bottom bounces were recovered but filtered out.
-The three source depths create distinguishable ray geometries with respect to the three sound speed inputs.
+The three source depths create distinct ray geometries with respect to the three sound speed inputs.
 
 \subsubsection{Source depth of 20 m}
 \begin{figure}[ht!]
   \centering
   \includegraphics[width=\reprintcolumnwidth]{figs/raytrace-3env-zs-20.pdf}
-  \caption{Eigenrays for beacon to beacon events for each sound speed with a nominal source depth of 20 m. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}. The eigenrays are curated from BELLHOP by travel time proximity and are traced in the representative receiver colors over a total ray fan in gray.}
+  \caption{Eigenrays for beacon-to-beacon events for each sound speed with a nominal source depth of 20 m over a total ray fan in gray. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}.}
   \label{fig:raytrace-zs20}
 \end{figure}
 
@@ -295,7 +293,7 @@ The ray paths all interact with the surface and the eigenrays for the Northern (
 \begin{figure}[ht!]
   \centering
   \includegraphics[width=\reprintcolumnwidth]{figs/raytrace-3env-zs-30.pdf}
-  \caption{Eigenrays for beacon to beacon events for each sound speed with a nominal source depth of 30 m. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}. The eigenrays are curated from BELLHOP by travel time proximity and are traced in the representative receiver colors over a total ray fan in gray.}
+  \caption{Eigenrays for beacon-to-beacon events for each sound speed with a nominal source depth of 30 m over a total ray fan in gray. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}.}
   \label{fig:raytrace-zs30}
 \end{figure}
 
@@ -310,7 +308,7 @@ For the HYCOM, baseline, and weighted SSP inputs, the most appropriate eigenrays
 \begin{figure}[ht!]
   \centering
   \includegraphics[width=\reprintcolumnwidth]{figs/raytrace-3env-zs-90.pdf}
-  \caption{Eigenrays for beacon to beacon events for each sound speed with a nominal source depth of 90 m. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}. The eigenrays are curated from BELLHOP by travel time proximity and are traced in the representative receiver colors over a total ray fan in gray.}
+  \caption{Eigenrays for beacon-to-beacon events for each sound speed with a nominal source depth of 90 m over a total ray fan in gray. The beacons are highlighted in color/marker coding in Fig. \ref{fig:overview}.}
   \label{fig:raytrace-zs90}
 \end{figure}
 
@@ -320,18 +318,20 @@ The HYCOM eigenrays still show the most reliable acoustic paths that deteriorate
 The lack of direct paths from the observed SSP further points out the shortcomings of the MBC approach.
 
 The goal of the MBC algorithm was to provide a reliable, physically intuitive interpretation of the acoustic propagation without taking on the additional burden of regularly identifying specific paths that may connect any given source-receiver pair in the network.
-Its performance was adequate for vehicle navigation and would have likely sufficed if it were not for the prominence of the duct observed relative that of other model and data products. \llabel{2.14}
+\llabel{2.14}
+Its performance was adequate for vehicle navigation and would have likely sufficed if it were not for the prominence of the duct observed relative that of other model and data products. 
 
 \clearpage
 \section{\label{sec:post} Post-processed pseudorange analysis}
 
 From all events recorded during the modem test experiment, there are 1242 successfully decoded beacon-to-beacon events.
-Only these events are used to evaluate ranging accuracy, as the ICNN was not configured to use receptions with failure flags.
 Thus, a post-processing analysis that emulates the real-time navigation engine was run to overcome the unequal distribution of communication events with respect to depth, range, and sound speed status.
 
 It is important to note that the value for the extrapolated range, $\hat{r}$, is only tracked when the modem runs the vehicle behavior; thus we replace $\hat{r}$ with the GPS-tracked range for all modem events.
 Because $\hat{r}$ converges to the correct solution, a comparison of $\hat{r}$ with the GPS-tracked range shows a normal, zero-centered distribution within the bounds of GPS drift.
-The present analysis therefore seeds realistic but ``omniscient'' knowledge of the extrapolated range and leverages the post-processing pipeline to more thoroughly evaluate the acoustic range estimate for all modem events, with three relevant sound speed sources, and both group velocity criterion.
+The analysis therefore seeds realistic but ``omniscient'' knowledge of the extrapolated range and emulates the post-processing pipeline to more thoroughly evaluate the acoustic pseudorange estimate for all modem events.
+Sound speed inputs are the isovelocity sound speed in addition to the modeled, baseline, and weighted SSPs from Fig. \ref{fig:sspExpectation}.
+The analysis replicates the MBC but also introduces a new filtering algorithm, the nearest bounce criteria (NBC), based on insights gleaned from the eigenray analysis.
 Accordingly, the results in this section evaluate the utility of the algorithms and sound speed sources, divorced from their role in the ICNN while maintaining real-time relevance.
 
 \subsection{Nearest bounce criteria (NBC)}
