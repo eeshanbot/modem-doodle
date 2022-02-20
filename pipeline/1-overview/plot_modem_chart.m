@@ -136,12 +136,14 @@ eof_time = RECAP.data_time;
 % for each tx depth (if multiple, bottom first)
 % for each rx depth
 % in order of valid data in modem labels -- North, South, East, West, Camp
-countOscar = [44 110 18 82 61 28 137 74 ...
+countRX = [44 110 18 82 61 28 137 74 ...
               71 74 121 160 76 ...
               32 10 28 34 ...
               91 55 150 155 38 ...
               12 43 45 34];
 c0 = 0;
+
+countTX = containers.Map(modem_labels,[303 94 417 95 396]);
 
 markerSize = 220;
 
@@ -190,7 +192,7 @@ plotspread = linspace(0,N,5) - N/2;
 xOffsetMap = containers.Map(modem_labels,plotspread);
 x2OffsetMap = containers.Map([20 30 90],[0 0 .3]);
 z2OffsetMap = containers.Map([20 30 90],[-.1 -.1  .2]);
-textOffsetMap = containers.Map(modem_labels,1.1.*[-1 1 -1 1 -1]);
+textOffsetMap = containers.Map(modem_labels,1.3.*[-1 1 -1 1 -1]);
 
 for txDepth = modem_rx_depth
     
@@ -205,8 +207,13 @@ for txDepth = modem_rx_depth
     
     for tNode = unique_tx_nodes
         
+        % plot tx node in TX
         scatter(xTX+0.5,ZMap(txDepth) + zOffsetMap(tNode{1}) + z2OffsetMap(txDepth),...
             markerSize,markerModemMap(tNode{1}),markerShape(txDepth),'filled')
+        
+        % plot count TX
+        text(xTX+0.5,ZMap(txDepth) + zOffsetMap(tNode{1}) + z2OffsetMap(txDepth) - z2OffsetMap(txDepth) + textOffsetMap(tNode{1}),...
+            num2str(countTX(tNode{1})),'VerticalAlignment','middle','HorizontalAlignment','center','color',markerModemMap(tNode{1}),'fontweight','bold');
         
         tx_node_index = find(strcmp(RECAP.tag_tx,tNode{1}));
         
@@ -243,9 +250,9 @@ for txDepth = modem_rx_depth
                     text(xval,yval - z2OffsetMap(rDepth) + textOffsetMap(tNode{1}),num2str(sum(index)),... 
                        'VerticalAlignment','middle','HorizontalAlignment','center','color',markerModemMap(rNode{1}),'fontweight','bold');
                      
-                   percentGood = round(sum(index)./countOscar(c0)*100);
+                   percentGood = round(sum(index)./countRX(c0)*100);
                    percentGoodStr = sprintf('%2d%%',percentGood);
-                     text(xval,yval - z2OffsetMap(rDepth) + 2.*textOffsetMap(tNode{1}),percentGoodStr,... 
+                     text(xval,yval - z2OffsetMap(rDepth) + 1.75.*textOffsetMap(tNode{1}),percentGoodStr,... 
                        'VerticalAlignment','middle','HorizontalAlignment','center','color',[0.4 0.4 0.4]);
                     
                 end
