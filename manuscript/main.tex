@@ -17,7 +17,7 @@
 \date{\today}
 
 \begin{abstract}
-The long baseline (LBL) underwater navigation paradigm relies on the conversion of recorded travel time to range to trilaterate for position.
+The long baseline (LBL) underwater navigation paradigm relies on the conversion of recorded travel times into pseudoranges to trilaterate position.
 For real-time operations, this conversion has assumed an isovelocity sound speed.
 For re-navigation in post-processing, computationally and/or labor intensive acoustic modeling may be employed to reduce uncertainty driven by multipath arrivals.
 This work demonstrates a real-time ray-based prediction method of the effective sound speed along a path from source to receiver to minimize vehicle position error.
@@ -25,10 +25,10 @@ This work demonstrates a real-time ray-based prediction method of the effective 
 The vehicle was successfully deployed and recovered.
 \llabel{2.2} Given the lack of GPS data throughout the vehicle's mission, however, the pseudorange performance is first evaluated on connections between GPS-linked beacons.
 The real-time ranging error between beacons is roughly 11 meters at distances up to 3 km.
-But a consistent overestimation in the real-time method, the Minimum Bounce Criteria (MBC), provides insights for improved eigenray filtering, which we call the Nearest Bounce Criteria (NBC).
+But a consistent overestimation in the real-time method provides insights for improved eigenray filtering by the number of surface bounces.
 An operationally equivalent pipeline is used to re-position the LBL beacons and re-navigate the AUV, using a modeled, historical, and a locally observed sound speed profile.
-The median re-positioning errors for the MBC and NBC are roughly 10 and 3 meters, respectively.
-The improved trilateration performance for re-positioning and re-navigation suggests that this approach effectively extends the single meter accuracy of the deployed GNSS units into the water column. \llabel{2.3}
+The median re-navigation error is 1.84 $\pm$ 2.19 RMS m.
+The improved trilateration performance for suggests that this approach effectively extends the single meter accuracy of the deployed GNSS units into the water column. \llabel{2.3}
 \end{abstract}
 
 %% pacs numbers not used
@@ -219,9 +219,8 @@ The group velocity estimate is found using the vehicle's reported depth and the 
 The latter returns an impulse response estimate in the form of ray travel times $dt_{j}$ and amplitudes $a_{j}$ for that range and depth.
 
 \llabel{2.11} The initial call to BELLHOP is over a local grid centered at the range and depth posited by the onboard tracking solution.
-Compared to a point solver, solving for arrivals on a grid minimizes the impact of numerical resolution in the propagation model.
-The resulting ray traces may represent paths that would reach a receiver in a real application but might not be recognized by the numerical solver as a viable detection.
-The grid is initialized as 11$\times$11 points spanning 10 m horizontally and 20 m vertically.
+The grid, compared to a point solver, adds redundancy in resolving the actual multipath structure for a reliable acoustic path without taxing onboard computational time and memory.
+It is initialized as 11$\times$11 points spanning 10 m horizontally and 20 m vertically.
 The horizontal dimension reflects the accumulated position error given a thirty-second communication cycle; the vertical dimension reflects how, computationally, eigenrays of the same timefront seem to stack vertically in the water column. \llabel{1.17}
 For each grid point, BELLHOP produces a number of arrivals resulting from multiple propagation paths for any source-receiver pair.
 Using only the $N_0$ rays with neither surface nor bottom bounces, it will then estimate the current group velocity $u$ from a power weighted average of the ray travel times,
