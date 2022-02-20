@@ -23,6 +23,7 @@ tiledlayout(2,3,'TileSpacing','none','Padding','none');
 shapeBounce = {'o','x','s','^','d'};
 
 count = 0;
+
 for zr = [30 90]
     index2 = DATA.recDepth == zr;
     
@@ -31,6 +32,8 @@ for zr = [30 90]
         
         count = count + 1;
         nexttile;
+        
+        hold on
         
         index = logical(index1.*index2.*INDEX.valid);
         
@@ -44,15 +47,9 @@ for zr = [30 90]
         sgps.MarkerEdgeColor = 'none';
         sgps.MarkerFaceColor = [200, 78, 0]./256;
         sgps.MarkerFaceAlpha = 0.2;
-
-        %p = patch([0 5 5 0 0],...
-            %[iso.avg-iso.std,iso.avg-iso.std,iso.avg+iso.std,iso.avg+iso.std,iso.avg-iso.std],'k','handlevisibility','off');
-        %p.FaceAlpha = 0.07;
-        %p.EdgeColor = 'none';
         
         if sum(index)>=1
             % plot
-            hold on
             for s = [5 3 4]
                 xval = DATA.owtt(index);
                 yval = T2{s}.gvel(index);
@@ -144,33 +141,7 @@ lgd = legend(lgdstr,'fontsize',12,'location','WestOutside');
 hold off
 legend boxoff
 
-% % add legend
-% nexttile(1);
-% 
-% % add legend 1 -- color
-% hold on
-% plot(NaN,NaN,'w');
-% plot(NaN,NaN,'k','linewidth',4);
-% 
-% for s = [5 3 4]
-%     plot(NaN,NaN,'color',colorSet{s},'linewidth',5);
-% end
-% plot(NaN,NaN,'w');
-% plot(NaN,NaN,'w');
-% 
-% % add legend 2 -- shape
-% for nb = 0:4
-%     scatter(NaN,NaN,shapeBounce{nb+1},'MarkerEdgeColor','k');
-% end
-% 
-% lgdstr = {'\bf{SOUND SPEED SOURCE}','Isovelocity','HYCOM','Baseline','Chosen Weights','','\bf{MULTIPATH STRUCTURE}','direct path','1 bounce','2 bounces','3 bounces','4 bounces'};
-% lgd = legend(lgdstr,'numcolumns',1,'fontsize',11,'location','WestOutside');
-% %title(lgd,'SSP Source & Multipath ID');
-% legend boxoff
-% hold off
-
 % title
 sgtitle({'Effective sound speed estimates by source and receiver depths'},'fontsize',17,'fontweight','bold')
-
 %% save plot
 h_printThesisPNG('gvel-txrxdepth-wIso-wGPS');
