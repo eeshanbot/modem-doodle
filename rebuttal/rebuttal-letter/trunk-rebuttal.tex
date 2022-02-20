@@ -20,7 +20,7 @@ Dear Editors,
 
 We thank the reviewers and editor for their thoughtful feedback and comments in improving this work.
 We have refashioned the abstract and introduction to better elucidate the motivation for this work as a model-aided component for LBL navigation in total under-ice conditions, which could be further generalized for any acoustic environment.
-Based on several suggestions, we have restructured the manuscript and separated the real-time navigation methodology (used the Minimum Bounce Criteria, MBC, but is impossible to compare given the lack of GNSS), the real-time positioning results (MBC), and the post-processing re-positioning improvement (Nearest Bounce Criteria). 
+Based on several suggestions, we have restructured the manuscript and separated the real time navigation methodology (used the Minimum Bounce Criteria, MBC, but is impossible to compare given the lack of GNSS), the real-time positioning results (MBC), and the post-processing re-positioning improvement (Nearest Bounce Criteria). 
 
 For clarity, we also more prominently establish definitions for navigation, positioning, and re-positioning to better contextualize our results and contributions, based on this discussion in Howe et al (2019) \emph{Observing the Oceans Acoustically} (and many others):
 
@@ -139,6 +139,7 @@ Dr. EeShan Bhatt \\
 	\lreviewer{line 192}{v1:1.12}{Clarify what you mean when you state that the transmit and receive layers are independent? Also, the discussions of physical and virtual layers are confusing. I think everything is there, but reorganization would make this more clear. Consider moving up the paragraph starting at line 203.}
 
 	\lreviewer{line 205}{v1:1.13}{What do you mean that the coordinate system is range independent?}
+	We mean that the propagation is range independent, with one sound speed profile. It does actually take into account bathymetry.
 
 	\lreviewer{line 222}{v1:1.14}{Could you provide more information on the baseline and weighted SSPs. Where did the baseline profile come from?}
 	\label{1dot14}
@@ -228,7 +229,6 @@ Dr. EeShan Bhatt \\
 	\lreviewer{line 4}{}{Fig 4 - where did the baseline come from (exactly)? What database, etc.}
 	Please see Comment \ref{1dot14}.
 
-
 	\lreviewer{line 224}{v1:2.7}{why did a human have to chose an optimal set of weights? Why not just use the measured SSP, or an average of a few?}
 
 	We have removed this statement, as it is not relevant to the findings of this work. However, the navigation solution existed in tandem with an interactive tactical decision aid (TDA) operated by a Navy submarine officer. A lightweight compression of the sound speed profile was needed to facilitate its update via digital acoustic message. Work about this TDA has been recently accepted for publication in IEEE JOE.
@@ -238,10 +238,11 @@ Dr. EeShan Bhatt \\
 	{\color{blue} Yes. BELLHOP finds all possible eigenrays given the prescribed launch angles whereas only a few or less (sometimes none) are valid for the travel time of interest}.
 
 	\lreviewer{line 241}{v1:2.9}{'modem triggering time', do you mean 'detected arrival time'?}
+	Yes. We have changed this accordingly.
 
 	\lreviewer{line 249}{v1:2.10}{Use of the word 'range' for the 'navy range' type of use is intermixed with range as in distance. Suggest not using 'range' and in 'navy range' and saying 'nav' or 'comms' system or network.}
 
-	{\color{blue} The authors are not sure what the reviewer means by this statement, specifically what ``navy range'' is. We believe we are only using ``range'' to mean distance. Nonetheless, we have adopted this suggestion and use ``navigation'' or ``communication'' system/network instead.}
+	We have adopted this suggestion and use navigation'' or communication system instead.
 
 	\lreviewer{line 261}{v1:2.11}{'bring'. Do you mean interpolate?}
 	Yes. We have changed this accordingly.
