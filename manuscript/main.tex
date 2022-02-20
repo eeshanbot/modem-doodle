@@ -42,7 +42,7 @@ The improved trilateration performance for suggests that this approach effective
 \label{sec:1}  
 Autonomous underwater vehicles (AUVs) are increasingly capable platforms to explore and sample the ocean, particularly for remote and/or dangerous regions.
 However, navigation uncertainty is a major challenge in considering AUVs as standard tools for oceanographic research.
-While land and air-based robots utilize information from Global Navigation Satellite Systems (GNSS) to achieve stunning location accuracy and precision throughout the duration of their missions, AUVs cannot access GNSS while underwater due to the rapid attenuation of electromagnetic waves.
+While land and air-based robots utilize information from Global Navigation Satellite Systems (GNSS) to achieve stunning location accuracy and precision throughout the duration of their missions, AUVs cannot access GNSS fixes while underwater.
 Therefore, underwater vehicles have relied on any combination of dead reckoning, hydrodynamic models, inertial navigation systems, doppler velocity logs, and acoustic baseline positioning systems for navigation \citep{Paull2014}.
 Limiting navigation error and drift requires an AUV to periodically stall on the surface and obtain a GNSS fix to reset its position error.
 This foolproof method of self-positioning is undesirable for stealth, adverse weather conditions, and mission efficiency, and inaccessible in a GNSS-denied situation like an ice-covered environment.
@@ -64,16 +64,16 @@ For clarity, we delineate specific definitions for timing, positioning, and navi
 	\item Positioning is the ability to accurately and precisely determine one's location referenced to a standard geodetic system
 	\item Navigation is the ability to determine current and desired position (relative or absolute) and apply corrections to course, orientation, and speed to attain a desired position anywhere in the domain of concern
 \end{enumerate}
-Thus, navigation is inherently in real time and depends on positioning; positioning depends on timing.
+Thus, navigation is inherently in real-time and depends on positioning; positioning depends on timing.
 We also suggest re-navigation and re-positioning as post-processed corollaries, which may include knowledge or processing capabilities not available \textit{in situ}.
 
 % More about LBL navigation
-While RAFOS floats championed one way ranging for re-positioning \citep{Rossby1986,Duda2006}, the ability to do so for navigation was facilitated by \llabel{1.11} the advent of the WHOI Micro-Modem \citep{Singh2006} and synchronized clocks.
+While RAFOS floats championed one way ranging for re-positioning \citep{Rossby1986,Duda2006}, the ability to do so for navigation was facilitated by \llabel{1.11} the advent of the WHOI Micro-Modem \citep{Singh2006} and synchronized clocks \citep{rypkema_one-way_2017}.
 AUV navigation efforts have achieved root mean square (RMS) localization error on the order of tens of meters relative to GNSS surface position over less than ten kilometers in shallow \citep{Eustice2007,Kepper2017,Claus2018} and deep water \citep{Kunz2008,Jakuba2008,Webster2009}.
 However, these efforts all used a nominal sound speed for travel time conversion and the vehicles were limited to shallower isovelocity regimes.
 
 Localization algorithms that do consider environmental or acoustic uncertainty tend to focus on longer and larger experiments, where spatio-temporal variability cannot be ignored.
-These methods have been reserved for post-processing as they can be labor intensive, computationally heavy, and/or require additional information like contemporaneous data.
+These methods have also been reserved for post-processing as they can be labor intensive, computationally heavy, and/or require additional information like contemporaneous data.
 For example, gliders navigating with kinematic flight models and equipped with acoustic modems were later unambiguously associated with predicted ray arrivals, resulting in roughly a kilometer error and hundred meters uncertainty over basin scale propagation \cite{VanUffelen2013}.
 A follow up study investigated how a single temporally and spatially averaged SSP could mitigate position error for a four month glider mission \cite{vanuffelen2016localization}.
 \citet{Wu2019} cross correlate three days of real acoustic records with synthetic ones generated through ocean model snapshots from HYCOM \cite{Chassignet2007}.
@@ -83,24 +83,24 @@ The algorithm inputs a four-dimensional ocean model, constrained by tomography d
 Then, a representative group speed is solved for alongside position in a least squares fashion. 
 This approach is able to re-position a floating hydrophone array with an error of 58 m and a standard deviation of 32 m based on six sources 129--450 km away but remains to seen for real-time navigation.
 
-The ICEX20 AUV deployment necessitated an environmentally- and physically-driven relationship between recorded travel time and estimated range due to the multipath uncertainty brought upon by an increasingly observed double ducted environment in the Beaufort Sea, which some refer to as the ``Beaufort Lens'' \citep{litvak2015acoustics,Chen2019,Chen2020}.
+The ICEX20 AUV deployment necessitated an environmentally- and physically-driven relationship between recorded travel times and estimated pseudoranges due to the multipath uncertainty brought upon by an increasingly observed double ducted environment in the Beaufort Sea, which some refer to as the ``Beaufort Lens'' \citep{litvak2015acoustics,Chen2019,Chen2020}.
 
-Given that a lens introduces significant ray refraction, the Beaufort Lens is a convenient shorthand for the spatio-temporal variability of the local temperature and sound speed maxima generally around 50 to 60 m in depth.
+Given that a lens introduces significant ray refraction, the Beaufort Lens is a shorthand for the spatio-temporal variability of the local temperature and sound speed maxima generally around 50 to 60 m in depth.
 A neutrally buoyant layer of warm Pacific Summer Water creates a unique double ducted environment \textemdash the upper duct degrades signal coherence due to intensified ice interaction and the lower duct effectively traps sound for long range propagation \citep{Poulsen2017}. 
-\llabel{2.5} Modeling output \citep{Duda2019,Duda2021} and experimental observations \citep{Ballard2020,Bhatt2021} suggest the duct is persistent and widespread but not necessarily continuous; it and its acoustic effects can be non-existent, minimal, or drastic.
+\llabel{2.5} Modeling output \citep{Duda2019,Duda2021} and experimental observations \citep{Ballard2020,Bhatt2021} suggest that, in the Beaufort Sea, the duct is persistent and widespread but not necessarily continuous; it and its acoustic effects can be non-existent, minimal, or drastic.
 Transmissions in the upper duct, between the surface ice and the lens, experience minimal attenuation but degrade in signal coherence with repeated reflections under the ice.
-In lower duct, between the lens and its conjugate depth in the Atlantic water, roughly 200 m, sound above 350 Hz is trapped effectively for long range propagation \citep{Poulsen2017}.
+In lower duct, between the lens and its conjugate depth in the Atlantic water, roughly 200 m, sound above 350 Hz is trapped near losslessly for long range propagation \citep{Poulsen2017}.
 
 Thorough reviews of uncrewed vehicle operations in polar environments can be found in \citep{Norgren2014} and \citep{Barker2020}; there is no comparable work in the Arctic for a short range AUV deployment in the Beaufort Lens.
 Seminal \citep{brooke1981arcs,jackson1983autonomous,light1989autonomous,bellingham1995auv,hayes2002determining} and more recent AUV deployments \citep{Jakuba2008,Kunz2008,}\citep{jakuba_2008_long,kunz_deep_2008,kukulya2010under,plueddemann_autonomous_2012,timmermans2013scales,fossum2021adaptive} witnessed the classical upward refracting sound speed profile that is amenable to an isovelocity assumption.
 
 Of note, despite different platforms and scales, are recent glider deployments in the Canada Basin.
 In 2014, in partially ice-covered conditions, a long range LBL system with WHOI Micro-Modems at 100 m exploited the lower duct for long range communication with two gliders \citep{Freitag2016,Webster2015}.
-The sound speed value measured at the time of reception was used to estimate range in post-processing.
+The sound speed value measured at the time of reception was used to estimate pseudorange in post-processing.
 The beacon-to-beacon performance was excellent, achieving contact at ranges greater than 200 km with a position uncertainty of 40 m.
-The beacon-to-glider performance, however, deteriorated due to missed contacts outside the duct.
-In 2017, gliders were deployed in a region with no ice coverage. 
-Ranges were linearly scaled by a statistical description of sound speed observations taken during the experiment, 1450 $\pm$ 6.5 m/s \citep{Graupe2019}.
+The beacon-to-glider performance, however, deteriorated due to missed contacts outside the duct, and was not described quantitatively.
+In 2017, gliders were deployed in a region with no ice coverage \citep{Graupe2019}.
+Ranges were linearly scaled by a statistical description of sound speed observations taken during the experiment, 1450 $\pm$ 6.5 m/s.
 This resulted in an error of 550 m, which was reduced by a factor between 4 and 5, depending on the dive, using a post-processing acoustic arrival matching method.
 Both cases exploit the lower duct for high fidelity communication at long ranges.
 Unintuitively, the smaller nature of our deployment during ICEX20 is not a simplifying factor.
@@ -108,7 +108,7 @@ For source depths typical to vehicle operations, 30 to 200 m, a shadow zone span
 
 Compared to the previous small scale navigation efforts, the approach in this paper integrates real-time model-aided data processing to estimate a representative sound speed along a path from source to receiver, leveraging climatology, \textit{in situ} data, and fast acoustic modeling.
 The paper is organized as follows.
-Section \ref{sec:icex20} details the experimental conditions during ICEX20.
+Section \ref{sec:icex20} details the experimental approach and conditions during ICEX20.
 Given that there is no GNSS ground truth for the vehicle position while underway, we first evaluate the real-time ranging performance of GPS-linked beacon-to-beacon communication events in section \ref{sec:realtime}.
 Section \ref{sec:post} uses insights from field data to introduce a new ray filtering algorithm to improve range estimation.
 Section \ref{sec:trilat} emulates the real-time processing pipeline to re-position beacon-to-beacon events and re-navigate AUV \emph{Macrura}.
