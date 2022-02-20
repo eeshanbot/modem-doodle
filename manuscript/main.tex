@@ -52,13 +52,13 @@ Of underwater acoustic navigation systems, long baseline (LBL) is the most GPS-l
 The state-of-the-art for LBL outsources depth to a pressure sensor and solves the two-dimensional localization problem with an isovelocity, linear scaling between one way travel time (OWTT) and range \citep{Eustice2006,Eustice2007,Webster2009,Webster2012}.
 This assumption is valid for short scale operations but oversimplifies propagation for larger and/or complex acoustic environments.
 To achieve single meter, GNSS-like performance in a GNSS-denied environment, we demonstrate an embedded ray-based data processing algorithm to convert recorded OWTTs into pseudorange estimates.
-This methodology was integrated onto the AUV Macrura, deployed and recovered in the Beaufort Sea, in March 2020, during the Ice Exercise 2020 (ICEX20).
+This methodology was integrated onto the AUV \emph{Macrura}, deployed and recovered in the Beaufort Sea, in March 2020, during the Ice Exercise 2020 (ICEX20).
 A physics-driven methodology that received an \textit{in situ} sound speed profile (SSP) was necessary despite the small operational domain because of the relatively high-risk mission environment\textemdash total under-ice conditions and a variable double ducted acoustic environment.
 
 %% rest of the background, JASA style
 
 % PNT
-For clarity, we delineate specific definitions for timing, positioning, and navigation from \citet{howe2019observing}.
+For consistency, we delineate specific definitions for timing, positioning, and navigation from \citet{howe2019observing}.
 \begin{enumerate}
 	\item Timing is the ability to acquire and maintain accurate and precise time anywhere in the domain of interest within user-defined timeliness parameters
 	\item Positioning is the ability to accurately and precisely determine one's location referenced to a standard geodetic system
@@ -87,7 +87,7 @@ The ICEX20 AUV deployment necessitated an environmentally- and physically-driven
 
 Given that a lens introduces significant ray refraction, the Beaufort Lens is a shorthand for the spatio-temporal variability of the local temperature and sound speed maxima generally around 50 to 60 m in depth.
 A neutrally buoyant layer of warm Pacific Summer Water creates a unique double ducted environment \textemdash the upper duct degrades signal coherence due to intensified ice interaction and the lower duct effectively traps sound for long range propagation \citep{Poulsen2017}. 
-\llabel{2.5} Modeling output \citep{Duda2019,Duda2021} and experimental observations \citep{Ballard2020,Bhatt2021} suggest that, in the Beaufort Sea, the duct is persistent and widespread but not necessarily continuous; it and its acoustic effects can be non-existent, minimal, or drastic.
+Modeling output \citep{Duda2019,Duda2021} and experimental observations \citep{Ballard2020,Bhatt2021} suggest that, in the Beaufort Sea, the duct is persistent and widespread but not necessarily continuous; it and its acoustic effects can be non-existent, minimal, or drastic.
 Transmissions in the upper duct, between the surface ice and the lens, experience minimal attenuation but degrade in signal coherence with repeated reflections under the ice.
 In lower duct, between the lens and its conjugate depth in the Atlantic water, roughly 200 m, sound above 350 Hz is trapped near losslessly for long range propagation \citep{Poulsen2017}.
 
@@ -118,11 +118,11 @@ Section \ref{sec:trilat} emulates the real-time processing pipeline to re-positi
 
 The results from this paper derive from data taken while deploying the AUV \emph{Macrura}, a custom Bluefin-21, during the Ice Exercise 2020 (ICEX20), in the Beaufort Sea, from March 8th to 11th.
 The AUV deployment was supported by the Integrated Communication and Navigation Network (ICNN) \citep{Schneider2020,Randeni2020,randeni_high-resolution_2021}, a specialized implementation of the LBL solution.
-The ICNN was initially developed via numerous virtual experiments to push the boundaries of algorithms and interfaces between different hardware components.
-The simulation approach serves as a testbed for robustness to produce better results than post-processing previous field data.
+The ICNN was initially developed via numerous virtual experiments to ensure robust algorithms and interfaces between different hardware components. 
 The simulation capabilities are largely physics-driven with a modular system of systems approach\textemdash an environmental simulator with sub-components for the ocean, including Arctic ice drift and ocean acoustic propagation; a vehicle simulator with sub-components for vehicle dynamics and navigation; a topside hardware simulator and acoustic communications simulator, both with a software-only configuration and a hardware-in-the-loop version \citep{Schneider2018}.
 The virtual environment similarly emulates the interfaces between the real components to test the entire software pipeline.
-Both simulation capabilities are integral to mission success.
+
+\subsection{The Integrated Communication and Navigation Network}
 
 \begin{figure}[h!]
 	\centering
@@ -131,10 +131,10 @@ Both simulation capabilities are integral to mission success.
 	\label{fig:icnnOverview}
 \end{figure}
 
-The ICNN is comprised of four ice buoys, in a loose rectangle, roughly 2 km away from a central ice camp with a topside computer, as shown in Fig.~\ref{fig:icnnOverview}.
-The AUV and each ice buoy are outfitted with a WHOI Micro-Modem \citep{Singh2006}, with a four-element receiver array and a single transmitter, one-tenth of a millisecond resolution.
-Acoustic messages were sent with a 10 kHz carrier frequency, 5 kHz bandwidth, and phase-shift keying (PSK)modulation on a thirty-second cycle, giving room for two-way communication throughout the mission volume.
-The receive and transmit elements were split between shallow and deeper depths (30 and 90 m, respectively) to provide better coverage across the shadow zone.
+The ICNN is comprised of four ice buoys in a loose rectangle, roughly 2 km away from a central ice camp with a topside computer, as shown in Fig.~\ref{fig:icnnOverview}.
+The AUV and each ice buoy are outfitted with a WHOI Micro-Modem \citep{Singh2006}, with a four-element receiver array, a single transmitter, and one-tenth of a millisecond resolution.
+Acoustic messages were sent with a 10 kHz carrier frequency, 5 kHz bandwidth, and phase-shift keying (PSK)modulation on a time-division multiple access schedule with a thirty-second cycle, giving room for two-way communication throughout the mission volume.
+The receive and transmit elements were split between shallow and deeper depths\textemdash 30 and 90 m\textemdash to provide better coverage across the shadow zone.
 While each buoy only has one transmit depth, all buoys have both receive depths but the active receive layer is consistent across all buoys. \llabel{1.12}
 The design of the ICNN enables a self-adapting network to transmit and receive at the optimal depth to maintain contact with the AUV \citep{Schneider2020}.
 The buoys do not encompass the full horizontal range of the vehicle but are positioned to minimize overlap in trilateration for spherical positioning \citep{Deffenbaugh1996}.
@@ -143,38 +143,40 @@ To balance competing uses of the acoustic channel, the network uses a single syn
 \begin{enumerate}
 \item The AUV, running an ice-tracking DVL and an onboard hydrodynamic model, broadcasts its perceived location on a scheduled, time-synchronized message via WHOI Micro-Modem
 \item Four ice buoys, each outfitted with a WHOI Micro-Modem, receive messages from the AUV and send that information over freewave radio to a Topside computer
-\item The topside computer converts travel times into range estimates using a stochastic embedded prediction of the horizontal group velocity via BELLHOP ray tracing code \citep{Porter2011} coupled with an updatable Virtual Ocean \citep{Schneider2018,bhatt_embedded_2022}
+\item The topside computer converts travel times into pseudorange estimates using a stochastic embedded prediction of the horizontal group velocity via BELLHOP ray tracing code \citep{Porter2011} using a sound speed profile provided by an updatable Virtual Ocean \citep{Schneider2018,bhatt_embedded_2022}
 \item The topside computer calculates a new position by trilaterating the range estimates
 \item The position differential, not the absolute position, is broadcast to the vehicle to update its navigation solution and be robust to latency and intermittency
 \end{enumerate}
 
-In the face of GNSS-denied navigation, this approach was anecdotally successful, as shown in \ref{fig:vehicleRecovery}.
+In the face of GNSS-denied navigation, this approach was anecdotally successful, as shown in Fig. \ref{fig:vehicleRecovery}.
 The AUV \emph{Macrura} was deployed through a hydrohole from an ice camp but recovered through an emergency hydrohole.
-A random disk error stalled the AUV underneath the ice but did not prevent it from transmitting its location.
+A random disk error stalled \emph{Macrura} underneath the ice but did not prevent it from transmitting its location.
 Due to an incoming storm, a team placed a physical marker on the ice at the location.
 Three days later, \emph{Macrura} was found within a meter of the marker.
 We view the emergency recovery as qualitative proof of the robustness of this navigation approach.
-Nonetheless, this paper specifically addresses the third and fourth steps\textemdash the conversion of travel time into range and its effect on trilateration.
-By focusing on range estimates between GPS-tracked beacons, and re-running the trilateration pipeline, the results are decoupled from all other mechanisms in the ICNN.
+Nonetheless, this paper specifically addresses the third and fourth steps\textemdash the conversion of travel times into pseudoranges and its effect on trilateration.
+By focusing on pseudorange estimates between GPS-tracked beacons, and re-running the trilateration pipeline, the results are decoupled from all other mechanisms in the ICNN.
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.7\columnwidth]{figs/auv-track-update.png} \hfill
 	\includegraphics[width=0.28\columnwidth]{figs/Fig1.jpg}
-	\caption{The under-ice mission track for AUV Macrura, including the position updates as it stalled underneath the ice overnight. A marker was placed on the ice at the vehicle's estimated self-location. It was recovered after a three day storm within a meter of the marker.}
+	\caption{The under-ice mission track for AUV \emph{Macrura}, including the position updates as it stalled underneath the ice overnight. A marker was placed on the ice at the vehicle's estimated self-location. It was recovered after a three day storm within a meter of the marker.}
 	\label{fig:vehicleRecovery}
 \end{figure}
 
-An important component to our navigation solution is an accurate estimation of the sound speed profile.
+\subsection{ICEX20 sound speed conditions}
+
+An important component to our navigation solution is an accurate estimation of a representative SSP for the ocean volume.
 Previous field experience, during the Ice Exercise 2016 (ICEX16), demonstrated the negative effects of the Beaufort Lens on tracking and communication \citep{Schmidt2016}.
-Fig. \ref{fig:sspExpectation} shows historical, modeled, and \textit{in situ} data for both ICEX16 and ICEX20.
+Fig. \ref{fig:sspExpectation} shows historical, modeled, and \textit{in situ} sound speed data for both ICEX16 and ICEX20.
 These three input streams were selected to mirror the information available on a submarine (personal conversation with LT B. Howard and LT CDR D. Goodwin). \llabel{1.8}
-The SSP information was compressed with a basis representation and sent via lightweight digital acoustic message to the AUV \citep{bhatt_embedded_2022}. \llabel{2.7}
+In the field, the SSP information was shared with the vehicle via basis representation compression on a lightweight digital acoustic message \citep{bhatt_embedded_2022}. \llabel{2.7}
 All modeled data comes from HYCOM \cite{Chassignet2007}, which does not seem to capture the forcing mechanisms that cause the Beaufort Lens.
 For ICEX16, the data-driven profile was sourced from nearby Ice Tethered Profilers (ITP) after the field experiment \cite{Krishfield2008,Toole2011} and exhibits a fairly low lens; the historical profile is from the World Ocean Atlas.
-For ICEX20, the chosen weights (data-driven) profile derives from a basis representation estimation of initial CTD casts taken on site, showing an intense warm water intrusion; the baseline (historical) profile, showing moderate ducted conditions, comes from the average of March 2013 data.
+For ICEX20, the chosen weights (data-driven) profile derives from an estimate of initial CTD casts taken on site, showing an intense warm water intrusion; the baseline (historical) profile, showing moderate ducted conditions, comes from the average of March 2013 ITP data.
 This month best matched sea ice and sound speed conditions at the beginning of ICEX20 \citep{bhatt_embedded_2022}.
-It is important to note that all profiles that do show the Beaufort Lens do so with different local sound speed maxima at different depths, reflective of the wide range of lens properties observed for all ITP data in the region.
+It is important to note that all profiles that do show the Beaufort Lens do so with different local sound speed maxima at different depths, reflective of the wide range of lens properties observed for all ITP data in the region. \llabel{2.5}
 The variability of the lens height and prominence is the main reason an updatable SSP was integrated into the ICNN solution.
 
 During ICEX20, the HYCOM profile was available but never deployed. \llabel{1.14}
@@ -457,7 +459,7 @@ In several events, the MBC is unable to accurately estimate the effective sound 
 The NBC, however, better resolves an approximation of the acoustic path.
 For example, in some trilateration solutions for the Eastern buoy, the MBC shows a correction of more than a kilometer; the NBC is two order of magnitudes less.
 
-\subsection{Re-navigating AUV Macrura}
+\subsection{Re-navigating AUV \emph{Macrura}}
 
 Up to this point, pseudorange estimation and localization have been evaluated on GPS-linked beacon-to-beacon connections to validate the NBC algorithm.
 This analysis ports the MBC and NBC algorithms to re-navigate the AUV \emph{Macrura}.
