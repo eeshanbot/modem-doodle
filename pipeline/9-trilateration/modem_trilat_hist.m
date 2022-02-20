@@ -20,7 +20,7 @@ figure('name','trilat-histogram','renderer','painters','position',[108 108 1200 
 h_hist_boxplot(Y,edges,colors,48);
 
 %% dress up figure
-xlabel('RMS of position correction [m]')
+xlabel('RMS correction [m]')
 set(gca,'fontsize',13)
 title(sprintf('Distribution of beacon re-positioning corrections (n=%u)',N),'fontsize',15);
 

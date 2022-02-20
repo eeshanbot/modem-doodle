@@ -27,7 +27,7 @@ Y{2}.count = trilat.mbc.correction;
 Y{1}.count = trilat.nbc.correction;
 h_hist_boxplot(Y,edges,colors,max(edges));
 
-xlabel('RMS of position correction [m]')
+xlabel('RMS correction [m]')
 set(gca,'fontsize',13)
 title(sprintf('Distribution of AUV re-navigation corrections (n=%u)',N),'fontsize',15)
 
@@ -41,7 +41,7 @@ Y{1}.count = trilat.nbc.error;
 Y{2}.count = trilat.mbc.error;
 
 h_hist_boxplot(Y,edges,colors,max(edges));
-xlabel('RMS of position error [m]')
+xlabel('RMS error [m]')
 set(gca,'fontsize',13)
 title({'',...
     sprintf('Distribution of AUV re-navigation error (n=%u)',N)}...
