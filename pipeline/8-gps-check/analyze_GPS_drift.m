@@ -154,8 +154,8 @@ xlim(xbounds2);
 xticks(xticks2);
 ylim(xbounds2.*sspGVEL);
 yticks(xticks2.*sspGVEL);
-title('GPS noise between North and East buoys','fontsize',15);
-ylabel('GPS \deltaR [m]');
+title('GNSS noise between North and East buoys','fontsize',15);
+ylabel('GNSS \deltaR [m]');
 xlabel('\deltat [ms]');
 
 % panel 4
@@ -166,25 +166,28 @@ xlim(xbounds2);
 xticks(xticks2);
 ylim(xbounds2.*sspGVEL);
 yticks(xticks2.*sspGVEL);
-title('GPS noise between South and West buoys','fontsize',15);
+title('GNSS noise between South and West buoys','fontsize',15);
 %ylabel('GPS \deltaR [m]');
 xlabel('\deltat [ms]');
 
 %% legend
 % add legend
 hold on
+
+plot(NaN,NaN,'w');
 for s = [20 30 90]
     plot(NaN,NaN,'color',colorDepth(s),'linewidth',6);
 end
 
+plot(NaN,NaN,'w');
 for r = [20 30 90]
     plot(NaN,NaN,sourceDepth(r),'color','k')
 end
 hold off
-lgdstr = {' 20 m',' 30 m',' 90 m',' 20 m',' 30 m',' 90 m'};
+lgdstr = {'\bf{tx depth (color)}',' 20 m',' 30 m',' 90 m','\bf{rx depth (shape)}', ' 20 m',' 30 m',' 90 m'};
 
 lg1 = legend(lgdstr,'location','eastOutside','NumColumns',1,'fontsize',10);
-title(lg1,{'tx depth (color)','rx depth (shape)'});
+%title(lg1,{'tx depth (color)','rx depth (shape)'});
 
 %% export
 h_printThesisPNG('gps-drift-example');
