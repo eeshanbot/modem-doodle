@@ -1,5 +1,5 @@
 %% prep workspace
-clear; clc; close all;
+clear; clc; close all; addpath('../../src/');
 
 % load modem marker information
 load p_modemMarkerDetails
@@ -107,7 +107,7 @@ end
 %% add legend
 
 % add legend
-nexttile(4);
+nexttile(1);
 
 % add legend 1 -- color
 hold on

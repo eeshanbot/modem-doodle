@@ -1,5 +1,5 @@
 \documentclass{article}
-	\def\papertitle{Under-ice acoustic navigation using real time model-aided range estimation}
+	\def\papertitle{Under-ice acoustic navigation using real-time model-aided range estimation}
 	\def\authors{E. Bhatt, O. V\'{i}quez, H. Schmidt}
 	\def\journal{Journal of the Acoustical Society of America}
 	\def\doi{}
@@ -36,11 +36,12 @@ PNT is a combination of three distinct, constituent capabilities:
 	\item Timing is the ability to acquire and maintain accurate and precise time anywhere in the domain of interest within user-defined timeliness parameters; it also includes time transfer.
 \end{enumerate}
 
-Navigation is real time and necessarily depends on positioning, and positioning depends on timing.
+Navigation is real-time and necessarily depends on positioning, and positioning depends on timing.
 \end{quote}
 
-Given the tension of evaluating our travel time to range conversion on events between LBL beacons in real time and post-processing, we further delineate that, in this work, positioning is in real time and re-positioning is post-processed.
-We have also added re-positioning trilateration results, processed with only the available field data and algorithms that could be performed in real time, to emulate navigation performance.
+Trilateration of beacon events was done in real-time, on the beacons themselves.
+In this work, we further delineate that positioning is in real-time and re-positioning is post-processed.
+We have also added re-positioning and re-navigation trilateration results to emulate our system performance given the navigation results have no ground truth GNSS to compare to.
 
 The rebuttal letter is organized with sections delineated by the review document and email. We look forward to your comments and the opportunity to continue improving this manuscript for potential publication in JASA. Thank you again for your time and consideration.
 
@@ -61,14 +62,14 @@ Dr. EeShan Bhatt \emph{on behalf of all authors}
 
 	\ebline{This paper demonstrates how a positioning system over \texttt{\small $\sim$}1.5-3 km of range achieves 11 m of positioning uncertainty. The work demonstrates how a single group velocity calculated from acoustic rays predicted by BELLHOP can be used to estimate ranges to be used in a LBL network for positioning. The data presented are from transceivers on fixed ice-tethered buoys but the system could also be implemented on an autonomous underwater vehicle.}
 
-	This summary captures key results presented in the paper. However, we note that the system was successfully deployed on an underwater vehicle during ICEX20. The results from this work are specifically limited to the methodology behind calculating a single group velocity, which we attempt to quantify through beacon-to-beacon communications with known GNSS timestamps.
+	This summary captures key results presented in the paper. However, we note that the system was successfully deployed on an underwater vehicle during ICEX20. The results from this work are specifically limited to the methodology behind calculating a single group velocity, which we attempt to validate through beacon-to-beacon communications with known GNSS timestamps.
 
 	\subsection*{Overall Comments}
 
 	\reviewer{}{The claims made in the abstract need to be better supported by the data presented or else tempered a bit. What is demonstrated here is not real-time navigation on a vehicle, but calculation of a handful of short fixed ranges from ice-tethered buoys. The limited data presented here begs more discussion with regards to how applicable the algorithm would be in normal vehicle operation and to navigation of the vehicle, as there were limited ranges between the beacons. What depths does the vehicle typically operate at and what is the maximum range from the beacons?  The abstract stresses real-time results, but the real-time results are just 3 paragraphs, and the paper mostly concentrates on post-processing results.} \label{1dot1}
 
-	We have adjusted the claims made in the abstract (and throughout the paper) and hope we have presented data to better support them as well. 
-	While we initially aimed to contextualize the calculation of a handful of short fixed ranges between ice-tethered buoys as the proxy for navigation, we agree with the reviewer that this is a severe shortcoming. Accordingly, we added the same analysis for the AUV run in ICEX20. 
+	We have adjusted the claims made in the abstract (and throughout the paper) to better emphasize what was deployed in the field, as part of normal vehicle operations, and how the proposed improvements compare to the fielded approach. We have presented data that we feel better support the claims about single meter accuracy as well. 
+	While we initially aimed to contextualize the calculation of a handful of short fixed ranges between ice-tethered buoys as the proxy for navigation, we agree with the reviewer that this representation of our work is incomplete in portraying its portability to vehicle operations. Accordingly, we added the same analysis for the AUV run in ICEX20. 
 
 	We have also addressed valid questions about transferability to other vehicle operations in the discussion (line \ref{v1:1.1}).
 
@@ -96,11 +97,13 @@ Dr. EeShan Bhatt \emph{on behalf of all authors}
 
 	\reviewer{}{Related to the point above, the introduction should make clear what type of vehicles the proposed method of navigation is applicable to and over what ranges. The authors do start to do this when they note that a shallow receiver depth enables the estimation method (line 274), but should more directly specify under what conditions the proposed algorithm is applicable.  In the Discussion section, there is an implication that this method of using a single group velocity could be applied to mesoscale operations but should acknowledge that propagation at these larger scales results in arrivals that are spread over several seconds including multiple modal arrivals with varying group velocities.  This method would presumably result in errors much higher than 11m….how might that scale?}
 
-	{\color{blue} COME BACK TO THIS.}
+	Within the data collected during ICEX20, we actually do see instances of multiple arrivals detected at a single receiver, spread over multiple seconds\textemdash this can be exemplified by arrivals consistent with bottom-bounce paths. 
+
+	The point of the Nearest Bounce Criteria, the improved approach proposed in this paper as part of the post-processing analysis, is precisely to expose how tracking the results of the acoustic model by modal variations can impact the ranging and positioning results; this is done using field data as the foundation. In our case, at short ranges under the Arctic ice, we have opted to track boundary interactions as the basis for modal variation; however, a different arrival classification basis may be needed for longer ranges in the SOFAR channel, for example.
 
 	\reviewer{}{I understand what the authors are referencing when they use the term “group velocity” but I think this term should be used a bit more carefully.  Group velocities are often associated with modal propagation in which each mode has a distinct group velocity.  The goal in this work is to determine a single group velocity by taking a power weighted average of several different ray arrivals to derive range.  This is addressed somewhat in lines 395 and following, but I think it would be appropriate to expand on this discussion and move it up.  Lines 235 and following state “the variation of horizontal group velocity from any source-receiver pair is the fundamental challenge to implement GPS-like navigation in an LBL navigation paradigm…” this statement could use some clarification.  Also, perhaps change the axis on Figure 5 to read something like ‘implied group velocity.”} \label{1dot5}
 
-	Thank you, these are all excellent suggestions. Instead of ``group velocity'' we use a combination of ``effective sound speed'', noted by $c$. The statement in question has been rewritten to talk about a single sound speed compensating for ray refraction and reflection, and is on line \ref{v1:1.5}.
+	Thank you, these are all excellent suggestions. Instead of ``group velocity'' we use ``effective sound speed'', noted by $c$. The statement in question has been rewritten to talk about a single sound speed compensating for ray refraction and reflection, and is on line \ref{v1:1.5}.
 
 	\reviewer{}{As written, this manuscript seems more suited to an ocean engineering journal.  For a JASA audience, this should be more focused on the acoustics.  Perhaps I missed it, but I didn’t see that the manuscript even mentioned the frequencies or waveforms that were used in the experiment.  I’d suggest, for example, less emphasis on which options were toggled on/off or triggered (e.g. line 186, 196, 241, 254 ) and more on, for example, why specific depths were chosen and how they provide better coverage due to the acoustic shadow zone (e.g., Line 155), or how the specific rays were eliminated by the filtering (Line 232). Lines 370-372 state “The increased error for these reciprocal transmission paths is most likely driven by the computational artifacts encountered when propagating through the steep sound speed gradients of the lens and through the shadow zone.“ The authors might consider providing more information on these artifacts.}\label{1dot6}
 
@@ -134,12 +137,12 @@ Dr. EeShan Bhatt \emph{on behalf of all authors}
 	We have removed the jargon of the physical and virtual layers in favor of a more streamlined explanation. The transmit and receive layers are activated independently.
 
 	\lreviewer{line 205}{v1:1.13}{What do you mean that the coordinate system is range independent?}
-	We meant that the analysis of beacon-to-beacon connections is presented in r/z, not x/y/z. We found this framing awkward as it is more common to say the propagation has a depth dependent sound speed profile with range dependent bathymetry.
+	We meant that the analysis of beacon-to-beacon connections is presented in r/z, not x/y/z. We found this framing awkward as it is more common to say the propagation has a depth dependent sound speed profile. Range-dependent models may assume no change in the sound speed profile, but account for a range dependent bathymetry; or they may account for changes in both bathymetry and SSP over range. This work includes a range dependent bathymetry.
 
 	\lreviewer{line 222}{v1:1.14}{Could you provide more information on the baseline and weighted SSPs. Where did the baseline profile come from?}
 	\label{1dot14}
 
-	In anticipation of ICEX20, all of the ITP data for the Beaufort Sea was assimilated. For operation reasons, we designed a system to transmit sound speed updates through digital acoustic message. This system relied on a simple basis function representation of the sound speed and its perturbations. Given the wide range of observed ducted conditions across all ITP data, several basis sets were created, corresponding to March of different years. During ICEX20, the data from Mar 2013 was found to be the closest match for observed conditions. The baseline is the mean sound speed from Mar 2013. The weighted is the basis set projection for the CTD taken during ICEX20.
+	In anticipation of ICEX20, all of the ITP data for the Beaufort Sea was assimilated. For operation reasons, we designed a system to transmit sound speed updates through digital acoustic message. This system relied on a simple basis function representation of the sound speed and its perturbations. Given the wide range of observed ducted conditions across all ITP data, several basis sets were created, corresponding to March of different years. During ICEX20, the data from Mar 2013 was found to be the closest match for observed conditions. The baseline is the mean sound speed from Mar 2013. The weighted SSP is the basis set projection for the CTD taken during ICEX20.
 
 	\lreviewer{line 256}{v1:1.15}{How is the group velocity uncertainty calculated?}
 	
@@ -171,7 +174,7 @@ Dr. EeShan Bhatt \emph{on behalf of all authors}
 
 	\lreviewer{Figure 3}{v1:fig:overview}{Figure 3 tallies the number of successful events, and I think the use of the directional arrows communicates the data well.  How many events are successful in comparison with those that are considered unsuccessful and what generally causes an event to be deemed unsuccessful?}
 
-	Thank you. We have added a successful decoding percentage, defined as the ratio of decoded over detected messages. We have also added the total number of transmissions, so one can see the ratio of detected over transmitted. An event is deemed unsuccessful given any error in the data frame, even if the error has nothing to do with the information necessary for positioning.
+	Thank you. We have added a successful decoding percentage, defined as the ratio of decoded over detected messages. We have also added the total number of transmissions, so one can see the ratio of detected over transmitted. An event is deemed unsuccessful given any error in the transmitted headers or any data frame, even if the error has nothing to do with the information necessary for positioning.
 
 	\lreviewer{Figure 5}{v1:fig:gvel-post}{What is the point labeled u=751 m/s that appears to fall around 1424 m/s?}
 
@@ -378,7 +381,7 @@ Dr. EeShan Bhatt \emph{on behalf of all authors}
 
 	\textbf{Reviewer 2:} Overall the language is fine, details below.}
 
-	Thank you. We have significantly reorganized the paper.
+	Thank you. We have significantly reorganized the paper to improve clarity as suggested.
 
 	\reviewer{}{Are the tables and figures clear and relevant, and are the captions adequate? Are there either too many or too few? If any of the figures are in color, is the color essential for conveying the scientific point?}
 	{\textbf{Reviewer 1:} I would suggest combining Figures 1 and 2 or eliminating Figure 1.  Some suggestions for improving figure and table titles and captions are in the attached report.  The use of color does help convey the scientific point.
@@ -396,7 +399,7 @@ Dr. EeShan Bhatt \emph{on behalf of all authors}
 
 	\textbf{Reviewer 2}: The GPS section seems out of place. Can it be shortened to a few sentences and references?}
 
-	We have significantly condensed the background for this section and narrowed the discussion for this section about the pattern of psuedorange error and what it might mean for the precision of the GPS puck we used at high latitudes.
+	We have significantly condensed the background for this section. In addition, we narrowed the discussion to the how trilateration error compares to that of GNSS at high latitudes and our particular GNSS unit. 
 
 	\reviewer{}{
 	Is the title appropriate and the abstract adequate for verbatim reproduction in abstract journals? IMPORTANT: The lead paragraph should advertise the main points of the article and must describe in terms accessible to the general reader the context and significance or the research problem studied and the importance of the results.}
