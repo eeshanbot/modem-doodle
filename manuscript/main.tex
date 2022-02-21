@@ -132,6 +132,7 @@ The virtual environment similarly emulates the interfaces between the real compo
 \end{figure}
 
 The ICNN is comprised of four ice buoys in a loose rectangle, roughly 2 km away from a central ice camp with a topside computer, as shown in Fig.~\ref{fig:icnnOverview}.
+Each ice buoy is outfitted with a Garmin GPS 18x, with a pulse-per-second rising edge aligned to 1 microsecond and a spec sheet accuracy of 3 m, 95\% of the time.
 The AUV and each ice buoy are outfitted with a WHOI Micro-Modem \citep{Singh2006}, with a four-element receiver array, a single transmitter, and one-tenth of a millisecond resolution.
 Acoustic messages were sent with a 10 kHz carrier frequency, 5 kHz bandwidth, and phase-shift keying (PSK)modulation on a time-division multiple access schedule with a thirty-second cycle, giving room for two-way communication throughout the mission volume.
 The receive and transmit elements were split between shallow and deeper depths\textemdash 30 and 90 m\textemdash to provide better coverage across the shadow zone.
@@ -195,7 +196,7 @@ This is a contrived value taken in the style of \citet{Graupe2019} for the sake 
 
 Because the vehicle's navigation solution during a mission can only be evaluated on the basis of the error estimates sent, a sister experiment for validating the real-time ranging approach was implemented.
 Ice buoy modems were run as ``virtual vehicles'' at a fixed depth, receiving position updates from the other beacons as well as a camp site modem lowered to 20 m. \llabel{1.13}
-Figure \ref{fig:overview} shows successful events sorted by source depth.
+Fig. \ref{fig:overview} shows successful events sorted by source depth.
 In this analysis, we assume there is insignificant displacement between the GNSS puck surface expression and subsurface modem; this is supported by unusually low observed ice drift rates, just 0.7 cm/s on average throughout the mission.
 
 \begin{figure}[h!]
@@ -429,7 +430,7 @@ There is strong evidence to suggest that the sound speed and multipath fidelity 
 To overcome potentially intermittent acoustic communication, the operational paradigm of the ICNN computes corrections relative to the trilaterated position estimates transmitted by the vehicle, rather than transmitting the updated positions themselves.
 The reliability of the correction is directly linked to how accurately the travel time measurements are converted to pseudoranges.
 This section aims to resolve that tension by reevaluating the trilateration results with respect to the MBC and NBC algorithms.
-The MBC/NBC sound speed estimates were tracked independently for each transmitter-receiver pair; although the sound speed was expected to be locally smooth near a given receiver, no such assumption was enforced between distinct acoustic links.
+The MBC/NBC effective speed predictions were tracked independently for each source-receiver pair; although the sound speed was expected to be locally smooth near a given receiver, no such assumption was enforced between distinct acoustic links.
 
 \subsection{Re-positioning beacon to beacon events}
 
@@ -448,16 +449,16 @@ This trimodal nature reflects the distribution of reflections on the ice surface
 
 In several events, the MBC is unable to accurately estimate the effective sound speed for one of the acoustic links, leading to a large positioning error.
 The NBC, however, better resolves an approximation of the acoustic path.
-For example, in some trilateration solutions for the Eastern buoy, the MBC shows a correction of more than a kilometer; the NBC is two order of magnitudes less.
+For example, in some trilateration solutions for the Eastern buoy, the MBC shows a correction of more than a kilometer; the NBC is two orders of magnitudes less.
 
 \subsection{Re-navigating AUV \emph{Macrura}}
 
 Up to this point, pseudorange estimation and localization have been evaluated on GPS-linked beacon-to-beacon connections to validate the NBC algorithm.
 This analysis ports the MBC and NBC algorithms to re-navigate the AUV \emph{Macrura}.
 
-The AUV dataset clearly exhibits instances where a receiver detects the same transmission more than once.
+In comparison to the modem experiment, the AUV data clearly exhibit instances where a receiver detects the same transmission more than once.
 This is not surprising considering the complex multipath provided by the Beaufort Lens.
-The 11 hour vehicle mission contains 3260 transmissions, 12938 total detections, and 4704 successful receptions.
+The 11 hour vehicle mission contains 3,260 transmissions, 12,938 total detections, and 4,704 successful receptions.
 Allowing receptions with PSK errors would almost double the number of recorded multipath arrivals exploited for positioning, if a real-time solution could correctly parse paths from different arrivals in the same thirty-second cycle.
 Thus it remains a future endeavor to explore how failure mode information from acoustic modems could be used to identify unsuccessful but otherwise trustworthy arrivals to augment trilateration samples.
 
@@ -468,7 +469,7 @@ Accordingly, the vehicle dove deeper than 50 meters about 20\% of the time it wa
 In contrast to the modem tests, where position correction illustrated re-positioning accuracy, the re-navigation corrections are less valuable in the absence of GNSS ground truth.
 The correction magnitude necessarily depends on the vehicle's internal navigation estimate, which is prone to larger errors from sensor drifts, ocean currents, and other error not captured in the hydrodynamic model.
 Thus, larger corrections are not necessarily indicative of worse performance.
-Navigation accuracy may be better described by trilateration error, the RMS of the remaining pseudorange errors from each acoustic link.
+Navigation accuracy is better described by trilateration error, the RMS of the remaining pseudorange errors from each acoustic link.
 
 Fig. \ref{fig:trilat-auv} shows the correction magnitudes and trilateration errors for events with three or more receptions during AUV operations.
 Whereas the MBC has a fairly bimodal nature, with peaks centered around 10--15 and 35--40 m, the NBC favors smaller corrections, from 5--20 m, and has a long tail.
@@ -488,29 +489,24 @@ In the Arctic, GNSS performance worsens due to poor constellation coverage, larg
 The National Security Implications of Climate Change for U.S. Naval Forces \citep{NAP12914} details some of the limitations of the Global Positioning System (GPS) at polar latitudes.
 Radio infrastructure that provides position corrections and references does not regularly extend to polar regions.
 The effect is minor for surface platform navigation \textemdash roughly 15 m of horizontal precision has been displayed at the North Pole\textemdash but is significant enough to register against the modem's detected travel times.
-Figure \ref{fig:gps-drift-example} zooms in on the GNSS and OWTT noise relative to the ice movement for two pairs of modem buoy connections.
+Fig. \ref{fig:gps-drift-example} zooms in on the GNSS and OWTT noise relative to the ice movement for two pairs of modem buoy connections.
 The two panels indicate the GPS drift as $\delta R = \sqrt{\delta x^2 + \delta y^2}$ and temporal drift, $\delta t$, relative to the median OWTT recorded between the two modems.
 The dashed line is scaled by a group velocity of 1440 m/s, such that if there were ideal sensor measurements with no drift, all events should exist on or near the line.
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\reprintcolumnwidth]{figs/gps-drift-example.pdf} 
-	\caption{A comparison of GPS drift (y-axis) versus OWTT drift (x-axis), colored by source and receiver depth. The physical link between North and East are shown on the top; South and West is on the bottom.}
+	\caption{A comparison of GPS drift (y-axis) versus OWTT drift (x-axis), colored by source and receiver depth.}
 	\label{fig:gps-drift-example}
 \end{figure}
 
 The top panel shows the connections between the North and East buoys.
-There is relative, i.e. non-rigid, ice movement between the North and East buoys, evidenced by events spanning the dashed line.
-But the height of the scatter plot is indicative of the precision of the GPS signal, as it remains consistent across many arrival time bands.
-Naturally, some minor offsets between these vertical bands relate to different operational configurations of source and receiver depth.
-However, the large majority of events show vertical banding for the same nominal $\delta t$, indicating the amount of GPS drift.
-
-This idea of GPS drift relative to the same OWTT measurements is further indicated by events between the other two buoys, South and West, in the bottom panel.
-These buoys are moving in a more rigid ice floe and there is minimal impact by source and receiver depth on the spread of OWTT.
-The GPS drift is much larger relative to the OWTT drift, which is sensitive to acoustic scattering, multipath, and/or environmental microstructure.
-
-These are just two subsets of the physical links that cover all four GPS modem buoys.
-The GPS at camp is the least accurate due to the human activity and infrastructure occluding the physical puck.
+The clusters scaling along the 1440 m/s guideline suggest relative ice movement picked up by both GNSS and OWTT.
+But the vertical distribution across many arrival time bands is indicative of the GNSS fluctuations in precision, or noise.
+Some minor offsets between these vertical bands relate to different operational configurations of source and receiver depth.
+The idea of GNSS noise relative to OWTT is further indicated by events between two other buoys, South and West.
+The relatively thin time window suggests these buoys are moving in a more rigid ice floe and that there is minimal impact by source and receiver depth on the spread of OWTT.
+Yet, the vertical distribution, spanning almost 4 meters, cannot be explained by time differentials due to acoustic scattering, multipath, and/or environmental microstructure.
 
 \section{Discussion}
 
