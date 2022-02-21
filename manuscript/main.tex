@@ -188,6 +188,7 @@ The variability of the lens height and prominence is the main reason an updatabl
 
 During ICEX20, the HYCOM profile was available but never deployed. \llabel{1.14}
 For post-processing comparison, we introduce both the HYCOM profile and an isovelocity case, 1441.8 $\pm$ 3.7 m/s, as the mean and standard deviation of the observed sound speed profile over the first 200 m.
+This is a contrived value taken in the style of \citet{Graupe2019} for the sake of comparison; the default value in the LAMSS simulator, which was not environmentally informed nor used during ICEX20, was 1430 m/s.
 
 \clearpage
 \section{\label{sec:realtime} Real-time pseudorange analysis}
@@ -264,7 +265,7 @@ The overarching results show that sound speed estimates derived from eigenrays f
 While the NBC looks for just the least complex multipath, the high density of launch angles almost always guarantees a direct path.
 Nonetheless, the consistent overestimation of pseudorange invites further analysis into acoustic arrival matching.
 
-\subsection{Eigenray identification for beacon-to-beacon events}
+\subsection{Eigenray identification for beacon-to-beacon events} \label{sec:eigenrays}
 
 Accounting for ice movement between beacons creates nominal ranges with small variability.
 Figs. \ref{fig:raytrace-zs20}, \ref{fig:raytrace-zs30}, and \ref{fig:raytrace-zs90} show eigenrays for three sound speed environments for source depths of 20, 30, and 90 m, respectively.
@@ -319,7 +320,8 @@ The lack of direct paths from the observed SSP further points out the shortcomin
 
 The goal of the MBC algorithm was to provide a reliable, physically intuitive interpretation of the acoustic propagation without taking on the additional burden of regularly identifying specific paths that may connect any given source-receiver pair in the network.
 \llabel{2.14}
-Its performance was adequate for vehicle navigation and would have likely sufficed if it were not for the prominence of the duct observed relative that of other model and data products. 
+While it was unlikely to resolve multipath arrivals that triggered successful modem detection, an isovelocity approach would have provided no adaptivity against source and receiver depth differences.
+Its performance was adequate for vehicle navigation and would have likely sufficed if it were not for the prominence of the duct observed relative that of other model and data products.
 
 \clearpage
 \section{\label{sec:post} Post-processed pseudorange analysis}
@@ -336,13 +338,12 @@ Accordingly, the results in this section evaluate the utility of the algorithms 
 
 \subsection{Nearest bounce criteria (NBC)}
 
-\llabel{2.12} As shown in the eigenray traces of Fig. \ref{fig:raytrace-zs30}, the extent of ray bending and repeated reflections is extremely dependent on the sound speed profile.
-An isovelocity approach would completely miss this nuance; our field-tested approach that only resolved the simplest path is unlikely to resolve the one that triggers modem detection.
+\llabel{2.12} The extent of ray bending and repeated reflections is extremely dependent on the degree of the Beaufort Lens observed.
 Based on this insight, a new algorithm, the nearest bounce criteria (NBC), is a slight modification from the MBC and includes multipath as a new dimension of information to exploit.
 This metric, while run in post-processing, adds a negligible amount of computation for real-time efficacy.
 
-Given a running estimate for the horizontal group velocity $u_{i,j}$ between nodes $i$ and $j$, the navigation system has an extrapolated value for range, $\hat{r}$, and a recorded travel time, $\Delta t_{i,j}$.
-Instead of using only the $N_0$ rays with neither surface nor bottom bounces to estimate group velocity and subsequently moving to incremental number of bounces only when no valid direct path solutions exist, we solve for the power weighted average of the ray travel time for the $N_k$ rays with $k$ bounces,
+Given a running estimate for the effective sound speed $c_{i,j}$ between nodes $i$ and $j$, the navigation system has an extrapolated value for range, $\hat{r}$, and a recorded travel time, $\Delta t_{i,j}$.
+Instead of using only the $N_0$ rays with neither surface nor bottom bounces to estimate conversion speed, and subsequently moving to incremental number of bounces only when no valid direct path solutions exist, we solve for the power weighted average of the ray travel time for the $N_k$ rays with $k$ bounces,
 \begin{equation}
 t_k = \frac{\sum_{n=1}^{N_{k}} dt_{n}a_{n}^{2}}{\sum_{n=1}^{N_{k}} a_{n}^{2}} ~, 
 \end{equation}
@@ -350,87 +351,77 @@ find the nearest matching power weighted average to recorded travel time,
 \begin{equation}
 t_{i,j,k} = \min_{k=0,1,2,...} \left| t_k - \Delta t_{i,j} \right|
 \end{equation}
-predict a group velocity,
+predict an effective sound speed,
 \begin{equation}
-u_{i,j} = \dfrac{\hat{r}}{t_{i,j,k}}
+c_{i,j} = \dfrac{\hat{r}}{t_{i,j,k}}
 \end{equation}
 and estimate the range as was done previously.
 \begin{equation}
-r_{i,j} = u_{i,j}\Delta t_{i,j}
+r_{i,j} = c_{i,j}\Delta t_{i,j}
 \end{equation}
 
-This method selects a different group velocity based on the multipath arrival structure, as the detected arrival is not always the first arrival or the direct path and could even be masked by noise or blocked temporarily \citep{deffenbaugh1996acoustic}.
-We manually cap the number of bounces to 4 because of the smaller operational scale and the attenuation accrued with many surface interactions.
+This method selects a different effective sound speed based on the multipath arrival structure, as the detected arrival is not always the first arrival or the direct path and could even be masked by noise or blocked temporarily \citep{deffenbaugh1996acoustic}.
+We manually cap the number of bounces at four because of the smaller operational scale and the attenuation accrued with many surface interactions.
 Bottom bounces are not encoded separately because of ray's tendency to refract upward, not due to information limitations.
 
 \subsection{Effective sound speed predictions}
 
-The minimal and nearest bounce algorithms are applied with the three sound speed inputs shown in Fig.~\ref{fig:raytrace-zs30}.
-The resulting predicted group velocities for all source depths are shown in Fig~\ref{fig:gvel-post}.
+The minimal and nearest bounce algorithms are applied with the three sound speed inputs shown in Figs.~\ref{fig:raytrace-zs20},~\ref{fig:raytrace-zs30},~\ref{fig:raytrace-zs90}.
+The resulting predicted effective sound speeds are shown in Fig. \ref{fig:gvel-post} for all source depths versus one way travel time.
 
 \begin{figure}[h!]
 \includegraphics[width=\columnwidth]{figs/gvel-txrxdepth-wIso-wGPS.pdf}
-\caption{A comparison of group velocity predictions for all beacon to beacon events in post-processing with a source depth of 30 m, with group velocity on the y-axis and recorded travel time on the x-axis. The left panel is for a receiver depth of 30 m; the right panel for 90 m. The sound speed source is indicated by color. The minimal and nearest bounce criterion are distinguished by different marker shapes, compared to the separately colored red dots showing the naive, data-driven group velocity calculation.}
+\caption{A post-processing comparison of effective sound speed predictions for all beacon-to-beacon events. The rows share receiver depth; the columns share source depth. The recorded travel time is on the x-axis and the predicted effective sound speed is on the y-axis. The sound speed source is indicated by color. The isovelocity is shown as the mean $\pm$ the standard deviation. The minimal and nearest bounce criterion are distinguished by different marker shapes, compared to the separately colored red dots showing the implied calculation.}
 \label{fig:gvel-post}
 \end{figure}
 
-The goal of the group velocity estimation is to converge towards the implied sound speed, i.e. the GNSS-derived range divided by the recorded travel time.
-For a 30 m receiver depth, the NBC shows more overlap with data-derived values as it classifies multipath more correctly.
-For a 90 m receiver depth, the overlap is less accurate due to computational constraints of a limited fan of rays entering the shadow zone rendering a less reliable simulated times of arrival packet.
-
+The goal of the effective sound speed prediction is to converge towards the implied sound speed, i.e. the GNSS-derived range divided by the recorded travel time.
 As the environmental and ray filtering method become better representations of the real ocean, the lower the expected mismatch is between the implied and estimated effective sound speeds.
-Analysis shows that the higher multipath classification produces more accurate sound speed predictions, likely driven by a tighter and/or sparser bundle of rays.
-However, that data are too small to draw significant conclusions.
-\llabel{1.19} Discontinuities in multipath classification verify our hypothesis for its importance to a smoothly varying group velocity, as shown in the cluster for a receiver depth of 30 m, where HYCOM jumps from one to two bounces amidst the baseline SSP and weighted SSP smoothly increasing while consistently seeing two and three bounces, respectively.
+
+The various sound speed inputs\textemdash isovelocity aside\textemdash not only modify the predicted effective sound speed, as seen by the colored vertical offsets, but often classify a distinct number of bounces.
+HYCOM sees the most direct and one bounce multipath structures, lending a bias for faster speeds; the weighted SSP sees the most double and triple bounces, favoring slower speeds; the baseline sound speed exists in between.
+Very rarely is the multipath structure classified as a direct path, where the MBC and NBC would prediction overlap.
+In fact, the higher the multipath classification, the more accurate the sound speed prediction is, likely driven by a tighter or even sparser bundle of rays.
+\llabel{1.19} Discontinuities in multipath classification provide initial evidence for its importance to a smoothly varying group velocity, as shown in the cluster of 30 to 30 m transmissions, where HYCOM jumps from one to two classified bounces amidst the baseline SSP and weighted SSP smoothly increasing while consistently seeing two and three classified bounces, respectively.
+Of course, the prediction deteriorates with cross-layer transmissions across the duct, but not to the same degree at which eigenrays could not be found for the weighted SSP in section \ref{sec:eigenrays}.
+The evidence suggests that the grid based method provides a useful amount of redundancy to resolve similar enough eigenrays.
+
+It is useful to think about in what case the isovelocity\textemdash or any isovelocity framing\textemdash would have been appropriate.
+The transmissions from shallow to shallow receiver would may have matched the default configuration of 1430 m/s.
+The isovelocity contrived for this paper, 1441.8 m/s, best matches the transmissions from 90 to 90 m.
+The one from \citet{Graupe2019}, 1450 m/s, would have had a systemic overestimation.
+Given that implied sound speeds just for beacon-to-beacon events span 1420 to 1445 m/s, it is safe to say that a nominal sound speed would sacrifice pseudorange accuracy somewhere, and that an adaptive approach is necessary even for short range operations in the Beaufort Lens.
 
 \subsection{Pseudorange error metrics}
 
+Pseudorange estimation plays an important role in trilateration.
+Fig. \ref{fig:rangeError} shows the directional pseudorange error ``footprints'' for the four sound speed inputs with the NBC approach, separated by source and receiver depth configurations.
+
 \begin{figure}[!ht]
 \includegraphics[width=\textwidth]{figs/range-error-allMethods.pdf}
-\caption{The post-processed range error for source depths of 20, 30, and 90 m, and receiver depths of 30 and 90 m. The dashed gray line shows no error. The shaded region connects the range performance across all events.}
+\caption{The post-processed pseudorange error; the rows share receiver depth; the columns share source depth. The dashed gray line shows no error. The shaded region connects the range performance across all events.}
 \label{fig:rangeError}
 \end{figure}
 
-Fig. \ref{fig:rangeError} shows the directional range error footprints for all three sound speed inputs with respect to OWTT, separated by source and receiver depth configurations.
 The weighted SSP range error generally has the smallest and most zero-centered footprint.
 The one case it does not is for the source-receiver pairings between 30 and 90 m in depth.
-The increased error for these reciprocal transmission paths is most likely driven by the computational artifacts encountered when propagating through the steep sound speed gradients of the lens and through the shadow zone.
+The increased error for these is most likely driven by the computational artifacts encountered when propagating through the steep sound speed gradients of the lens and through the shadow zone.
 All other source depth pairings are significantly improved using the chosen weights compared to HYCOM or the baseline.
 
-When using a linear scaling to convert travel time into range, any offset between the assumed sound speed and the horizontal group velocity produces unconstrained error with increasing receiver distance.
-Most importantly, we see the consequences of the adaptive group velocity in that range error does not strictly increase with OWTT.
+When using a linear scaling to convert travel time into range, any offset between the assumed sound speed and the horizontal group velocity produces unconstrained error with increasing receiver distance, whereas an adaptive estimate would exhibit no such trend.
+This is easily observed in the same-layer links, i.e., 30 to 30 m and 90 to 90 m.
+In cross-layer links, the isovelocity does not perform better but tends to exaggerate or flip the footprint created adaptively.
 
-The improvement from MBC to NBC is most evident for the realistic sound speed; while the HYCOM SSP improves from a median absolute range error of 6.41 to 4.61 m, the baseline SSP improves from 10.30 to 2.27 m, and the weighted SSP improves from 13.28 to 2.12 m.
-Table \ref{tab:rangeErrorV1V2} shows further statistics on the absolute range error by SSP and group velocity algorithm.
-The order of magnitude improvement in the ducted SSPs demonstrate the effectiveness of the algorithm exploiting the multipath conditions.
+The improvement from MBC to NBC is most evident for the data-driven sound speed; while the HYCOM SSP improves from a median absolute range error of 6.41 to 4.61 m, the baseline SSP improves from 10.30 to 2.27 m, and the weighted SSP improves from 13.28 to 2.12 m.
+In comparison, the isovelocity has a median error of 13.09 m.
+The order of magnitude improvement in the ducted SSPs demonstrate the effectiveness of the NBC algorithm exploiting the observed multipath conditions.
 
-\begin{table}[h!]
-\renewcommand{\arraystretch}{1.5}
-\centering
-\begin{tabular}{r|cc|cc|cc}\toprule
- & \multicolumn{2}{c|}{\textbf{Baseline} } & \multicolumn{2}{c|}{\textbf{Chosen Weights} } & \multicolumn{2}{c}{\textbf{HYCOM}} \\
-  & \cellcolor[HTML]{EFEFEF}MBC & NBC & \cellcolor[HTML]{EFEFEF} MBC& NBC & \cellcolor[HTML]{EFEFEF}MBC & NBC \\ \hline
- minimum [m] 	& \cellcolor[HTML]{EFEFEF}0.01 & 0.00	& \cellcolor[HTML]{EFEFEF}0.00 	& 0.00 	& \cellcolor[HTML]{EFEFEF}0.11 & 0.01 \\
- 25th \% [m]   & \cellcolor[HTML]{EFEFEF}4.96 & 0.99	& \cellcolor[HTML]{EFEFEF}6.26 	& 0.95 	& \cellcolor[HTML]{EFEFEF}3.30 & 2.25 \\   
- median [m]		& \cellcolor[HTML]{EFEFEF}10.30 & 2.27 	& \cellcolor[HTML]{EFEFEF}13.28 & 2.12 	& \cellcolor[HTML]{EFEFEF}6.41 & 4.61 \\
- 75th \% [m]   & \cellcolor[HTML]{EFEFEF}15.81 & 5.51 	& \cellcolor[HTML]{EFEFEF}19.75 & 4.11 	& \cellcolor[HTML]{EFEFEF}10.92 & 7.46 \\
- maximum [m]    & \cellcolor[HTML]{EFEFEF}22.52 & 14.96 & \cellcolor[HTML]{EFEFEF}1491  & 20.21 & \cellcolor[HTML]{EFEFEF}19.55 & 15.81 \\
- \toprule
-\end{tabular}
-\caption[Comparison of post-processing range estimation algorithms across all events]{A comparison of range estimation metrics for each sound speed source and group velocity estimation algorithm for all 1283 beacon to beacon events via post-processing. The 0th (minimum), 25th, 50th (median), 75th, and 100th (maximum) percentiles are shown to the range resolution afforded by the WHOI Micro-Modem. There are a few outliers that drive the mean to be higher than the median.}
-\label{tab:rangeErrorV1V2}
-\end{table}
-
-As shown in table \ref{tab:rangeErrorV1V2}, there is a striking maximum range error of 1491 m for the weighted SSP in the minimal bounce criteria.
-There are 10 events from South transmitting at 30 m depth to North receiving at 30 m depth.
-The OWTT spread is from 2.1958 to 2.1963 s; the naive group velocity is 1429.3 to 1430.1 m/s; and the GPS-tracked range is from 3138.54 m to 3140.87 m.
-This example ends up being an excellent case study for how sound speed and multipath fidelity work in concert to minimize range error.
-The large error in this instance is driven by the MBC unexpectedly defaulting to a bottom bounce with a much greater OWTT.
-The NBC classifies the multipath as 4 bounces, reducing the range error from greater than a kilometer to less than a meter.
-While there is no actual way of knowing if this is the correct multipath structure, the range error is remarkably small, at 0.025\%. 
-This pattern of not choosing the minimal observed bounce structure is consistent across all SSPs; the baseline goes from 1 to 3 bounces and HYCOM goes from 0 to 2 bounces.
-Notably, the baseline and HYCOM range errors are never egregiously large, but are nonetheless improved with the NBC algorithm.
-Thus, for acoustically complex environments, the NBC has a disproportionately positive impact as the estimated SSP approaches the desired SSP.
+There is one example that helpfully illustrates the improvement brought upon by bounce classification.
+For transmissions between North and South at 30 m, the OWTT spread is 2.1958 to 2.1963 s; the GNSS-tracked distance is 3138.54 to 3140.87 m; and the implied effective sound speed is 1429.3 to 1430.1 m/s.
+For these transmissions, the weighted SSP and the MBC approach produce a pseudorange error of -1491 m, as the effective sound speed is dominated by bottom bounce arrivals with much greater travel times.
+The NBC approach categorizes this same record as a quadruple surface bounce, reducing the pseudorange error to less than a meter.
+Comparatively, the NBC approach for HYCOM and the baseline SSP produce pseudorange errors of 8.30 and 2.39 m, respectively. 
+There is strong evidence to suggest that the sound speed and multipath fidelity codependently improve localization accuracy.
 
 \clearpage
 \section{Trilateration for ICEX20 field data}\label{sec:trilat}
