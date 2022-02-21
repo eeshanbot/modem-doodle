@@ -69,6 +69,7 @@ We also suggest re-navigation and re-positioning as post-processed corollaries, 
 
 % More about LBL navigation
 While RAFOS floats championed one way ranging for re-positioning \citep{Rossby1986,duda_evaluation_2006}, the ability to do so for navigation was facilitated by \llabel{1.11} the advent of the WHOI Micro-Modem \citep{Singh2006} and synchronized clocks \citep{rypkema_one-way_2017}.
+\llabel{1.3a}
 AUV navigation efforts have achieved root mean square (RMS) localization error on the order of tens of meters relative to GNSS surface position over less than ten kilometers in shallow \citep{Eustice2007,Claus2018,kepper_mems_2017} and deep water \citep{Kunz2008,jakuba_long-baseline_2008,Webster2009}.
 However, these efforts all used a nominal sound speed for travel time conversion and the vehicles were limited to shallower isovelocity regimes.
 
@@ -84,7 +85,9 @@ This approach is able to re-position a floating hydrophone array with an error o
 
 The ICEX20 AUV deployment necessitated an environmentally- and physically-driven relationship between recorded travel times and estimated pseudoranges due to the multipath uncertainty brought upon by an increasingly observed double ducted environment in the Beaufort Sea, which some refer to as the ``Beaufort Lens'' \citep{litvak2015,chen_spectral_2019,chen_temporal_2020}.
 
+\llabel{2.1a}
 Given that a lens introduces significant ray refraction, the Beaufort Lens is a shorthand for the spatio-temporal variability of the local temperature and sound speed maxima generally around 50 to 60 m in depth.
+\llabel{2.4}
 A neutrally buoyant layer of warm Pacific Summer Water creates a unique double ducted environment \textemdash the upper duct degrades signal coherence due to intensified ice interaction and the lower duct effectively traps sound for long range propagation \citep{Poulsen2016}. 
 Modeling output \citep{duda_long-range_2019,duda_effects_2021} and experimental observations \citep{Ballard2020,Bhatt2021} suggest that, in the Beaufort Sea, the duct is persistent and widespread but not necessarily continuous; it and its acoustic effects can be non-existent, minimal, or drastic.
 Transmissions in the upper duct, between the surface ice and the lens, experience minimal attenuation but degrade in signal coherence with repeated reflections under the ice.
@@ -134,7 +137,7 @@ The virtual environment similarly emulates the interfaces between the real compo
 The ICNN is comprised of four ice buoys in a loose rectangle, roughly 2 km away from a central ice camp with a topside computer, as shown in Fig.~\ref{fig:icnnOverview}.
 Each ice buoy is outfitted with a Garmin GPS 18x, with a pulse-per-second rising edge aligned to 1 microsecond and a spec sheet accuracy of 3 m, 95\% of the time.
 The AUV and each ice buoy are outfitted with a WHOI Micro-Modem \citep{Singh2006}, with a four-element receiver array, a single transmitter, and one-tenth of a millisecond resolution.
-Acoustic messages were sent with a 10 kHz carrier frequency, 5 kHz bandwidth, and phase-shift keying (PSK)modulation on a time-division multiple access schedule with a thirty-second cycle, giving room for two-way communication throughout the mission volume.
+\llabel{1.6a} Acoustic messages were sent with a 10 kHz carrier frequency, 5 kHz bandwidth, and phase-shift keying (PSK) modulation on a time-division multiple access schedule with a thirty-second cycle, giving room for two-way communication throughout the mission volume.
 The receive and transmit elements were split between shallow and deeper depths\textemdash 30 and 90 m\textemdash to provide better coverage across the shadow zone.
 While each buoy only has one transmit depth, all buoys have both receive depths but the active receive layer is consistent across all buoys. \llabel{1.12}
 The design of the ICNN enables a self-adapting network to transmit and receive at the optimal depth to maintain contact with the AUV \citep{schneider_self-adapting_2020}.
@@ -197,6 +200,7 @@ This is a contrived value taken in the style of \citet{Graupe2019} for the sake 
 Because the vehicle's navigation solution during a mission can only be evaluated on the basis of the error estimates sent, a sister experiment for validating the real-time ranging approach was implemented.
 Ice buoy modems were run as ``virtual vehicles'' at a fixed depth, receiving position updates from the other beacons as well as a camp site modem lowered to 20 m. \llabel{1.13}
 Fig. \ref{fig:overview} shows successful events sorted by source depth.
+\llabel{1.10}
 In this analysis, we assume there is insignificant displacement between the GNSS puck surface expression and subsurface modem; this is supported by unusually low observed ice drift rates, just 0.7 cm/s on average throughout the mission.
 
 \begin{figure}[h!]
@@ -208,7 +212,7 @@ In this analysis, we assume there is insignificant displacement between the GNSS
 
 \subsection{Minimal bounce criteria (MBC)}
 
-The fundamental challenge to implement GNSS-like navigation, especially in an acoustically complex propagation environment, is characterizing a single sound speed to compensate for the effects of ray refraction and reflection.
+\llabel{1.5} The fundamental challenge to implement GNSS-like navigation, especially in an acoustically complex propagation environment, is characterizing a single sound speed to compensate for the effects of ray refraction and reflection.
 The use of the acoustic modem network for tracking relies on the accurate estimates of travel times between the submerged platform and LBL beacons, supported by clock synchronization and a pre-determined scheduling of acoustic events.
 \llabel{2.9} For the Beaufort Lens in particular, the strong multipath effects make it virtually impossible to deterministically predict the modem's detected arrival time.
 
@@ -259,6 +263,7 @@ Given the complexity of the ICNN system, this experiment did not collect an exha
 
 Fig. \ref{fig:range-error-insitu} shows the range error boundary for both SSP inputs used in ICEX20.
 A promising sign that the MBC method adapts sound speed somewhat intelligently is the lack of error growth as travel time increases.
+\llabel{1.28}
 The baseline SSP (n=243 events) has an absolute pseudorange error of 11.38 $\pm$ 4.23 m; the weighted SSP (n=568), 11.36 $\pm$ 8.12 m.
 The discrepancy between these two is largely due to outlier events only contained in the weighted SSP set.
 Where there is overlap between sound speed conditions used for the real-time MBC, the pseudorange error difference is no more than a few meters.
@@ -266,7 +271,7 @@ The overarching results show that sound speed estimates derived from eigenrays f
 While the NBC looks for just the least complex multipath, the high density of launch angles almost always guarantees a direct path.
 Nonetheless, the consistent overestimation of pseudorange invites further analysis into acoustic arrival matching.
 
-\subsection{Eigenray identification for beacon-to-beacon events} \label{sec:eigenrays}
+\subsection{Eigenray identification for beacon-to-beacon events} \label{sec:eigenrays} \llabel{1.6b}
 
 Accounting for ice movement between beacons creates nominal ranges with small variability.
 Figs. \ref{fig:raytrace-zs20}, \ref{fig:raytrace-zs30}, and \ref{fig:raytrace-zs90} show eigenrays for three sound speed environments for source depths of 20, 30, and 90 m, respectively.
@@ -320,8 +325,8 @@ The HYCOM eigenrays still show the most reliable acoustic paths that deteriorate
 The lack of direct paths from the observed SSP further points out the shortcomings of the MBC approach.
 
 The goal of the MBC algorithm was to provide a reliable, physically intuitive interpretation of the acoustic propagation without taking on the additional burden of regularly identifying specific paths that may connect any given source-receiver pair in the network.
-\llabel{2.14}
 While it was unlikely to resolve multipath arrivals that triggered successful modem detection, an isovelocity approach would have provided no adaptivity against source and receiver depth differences.
+\llabel{2.14}
 Its performance was adequate for vehicle navigation and would have likely sufficed if it were not for the prominence of the duct observed relative that of other model and data products.
 
 \clearpage
@@ -384,7 +389,7 @@ The various sound speed inputs\textemdash isovelocity aside\textemdash not only 
 HYCOM sees the most direct and one bounce multipath structures, lending a bias for faster speeds; the weighted SSP sees the most double and triple bounces, favoring slower speeds; the baseline sound speed exists in between.
 Very rarely is the multipath structure classified as a direct path, where the MBC and NBC would prediction overlap.
 In fact, the higher the multipath classification, the more accurate the sound speed prediction is, likely driven by a tighter or even sparser bundle of rays.
-\llabel{1.19} Discontinuities in multipath classification provide initial evidence for its importance to a smoothly varying group velocity, as shown in the cluster of 30 to 30 m transmissions, where HYCOM jumps from one to two classified bounces amidst the baseline SSP and weighted SSP smoothly increasing while consistently seeing two and three classified bounces, respectively.
+\llabel{1.19} Discontinuities in multipath classification provide initial evidence for its importance to a smoothly varying group velocity, as shown in the cluster of 30 to 30 m transmissions in \ref{fig:gvel-post}, where HYCOM jumps from one to two classified bounces amidst the baseline SSP and weighted SSP smoothly increasing while consistently seeing two and three classified bounces, respectively.
 Of course, the prediction deteriorates with cross-layer transmissions across the duct, but not to the same degree at which eigenrays could not be found for the weighted SSP in section \ref{sec:eigenrays}.
 The evidence suggests that the grid based method provides a useful amount of redundancy to resolve similar enough eigenrays.
 
@@ -392,7 +397,8 @@ It is useful to think about in what case the isovelocity\textemdash or any isove
 The transmissions from shallow to shallow receiver would may have matched the default configuration of 1430 m/s.
 The isovelocity contrived for this paper, 1441.8 m/s, best matches the transmissions from 90 to 90 m.
 The one from \citet{Graupe2019}, 1450 m/s, would have had a systemic overestimation.
-Given that implied sound speeds just for beacon-to-beacon events span 1420 to 1445 m/s, it is safe to say that a nominal sound speed would sacrifice pseudorange accuracy somewhere, and that an adaptive approach is necessary even for short range operations in the Beaufort Lens.
+In addition, over the course of the four day experiment, the local maxima of the Beaufort Lens changed from roughly 1447 m/s at 40 m to 1442 m/s at 60 m.
+Given that implied sound speeds just for beacon-to-beacon events span 1420 to 1445 m/s, it is safe to say that a nominal sound speed would sacrifice pseudorange accuracy somewhere, and that an adaptive approach is necessary even for short and/or small scale operations in the Beaufort Lens.
 
 \subsection{Pseudorange error metrics}
 
@@ -418,7 +424,7 @@ The improvement from MBC to NBC is most evident for the data-driven sound speed;
 In comparison, the isovelocity has a median error of 13.09 m.
 The order of magnitude improvement in the ducted SSPs demonstrate the effectiveness of the NBC algorithm exploiting the observed multipath conditions.
 
-There is one example that helpfully illustrates the improvement brought upon by bounce classification.
+\llabel{1.23} There is one example that helpfully illustrates the improvement brought upon by bounce classification.
 For transmissions between North and South at 30 m, the OWTT spread is 2.1958 to 2.1963 s; the GNSS-tracked distance is 3138.54 to 3140.87 m; and the implied effective sound speed is 1429.3 to 1430.1 m/s.
 For these transmissions, the weighted SSP and the MBC approach produce a pseudorange error of -1491 m, as the effective sound speed is dominated by bottom bounce arrivals with much greater travel times.
 The NBC approach categorizes this same record as a quadruple surface bounce, reducing the pseudorange error to less than a meter.
@@ -484,6 +490,7 @@ It is apparent that, while both methods are quite successful, there is strong ev
 \end{figure}
 
 \subsection{Investigating potential GNSS noise}
+\llabel{1.7}
 
 The fact that the bulk of the best performing re-navigation error exists within the precision of the GNSS unit deployed invites a further look into GNSS noise.
 In the Arctic, GNSS performance worsens due to poor constellation coverage, larger ionospheric effects, and multipath interference.
