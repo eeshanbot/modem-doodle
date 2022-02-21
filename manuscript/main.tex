@@ -91,6 +91,7 @@ Modeling output \citep{Duda2019,Duda2021} and experimental observations \citep{B
 Transmissions in the upper duct, between the surface ice and the lens, experience minimal attenuation but degrade in signal coherence with repeated reflections under the ice.
 In lower duct, between the lens and its conjugate depth in the Atlantic water, roughly 200 m, sound above 350 Hz is trapped near losslessly for long range propagation \citep{Poulsen2017}.
 
+The Arctic, while remote, is the perfect place to demonstrate mature navigation technologies in real GNSS-denied conditions.
 Thorough reviews of uncrewed vehicle operations in polar environments can be found in \citep{Norgren2014} and \citep{Barker2020}; there is no comparable work in the Arctic for a short range AUV deployment in the Beaufort Lens.
 Seminal \citep{brooke1981arcs,jackson1983autonomous,light1989autonomous,bellingham1995auv,hayes2002determining} and more recent AUV deployments \citep{Jakuba2008,Kunz2008,kukulya2010under,plueddemann_autonomous_2012,timmermans2013scales,fossum2021adaptive} witnessed the classical upward refracting sound speed profile that is amenable to an isovelocity assumption.
 
@@ -361,7 +362,8 @@ and estimate the range as was done previously.
 r_{i,j} = c_{i,j}\Delta t_{i,j}
 \end{equation}
 
-This method selects a different effective sound speed based on the multipath arrival structure, as the detected arrival is not always the first arrival or the direct path and could even be masked by noise or blocked temporarily \citep{deffenbaugh1996acoustic}.
+Whereas the MBC outputs a scalar, this method first outputs a vector of effective sound speeds based on the number of reflections.
+Then a single value is selected that best matches the recorded travel time, as the detected arrival is not always the first arrival or the direct path and could even be masked by noise or blocked temporarily \citep{deffenbaugh1996acoustic}.
 We manually cap the number of bounces at four because of the smaller operational scale and the attenuation accrued with many surface interactions.
 Bottom bounces are not encoded separately because of ray's tendency to refract upward, not due to information limitations.
 
@@ -507,61 +509,55 @@ Some minor offsets between these vertical bands relate to different operational 
 The idea of GNSS noise relative to OWTT is further indicated by events between two other buoys, South and West.
 The relatively thin time window suggests these buoys are moving in a more rigid ice floe and that there is minimal impact by source and receiver depth on the spread of OWTT.
 Yet, the vertical distribution, spanning almost 4 meters, cannot be explained by time differentials due to acoustic scattering, multipath, and/or environmental microstructure.
+This conclusion corroborates the vertical spread of implied effective speeds in Fig. \ref{fig:gvel-post}.
 
+\clearpage
 \section{Discussion}
 
-Given the computational constraints of real-time modeling, the gridded approach facilitates enough multipath classification to build in a ``ray ensemble'' of characteristic group velocities.
-This result is not always possible when aiming to find eigenrays to just an individual point, even with a higher density of launch angles.
-An important takeaway for those interested in ray-based localization is leveraging a local grid to give BELLHOP tolerance for finding solutions that otherwise may not be found in a center or single point solution.
-The limitations of numerical computation, particularly for a complex environment, are more adeptly addressed by accepting some uncertainty in position than by prescribing an exact solution.
-Even though BELLHOP is a greedy estimator for eigenrays, the additional data created is a negligible burden. 
+Underwater navigation research is broadly motivated by acquiring GNSS-like navigation in GNSS-denied conditions.
+Accurate range estimation is essential to mitigating error.
+Current approaches for underwater acoustic navigation simplify the non-linear relationship between a SSP and timefronts with a determinstic sound speed.
+Thus, the conversion of travel time into distance can be pre-conditioned for error and error growth over the course of a vehicle mission.
+This work introduces a lightweight stochastic prediction of an effective sound speed along the path between source and receiver, retooling arrival methods generally deemed too complex or labor intensive for real-time.
+We assume that the effective sound speed would be a locally smoothly varying function with respect to operational conditions\textemdash horizontal and vertical differences and rate of difference between source and receiver.
+The field-tested approach, the minimal bounce criteria, facilitated a successful AUV recovery in a total ice-covered, double ducted environment.
+The accuracy of the MBC was validated against GPS-linked beacon-to-beacon communications.
+Given a consistent bias towards overestimation, an improved algorithm, the nearest bounce criteria, was developed on the insight that multipath structure may play an outsized role in maintaining a smoothly varying effective sound speed.
+The NBC was developed with field data and reevaluated on vehicle data, achieving a position accuracy and precision that rivals that of the deployed GNSS puck.
 
-Underwater navigation research is broadly motivated by acquiring GPS-like navigation accuracy in GPS-denied conditions.
-The Arctic, while remote, is the perfect place to test mature navigation technologies in real GPS-denied conditions.
-
-Range estimation is an essential step of acoustic localization and navigation.
-Current approaches in real-time underwater acoustic navigation simplify the non-linear relationship between a sound speed profile and acoustic propagation with a deterministic sound speed.
-Some post-processing approaches attempt to leverage the acoustic arrival structure via various ray methods, but often use a singular SSP for simplicity, even over long term missions or dynamic conditions.
-Thus, the conversion from travel time to range, particularly for real-time vehicle deployments, can be pre-conditioned for error growth as the OWTT/range increases.
-
-For GPS-denied navigation, especially in hostile environments like the Arctic, tolerance for error is close to none.
-This work addresses a critical need in acoustic navigation by retooling acoustic arrival methods generally deemed too complex or labor intensive for real-time, ray-based range estimation to achieve GPS-like positioning.
-
-We hypothesize and validate that the embedded stochastic prediction of a single group velocity is a smoothly varying function of range, source and receiver depth pairings, as well as multipath structure.
-We employ a GPS-tracked experiment to have a ground truth comparison for real-time localization algorithms.
-The real-time system achieves GPS-like navigation for an AUV without taking into account multipath structure; the ranging error improves by an order of magnitude with the suggested multipath adaptability, minimizing range error to single meters.
-Post-processing analysis shows that this method of ranging is sensitive to GPS drift itself; thus embedding a stochastic prediction of the horizontal group velocity has an outsized benefit to minimizing trilateration error.
+A key insight for both approaches was seeking an eigenray ensemble around an estimated location instead of seeking to unambigously match arrivals.
+The ensemble diversified the simulated multipath possibilities to better capture the actual multipath recorded.
+In this way, the solution exploits multipath, generally viewed as a source of uncertainty, as a new dimension of information to improve localization accuracy.
+Based on the navigation and re-navigation results of our AUV deployment in the ice-covered Beaufort Sea, we conclude that embedding a model-aided prediction of the effective sound speed has an outsized benefit to minimizing trilateration error, and that our approach sufficiently resolves the acoustic timefronts for an unpredictable, complex propagation environment like the double ducted Beaufort Lens.
 
 There are many avenues through which this approach can be further refined and tested for field operations.
 Amongst them is defining the uncertainty grid for BELLHOP via stochastic or data-driven measures such as the distance traveled by the AUV between ICNN updates or the magnitude of the position corrections by the ICNN.
 Another is to entirely remove the seeded range and instead rely on the submerged asset's depth and recorded OWTT to find high probability fields in range.
 
-The literature in underwater acoustic navigation and positioning is either real-time or physics-based.
-In this paper we demonstrate a field-tested approach that is both real-time and physics-based; this is achieved by coupling data streams with fast acoustic modeling.
-The methods exploit the upward refracting nature and the total ice cover of the Arctic environment to achieve remarkable ranging accuracy and precision.
-It transforms multipath, widely considered as an obstacle for acoustic ranging, into a new information content to refine ranging accuracy.
-We believe that this work enables more accurate range estimation, localization, and/or navigation for any field experiment given known source and receiver depths.
+The relatively simple nature of this approach suggests it is transferable to other environments, spatio-temporal scales, and platforms.
+While it is likely a particular quirk of the Beaufort Lens that filtering for reflection alone can produce a horizontal effective speed that compensates for ray refraction and reflection, it is trivial to filter along other ways, like number of turning points, to create a more diverse and informed set of multipath timefronts.
+Though the majority of re-navigation results are within single-meter accuracy, future work can examine how constellations of more LBL beacons can extend the operational domain without adding an undesirable amount of error.
+One possibility is that, during a mission, ICNN-like LBL implementions use a comparison of the GNSS self-position and acoustic positioning to invert for the ocean volume, linking how vertical and horizontal sound speed structure impact transmission integrity.
+\llabel{1.20} A fast tomographic estimate \citep{Deffenbaugh1997,Elisseeff2002}, along with its uncertainty, can be continuously communicated to assets underway to maintain contact or enable adaptive sampling.
+In this sense navigation and tomography converge on the same set of component technologies\textemdash position estimation, sound speed parameterization estimation, ray path identification, and vehicle path optimization.
 
-Performance in other acoustic environments may require introducing a different thresholded metric to sort time of arrivals.
-Given the NBC algorithm's improvement with increased multipath, its effectiveness is likely only challenged by the valid operational scales of a range independent propagation environment.
-For mesoscale operations, like that of many gliders, the group velocity criteria may need to be modified to better account for variability driven by range dependent propagation through internal waves, eddies, or even bathymetric changes like underwater volcanoes.
-BELLHOP simulations provide other relevant eigenray information, like time and angle of arrival, that is ripe for statistical and machine learning methods to classify a representative group velocity.
-A bespoke and fast ray tracing method, which was used during ICEX20 to evaluate the acoustic fit of sound speed profile parameterization \citep{bhatt_embedded_2022}, can easily report back the number of turning points instead of the number of bounces for multipath classification.
+Spatio-temporal variability is a serious challenge for accurate real-time ranging.
+On one hand, the effectiveness of eigenray filtering algorithm is likely only challenged by the valid operational scales of a range independent propagation environment.
+Longer range experiments may provide more time for eigenray filtering.
+A bootstrapping approach that filters eigenrays for several randomly generated internal wave spectrums may compensate for otherwise unknowable spatio-temporal variability.
+The model-aided component to the eigenray filtering is compatible with vertical slices from any physically driven ocean model.
+But in the long run, more accurate and higher resolution global circulation models are needed to properly resolve features that alter ducted propagation at the scales discernible to an acoustic modem.
+Through-the-sensor methods can resolve local features but would require a degree of information sharing not readily supported on the acoustic channel for large scale variability.
+But addressing the spatial and temporal scales of what can be solved deterministically and what must be solved stochastically imposes a resolution constraint that is at odds with computational overhead for real-time operations.
+Resolving features inaccurately, or with a false sense of confidence, could be more harmful than contextualizing the limitations of a range independent propagation over realistic bathymetry.
+Given that AUV operations are often on smaller spatial and temporal scales, the added benefit of a gridded model is quite small, and for features like the Beaufort Lens, not well resolved.
 
-This approach will start to break down in extremely dynamic environments, like fast moving fronts.
-Realistic \textit{in situ} considerations of the acoustic environment may not be possible without complete through-the-sensor integration of acoustic dat and/or hyper realistic ocean models.
-
-\llabel{1.20} Many approaches to underwater navigation combine it with acoustic tomography, i.e., a joint estimation of both source and receiver locations and the ocean volume between them.
-There has been considerable success at this effort in post-processing methods, which utilize intensive\textemdash and due to the non-linearity of sound propagation, often brute force\textemdash computational methods. 
-For vehicle operations, fast tomography is the ideal implementation, in that one can fully consider how sound speed structure, horizontally and vertically, influences sound propagation.
-AUVs can serve as moving sources to better image the ocean volume \citep{Deffenbaugh1997,Elisseeff2002}, where mobile tomography and navigation converge on the same set of component technologies: position estimation, sound speed parameterization estimation, ray path identification, and vehicle path optimization.
-
-But there are overwhelming challenges, operationally and computationally, for fast, mobile tomography to become a realistic endeavor.
-Addressing the spatial and temporal scales of what can be solved deterministically and what must be solved stochastically imposes a resolution constraint on the utility of gridded models\textemdash resolving fine features inaccurately (or with a false sense of confidence) could be more harmful than assuming range independence.
-Given that AUV operations are often on small spatial and temporal scales, the added benefit of a gridded model is quite small, and in cases like the Arctic, may actually mischaracterize the ocean volume. 
-For gliders, with longer and larger operational scales, an ocean model may provide more useful information.
-Currently gliders are low power and do not have the storage or computational power to run a full-scale, realistic ocean model.
-A lightweight representation of the key environmental and acoustic features, passed through the same manner of acoustic message from the modem experiment, may drastically improve glider navigation.
+The methods presented in this paper, including the software projects \citep{benjamin2010nested,schneider2010unified,schneider2015dynamic}, are open source and platform agnostic.
+Large AUVs, often large enough to support long duration and/or deep sea missions, would benefit from including diurnal or tidal effects for ranging.
+Gliders, though generally low power and memory, have been equipped with acoustic modems.
+Their inability to maintain position within a region of reliable acoustic path makes the impact of an environmentally adaptive pseudorange estimation disproportionately positive.
+The exact adjustments to the ensemble eigenray filtering are predicated on the expected sound speed conditions and acoustic arrival structure; the problem is ripe application for other simulation testbeds or machine learning methods.
+The continued development of embedded acoustic processing on heterogenous platforms is fundamental to support a universal underwater navigation scheme comparable to GNSS.
 
 % ================================================== %
 % \begin{figure}[ht]
