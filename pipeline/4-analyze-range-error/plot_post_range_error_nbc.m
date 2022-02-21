@@ -1,5 +1,5 @@
 %% prep workspace
-clear; clc; close all;
+clear; clc; close all; addpath('../../src/');
 
 %% unpack Bellhop gvel table
 [DATA,INDEX] = h_unpack_bellhop('../bellhop-gvel-gridded/gveltable.csv');
@@ -96,7 +96,7 @@ for zr = [30 90]
         %         end
         if count == 4
             xlabel('one way travel time [s]');
-            ylabel('sound speed [m/s]');
+            ylabel('pseudorange error [m]');
         else
             yticklabels([]);
             xticklabels([]);
@@ -115,5 +115,5 @@ lg = legend('Isovelocity','HYCOM','Baseline','Chosen Weights','location','southe
 title(lg,'Sound Speed Inputs');
 
 % title
-sgtitle('Range error by source and receiver depths','fontsize',17,'fontweight','bold')
-% h_printThesisPNG('range-error-allMethods')
+sgtitle('Pseudorange error footprints','fontsize',17,'fontweight','bold')
+h_printThesisPNG('range-error-allMethods')
