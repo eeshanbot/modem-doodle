@@ -429,7 +429,7 @@ The order of magnitude improvement in the ducted SSPs demonstrate the effectiven
 
 \llabel{1.23} There is one example that helpfully illustrates the improvement brought upon by bounce classification.
 For transmissions between North and South at 30 m, the OWTT spread is 2.1958 to 2.1963 s; the GNSS-tracked distance is 3138.54 to 3140.87 m; and the implied effective sound speed is 1429.3 to 1430.1 m/s.
-For these transmissions, the weighted SSP and the MB approach produce a pseudorange error of -1491 m, as the effective sound speed is dominated by bottom bounce arrivals with much greater travel times.
+For these transmissions, the weighted SSP and the MB approach produce a pseudorange error of -1491 m, as the effective sound speed predicted by the minimum bounce criteria is dominated by bottom bounce arrivals with much greater travel times.
 The NB approach categorizes this same record as a quadruple surface bounce, reducing the pseudorange error to less than a meter.
 Comparatively, the NB approach for HYCOM and the baseline SSP produce pseudorange errors of 8.30 and 2.39 m, respectively. 
 There is strong evidence to suggest that the sound speed and multipath fidelity codependently improve localization accuracy.
@@ -500,17 +500,17 @@ In the Arctic, GNSS performance worsens due to poor constellation coverage, larg
 Radio infrastructure that provides position corrections and references does not regularly extend to polar regions.
 The effect is minor for surface platform navigation \textemdash roughly 15 m of horizontal precision has been displayed at the North Pole\textemdash but is significant enough to register against the modem's detected travel times.
 Fig. \ref{fig:gps-drift-example} zooms in on the GNSS and OWTT noise relative to the ice movement for two pairs of modem buoy connections.
-The two panels indicate the GPS drift as $\delta R = \sqrt{\delta x^2 + \delta y^2}$ and temporal drift, $\delta t$, relative to the median OWTT recorded between the two modems.
+The two panels indicate the GPS noise as $\delta R = \sqrt{\delta x^2 + \delta y^2}$ and temporal drift, $\delta t$, relative to the median OWTT recorded between the two modems.
 The dashed line is scaled by a group velocity of 1440 m/s, such that if there were ideal sensor measurements with no drift, all events should exist on or near the line.
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\columnwidth]{figs/gps-drift-example.pdf} 
-	\caption{A comparison of GPS drift (y-axis) versus OWTT drift (x-axis) for corners of the ICNN network with different source depths.}
+	\caption{A comparison of GPS noise (y-axis) versus OWTT drift (x-axis) for corners of the ICNN network with different source depths.}
 	\label{fig:gps-drift-example}
 \end{figure}
 
-The top panel shows the connections between the North and East buoys.
+The left panel shows the connections between the North and East buoys.
 The clusters scaling along the 1440 m/s guideline suggest relative ice movement picked up by both GNSS and OWTT.
 But the vertical distribution across many arrival time bands is indicative of the GNSS fluctuations in precision, or noise.
 Some minor offsets between these vertical bands relate to different operational configurations of source and receiver depth.
@@ -526,12 +526,12 @@ Underwater navigation research is broadly motivated by acquiring GNSS-like navig
 Accurate range estimation is essential to mitigating error.
 Current approaches for underwater acoustic navigation simplify the non-linear relationship between a SSP and timefronts with a determinstic sound speed.
 Thus, the conversion of travel time into distance can be pre-conditioned for error and error growth over the course of a vehicle mission.
-This work introduces a lightweight stochastic prediction of an effective sound speed along the path between source and receiver, retooling arrival methods generally deemed too complex or labor intensive for real-time.
+This work introduces a lightweight stochastic prediction of an effective speed along the acoustic path between source and receiver, retooling arrival methods generally deemed too complex or labor intensive for real-time.
 We assume that the effective sound speed would be a locally smoothly varying function with respect to operational conditions\textemdash horizontal and vertical differences and rate of difference between source and receiver.
 The field-tested approach, the minimal bounce criteria, facilitated a successful AUV recovery in a total ice-covered, double ducted environment.
 The accuracy of the MB was validated against GPS-linked beacon-to-beacon communications.
 Given a consistent bias towards overestimation, an improved algorithm, the nearest bounce criteria, was developed on the insight that multipath structure may play an outsized role in maintaining a smoothly varying effective sound speed.
-The NB was developed with field data and reevaluated on vehicle data, achieving a position accuracy and precision that rivals that of the deployed GNSS puck.
+The NB was developed with field data and reevaluated on vehicle data, achieving a position accuracy and precision that compares with that of the deployed GNSS puck.
 
 A key insight for both approaches was seeking an eigenray ensemble around an estimated location instead of seeking to unambigously match arrivals.
 The ensemble diversified the simulated multipath possibilities to better capture the actual multipath recorded.
@@ -543,10 +543,10 @@ Amongst them is defining the uncertainty grid for BELLHOP via stochastic or data
 Another is to entirely remove the seeded range and instead rely on the submerged asset's depth and recorded OWTT to find high probability fields in range.
 
 The relatively simple nature of this approach suggests it is transferable to other environments, spatio-temporal scales, and platforms.
-While it is likely a particular quirk of the Beaufort Lens that filtering for reflection alone can produce a horizontal effective speed that compensates for ray refraction and reflection, it is trivial to filter along other ways, like number of turning points, to create a more diverse and informed set of multipath timefronts.
+While it is likely a particular quirk of the Beaufort Lens that filtering for reflection alone can produce a horizontal effective speed that compensates for ray refraction and reflection, the algorithm can be reconditioned to filter against other metrics, like number of turning points, to create a more diverse and informed set of multipath timefronts.
 Though the majority of re-navigation results are within single-meter accuracy, future work can examine how constellations of more LBL beacons can extend the operational domain without adding an undesirable amount of error.
 One possibility is that, during a mission, ICNN-like LBL implementions use a comparison of the GNSS self-position and acoustic positioning to invert for the ocean volume, linking how vertical and horizontal sound speed structure impact transmission integrity.
-\llabel{1.20} A fast tomographic estimate \citep{deffenbaugh_optimal_1997,Elisseeff2002}, along with its uncertainty, can be continuously communicated to assets underway to maintain contact or enable adaptive sampling.
+\llabel{1.20} A fast tomographic estimate \citep{deffenbaugh_optimal_1997,Elisseeff2002}, along with its uncertainty, could be continuously communicated to assets underway to maintain contact or enable adaptive sampling.
 In this sense navigation and tomography converge on the same set of component technologies\textemdash position estimation, sound speed parameterization estimation, ray path identification, and vehicle path optimization.
 
 Spatio-temporal variability is a serious challenge for accurate real-time ranging.
@@ -558,14 +558,14 @@ But in the long run, more accurate and higher resolution global circulation mode
 Through-the-sensor methods can resolve local features but would require a degree of information sharing not readily supported on the acoustic channel for large scale variability.
 But addressing the spatial and temporal scales of what can be solved deterministically and what must be solved stochastically imposes a resolution constraint that is at odds with computational overhead for real-time operations.
 Resolving features inaccurately, or with a false sense of confidence, could be more harmful than contextualizing the limitations of a range independent propagation over realistic bathymetry.
-Given that AUV operations are often on smaller spatial and temporal scales, the added benefit of a gridded model is quite small, and for features like the Beaufort Lens, not well resolved.
+Given that AUV operations are often on smaller spatial and temporal scales, the added benefit of an ocean model is quite small, and for features like the Beaufort Lens, not well resolved.
 
 \llabel{1.1}
-The methods presented in this paper, including the software projects \citep{,Benjamin2010,schneider2015dynamic,schneider_unified_2010}, are open source and platform agnostic.
+The methods involved in this paper include open source software projects \citep{,Benjamin2010,schneider2015dynamic,schneider_unified_2010} that are platform agnostic.
 Large AUVs, often large enough to support long duration and/or deep sea missions, would benefit from including diurnal or tidal effects for ranging.
 Gliders, though generally low power and memory, have been equipped with acoustic modems.
 Their inability to maintain position within a region of reliable acoustic path makes the impact of an environmentally adaptive pseudorange estimation disproportionately positive.
-The exact adjustments to the ensemble eigenray filtering are predicated on the expected sound speed conditions and acoustic arrival structure; the problem is ripe application for other simulation testbeds or machine learning methods.
+The exact adjustments to the ensemble eigenray filtering are predicated on the expected sound speed conditions and acoustic arrival structure; the problem is ripe for other simulation testbeds or machine learning methods.
 The continued development of embedded acoustic processing on heterogenous platforms is fundamental to support a universal underwater navigation scheme comparable to GNSS.
 
 % ================================================== %
