@@ -9,15 +9,16 @@ A = h_clean_simgvel(A);
 
 load p_sspColorDetails
 %% figure 1 -- all events in 3x2 grid
-figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1100 900]);
-t = tiledlayout(3,2,'TileSpacing','none','Padding','compact');
+figure('name','rangeanomaly-by-owtt','renderer','painters','position',[108 108 1300 800]);
+t = tiledlayout(2,3,'TileSpacing','none','Padding','compact');
 
 index3 = ~isnan(A.sim_gvel);
 count = 0;
-for zs = [20 30 90]
-    index1 = A.tx_z == zs;
+for zr = [30 90]
     
-    for zr = [30 90]
+    for zs = [20 30 90]
+        
+        index1 = A.tx_z == zs;
         index2 = A.rx_z == zr;
         
         count = count + 1;
@@ -31,7 +32,7 @@ for zs = [20 30 90]
             else
                 eof_str = 'baseline';
             end
-        
+            
             index = logical(index1.*index2.*index3.*index4);
             
             if sum(index)>=1
@@ -73,42 +74,40 @@ for zs = [20 30 90]
             % for all grids
             %title(sprintf('source depth = %u m',zs),'fontsize',14,'fontweight','bold');
             title('  ','fontsize',8);
-            text(2.2,24,sprintf('tx depth = %u m',zs),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
-            text(2.2,24,sprintf('rx depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+            text(2.25,23,sprintf('source depth = %u m',zs),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11,'fontweight','bold');
+            text(2.25,23,sprintf('receiver depth = %u m',zr),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11,'fontweight','bold');
             
-            if sum(index)~=1
-                text(2.2,21-3.*eof_status,sprintf('%s = %u events',eof_str,sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+            if eof_status==0
+                text(2.25,18,sprintf('%s = %u events',eof_str,sum(index)),'HorizontalAlignment','right','VerticalAlignment','bottom','fontsize',11);
             else
-                text(2.2,21,sprintf('%s = %u event',eof_str,sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
+                text(2.25,18,sprintf('%s = %u events',eof_str,sum(index)),'HorizontalAlignment','right','VerticalAlignment','top','fontsize',11);
             end
             grid on
             
-            xlim([0.9 2.26])
-            ylim([-16 26]);
+            xlim([0.9 2.29])
+            xticks(1:0.2:2.2);
+
+            ylim([-16 27]);
+            yticks(-15:5:25);
             
-            if mod(count,2)~=1
-                yticklabels([])
-            else
-                ylabel('range error [m]');
-            end
-            
-            if count >=5
+            if count == 4
                 xlabel('one way travel time [s]');
+                ylabel('pseudorange error [m]');
             else
+                yticklabels([]);
                 xticklabels([]);
             end
         end
     end
 end
-
 % legend
 nexttile(1);
 hold on
 for k = 1:2
-l2(k) = plot([NaN NaN],[NaN NaN],'color',colorSet{k});
+    l2(k) = plot([NaN NaN],[NaN NaN],'color',colorSet{k});
 end
 hold off
-legend(l2,'Baseline','Chosen Weights','location','northwest');
+legend(l2,'Baseline','Chosen Weights','location','southeast');
 
 % title
 sgtitle('Real-time pseudorange error by source and receiver depths','fontsize',17,'fontweight','bold')
@@ -128,7 +127,6 @@ for eof_status = [0 1]
     bStat(count).std = std(A.rangeAnomaly(indexStat));
     bStat(count).max = max(A.rangeAnomaly(indexStat));
 end
-    
-    
-    
-    
+
+
+

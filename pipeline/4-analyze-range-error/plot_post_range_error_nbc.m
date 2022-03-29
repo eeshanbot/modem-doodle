@@ -82,18 +82,7 @@ for zr = [30 90]
         ylim([-12 31]);
         yticks(-10:5:30);
         xticks(1:0.2:2.2);
-        
-        %         if mod(count,3)~=1
-        %             yticklabels([])
-        %         else
-        %             ylabel('range error [m]');
-        %         end
-        %
-        %         if count >=4
-        %             xlabel('one way travel time [s]');
-        %         else
-        %             xticklabels([]);
-        %         end
+
         if count == 4
             xlabel('one way travel time [s]');
             ylabel('pseudorange error [m]');
@@ -116,4 +105,4 @@ title(lg,'Sound Speed Inputs');
 
 % title
 sgtitle('Pseudorange error footprints','fontsize',17,'fontweight','bold')
-h_printThesisPNG('range-error-allMethods')
+%h_printThesisPNG('range-error-allMethods')
