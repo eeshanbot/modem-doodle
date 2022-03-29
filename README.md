@@ -1,1 +1,3 @@
-# icex20-modem-doodle
+# modem-doodle
+
+for JASA special issue on "Changing Acoustics in the Arctic"
