@@ -1,4 +1,4 @@
-all: clean preprint
+all: clean manuscript
 
 # with bibliography:
 #
@@ -16,25 +16,16 @@ all: clean preprint
 # Tables, Citations) are rendered correctly in the
 # final PDF output
 
-preprint:
-	pdflatex preprint
-	bibtex   preprint
-	pdflatex preprint
-	pdflatex preprint
-
-reprint:
-	pdflatex reprint
-	bibtex   reprint
-	pdflatex reprint
-	pdflatex reprint
+manuscript:
+	pdflatex manuscript
+	bibtex   manuscript
+	pdflatex manuscript
+	pdflatex manuscript
 
 clean:
-	rm -f preprint.pdf
-	rm -f reprint.pdf
+	rm -f manuscript.pdf
 	rm -f *.aux
 	rm -f *.log
 	rm -f *Notes.bib
 	rm -f *.blg
 	rm -f *.bbl
-
-
