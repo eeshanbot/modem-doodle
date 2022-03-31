@@ -25,7 +25,7 @@ nexttile(1);
 edges = [0:5:65];
 Y{2}.count = trilat.mbc.correction;
 Y{1}.count = trilat.nbc.correction;
-h_hist_boxplot(Y,edges,colors,max(edges));
+statBackCorr = h_hist_boxplot(Y,edges,colors,max(edges));
 
 xlabel('correction [m rms]')
 set(gca,'fontsize',13)
@@ -40,7 +40,7 @@ edges = [0:3:21];
 Y{1}.count = trilat.nbc.error;
 Y{2}.count = trilat.mbc.error;
 
-h_hist_boxplot(Y,edges,colors,max(edges));
+statBackErr = h_hist_boxplot(Y,edges,colors,max(edges));
 xlabel('error [m rms]')
 set(gca,'fontsize',13)
 title({'',...

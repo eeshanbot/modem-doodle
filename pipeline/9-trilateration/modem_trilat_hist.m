@@ -17,7 +17,7 @@ colors = {[153 51 153]./256,[51 153 153]./256};
 %% figure
 figure('name','trilat-histogram','renderer','painters','position',[108 108 1200 500]);
 
-h_hist_boxplot(Y,edges,colors,48);
+statBack = h_hist_boxplot(Y,edges,colors,48);
 
 %% dress up figure
 xlabel('correction [m rms]')

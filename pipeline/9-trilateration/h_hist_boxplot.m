@@ -1,4 +1,4 @@
-function [] = h_hist_boxplot(Y,EDGES,COLORS,THRESHOLD)
+function [statBack] = h_hist_boxplot(Y,EDGES,COLORS,THRESHOLD)
 %h_hist_boxplot makes a beautiful histogram w/ a boxplot underlaid
 
 diffEdges = mean(diff(EDGES))./2;
@@ -17,7 +17,7 @@ end
 grid on
 ylabel('probability');
 xticks(EDGES);
-xlim([-1 max(EDGES)]);
+xlim([-1 max(EDGES)+1]);
 
 % box plot
 hold on
@@ -26,12 +26,12 @@ buff = -0.15;
 
 % add bottom "box" plot
 hold on
-buff = -0.15;
 maxY = ceil(max(h(:))*10)/10;
+buff = -maxY/5;
 ylim([buff maxY]);
 yticks([0:0.1:maxY]);
 
-kbuff = .05;
+kbuff = buff/3;
 for s = 1:2
     
     yval = Y{s}.count;
@@ -42,13 +42,18 @@ for s = 1:2
     xQuant1 = quantile(yval,[0 1]);
     xQuant2 = quantile(yval,[.25 .5 .75]);
     
-    plot(xQuant1,ones(2,1).*-s*kbuff,'handlevisibility','off','color',[COLORS{s} 0.4]);
-    plot(xQuant1,-s*kbuff,'.','handlevisibility','off','color',COLORS{s},'MarkerSize',15);
-    plot(meanVal,-s*kbuff,'o','handlevisibility','off','color',COLORS{s},'MarkerSize',12);
+    plot(xQuant1,ones(2,1).*s*kbuff,'handlevisibility','off','color',[COLORS{s} 0.4]);
+    plot(xQuant1,s*kbuff,'.','handlevisibility','off','color',COLORS{s},'MarkerSize',15);
+    plot(meanVal,s*kbuff,'o','handlevisibility','off','color',COLORS{s},'MarkerSize',12);
     
-    plot(xQuant2(1),-s*kbuff,'<','handlevisibility','off','color',COLORS{s});
-    plot(xQuant2(3),-s*kbuff,'>','handlevisibility','off','color',COLORS{s});
-    plot(xQuant2(2),-s*kbuff,'d','handlevisibility','off','color',COLORS{s});
+    plot(xQuant2(1),s*kbuff,'<','handlevisibility','off','color',COLORS{s});
+    plot(xQuant2(3),s*kbuff,'>','handlevisibility','off','color',COLORS{s});
+    plot(xQuant2(2),s*kbuff,'d','handlevisibility','off','color',COLORS{s});
+    
+    statBack(s).mean = meanVal;
+    statBack(s).minmax = xQuant1;
+    statBack(s).percentiles = xQuant2;
+    statBack(s).std = std(yval,'omitnan');
 
 end
 
