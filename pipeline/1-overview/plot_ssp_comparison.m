@@ -40,7 +40,9 @@ hold off
 grid on
 set(gca,'ydir','reverse');
 title('Sound speed estimates');
-ylim([0 600])
+ylim([0 550])
+ytick([0 30 100:100:600]);
+yticklabels({'0','30','100','200','300','400','500','600'});
 xlim([1431 1462])
 ylabel('depth [m]');
 xlabel('c [m/s]');
@@ -48,6 +50,11 @@ xlabel('c [m/s]');
 legend('ICEX20: Baseline','ICEX20: Chosen Weights','ICEX20: HYCOM','',...
        'ICEX16: Historical', 'ICEX16: Data','ICEX16: HYCOM',...
        'location','southwest','fontsize',13);
+   
+%text(1431,20,'20 ','horizontalalignment','right','verticalalignment','middle','fontsize',9);
+%text(1431,30,'30 ','horizontalalignment','right','verticalalignment','middle','fontsize',9);
+%text(1431,90,'90 ','horizontalalignment','right','verticalalignment','middle','fontsize',9);
+
    
 %% export "isovelocity" assumption
 

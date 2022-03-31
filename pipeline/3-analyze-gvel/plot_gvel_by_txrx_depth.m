@@ -12,6 +12,8 @@ load isovelocity-ssp.mat
 listing = dir('../bellhop-gvel-gridded/csv_arr/*gridded.csv');
 [T2,colorSet] = h_get_nbc(listing,DATA,INDEX);
 
+impliedColor = [161, 183, 13]./256;
+
 %% load post-processing sim for MBC
 listing1 = dir('../bellhop-gvel-gridded/csv_arr/*old.csv');
 T1 = h_get_mbc(listing1,DATA);
@@ -43,10 +45,10 @@ for zr = [30 90]
         yline(iso.avg-iso.std,'k:','linewidth',2,'handlevisibility','off');
         
         % implied effective sound speed (GPS)
-        sgps = scatter(DATA.owtt(index),DATA.gvel(index),50,'o','filled','handlevisibility','off');
+        sgps = scatter(DATA.owtt(index),DATA.gvel(index),60,'o','filled','handlevisibility','off');
         sgps.MarkerEdgeColor = 'none';
-        sgps.MarkerFaceColor = [200, 78, 0]./256;
-        sgps.MarkerFaceAlpha = 0.2;
+        sgps.MarkerFaceColor = impliedColor;
+        sgps.MarkerFaceAlpha = 0.3;
         
         if sum(index)>=1
             % plot
@@ -131,7 +133,7 @@ end
 % legend for data
 plot(NaN,NaN,'w');
 plot(NaN,NaN,'w');
-plot(NaN,NaN,'.','color',[200, 78, 0]./256,'markersize',15);
+plot(NaN,NaN,'.','color',impliedColor,'markersize',15);
 
 lgdstr = {'\bf{SOUND SPEED SOURCE}','Isovelocity','HYCOM','Baseline','Chosen Weights','','\bf{MINIMAL BOUNCE CRITERIA}',...
     'Minimal bounce','','\bf{NEAREST BOUNCE CRITERIA}',...
